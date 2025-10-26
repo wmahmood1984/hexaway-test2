@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Tree from "react-d3-tree";
 import { useSelector } from "react-redux";
-import { mlmabi, mlmcontractaddress, web3 } from "../config";
+import { helperAbi, helperAddress, web3 } from "../config";
 import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function AddressHierarchy() {
@@ -20,7 +20,8 @@ export default function AddressHierarchy() {
     height: "100vh",
   };
 
-  const contract = new web3.eth.Contract(mlmabi, mlmcontractaddress);
+//  const contract = new web3.eth.Contract(mlmabi, mlmcontractaddress);
+  const hContract = new web3.eth.Contract(helperAbi, helperAddress);
 
   // Helper function to shorten addresses recursively
   const shortenAddresses = (node) => {
@@ -50,7 +51,7 @@ export default function AddressHierarchy() {
         return null;
 
       try {
-        const user = await contract.methods.getUser(address).call();
+        const user = await hContract.methods.getUser(address).call();
         const [ , children] = user;
 
         // Ensure 2x2 structure

@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { erc20abi, erc20Add, mlmabi, mlmcontractaddress, web3 } from "../config";
+import { erc20abi, erc20Add, helperAbi, helperAddress, mlmabi, mlmcontractaddress, web3 } from "../config";
 
 // Init thunk: create contract and save in state
 export const init = createAsyncThunk("contract/init", async (_, thunkApi) => {
   try {
-    const rContract = new web3.eth.Contract(mlmabi, mlmcontractaddress);
+    const rContract = new web3.eth.Contract(helperAbi, helperAddress);
+
     const uContract = new web3.eth.Contract(erc20abi, erc20Add);
+
 
     thunkApi.dispatch(setContract(rContract));
     thunkApi.dispatch(setUSDTContract(uContract));
@@ -25,6 +27,8 @@ export const readName = createAsyncThunk(
     const contract = state.contract.contract;
     const uContract = state.contract.usdtContract;
 
+    const nftContract = new web3.eth.Contract(mlmabi, mlmcontractaddress);
+
     if (!contract) throw new Error("Contract not initialized");
 
     try {
@@ -37,17 +41,17 @@ export const readName = createAsyncThunk(
         }
       };
 
-      const name = await safeCall("name", () => contract.methods.name().call());
-      const nfts = await safeCall("getNFTs", () => contract.methods.getNFTs().call());
+      const name = await safeCall("name", () => nftContract.methods.name().call());
+      // const nfts = await safeCall("getNFTs", () => contract.methods.getNFTs().call());
       const packages = await safeCall("getPackages", () => contract.methods.getPackages().call());
       const admin = await safeCall("admin", () => contract.methods.owner().call());
       const NFTque = await safeCall("getNFTque", () => contract.methods.getNFTque().call());
       const registered = await safeCall("userRegistered", () => contract.methods.userRegistered(a.address).call());
-      
+
       const NFTMayBeCreated = await safeCall("NFTMayBeCreated", () => contract.methods.NFTMayBeCreated().call());
-      const nextTokenId = await safeCall("_nextTokenId", () => contract.methods._nextTokenId().call());
-      const nftused = await safeCall("nftused(0)", () => contract.methods.getNFTused().call());
-   
+      const nextTokenId = await safeCall("_nextTokenId", () => nftContract.methods._nextTokenId().call());
+      //      const nftused = await safeCall("nftused(0)", () => contract.methods.getNFTused().call());
+
 
       let Package = null;
       let uplines = [];
@@ -56,27 +60,33 @@ export const readName = createAsyncThunk(
       let directReferrals = [];
       let limitUtilized = 0;
       let myNFTs = [];
-      let NFTQueBalance=0
+      let NFTQueBalance = 0
+      let levelIncome = 0
+      let referralIncome = 0
+      let tradingIncome = 0
 
       if (a.address && registered) {
         Package = await safeCall("userPackage", () => contract.methods.userPackage(a.address).call());
         uplines = await safeCall("getUplines", () => contract.methods.getUplines(a.address).call());
         downlines = await safeCall("getDownlines", () => contract.methods.getUser(a.address).call());
         allowance = await safeCall("allowance", () => uContract.methods.allowance(a.address, mlmcontractaddress).call());
-  //      directReferrals = await safeCall("getDirectReferrals", () => contract.methods.getDirectReferrals(a.address).call());
+        //      directReferrals = await safeCall("getDirectReferrals", () => contract.methods.getDirectReferrals(a.address).call());
         limitUtilized = await safeCall("userLimitUtilized", () => contract.methods.userLimitUtilized(a.address).call());
         myNFTs = await safeCall("getNFTs(address)", () => contract.methods.getNFTs(a.address).call());
         NFTQueBalance = await safeCall("NFTQueBalance", () => contract.methods.NFTQueBalance(a.address).call());
-      
-      }
-      
-  
+        levelIncome = await safeCall("NFTQueBalance", () => contract.methods.userLevelIncome(a.address).call());
+        referralIncome = await safeCall("NFTQueBalance", () => contract.methods.userReferralIncome(a.address).call());
+        tradingIncome = await safeCall("NFTQueBalance", () => contract.methods.userTradingIncome(a.address).call());
 
-      console.log("✅ [readName] All calls succeeded",downlines);
+      }
+
+
+
+      console.log("✅ [readName] All calls succeeded", downlines);
 
       return {
         name,
-        nfts,
+        // nfts,
         Package,
         packages,
         uplines,
@@ -91,7 +101,12 @@ export const readName = createAsyncThunk(
         myNFTs,
         NFTMayBeCreated,
         nextTokenId,
-        nftused,
+        levelIncome,
+        referralIncome,
+        tradingIncome,
+
+
+        //      nftused,
       };
     } catch (err) {
       console.error("❌ [readName] General error:", err);
@@ -106,7 +121,7 @@ const contractSlice = createSlice({
     contract: null,
     usdtContract: null,
     name: null,
-    nfts: [],
+    // nfts: [],
     Package: null,
     packages: [],
     uplines: [],
@@ -121,7 +136,10 @@ const contractSlice = createSlice({
     myNFTs: [],
     NFTMayBeCreated: false,
     nextTokenId: 0,
-    nftused: null,
+           levelIncome:0,
+        referralIncome:0,
+        tradingIncome:0,
+    //nftused: null,
     status: "idle",
     error: null,
   },

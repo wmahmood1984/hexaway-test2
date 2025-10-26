@@ -2,7 +2,7 @@ import axios from "axios";
 import { formatEther, parseEther } from "ethers";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { mlmcontractaddress, usdtContract } from "./config";
+import { helperAbi, helperAddress, mlmcontractaddress, usdtContract, web3 } from "./config";
 import { useConfig } from "wagmi";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { executeContract } from "./utils/contractExecutor";
@@ -13,7 +13,7 @@ export const Image = ({ nft, index }) => {
     const config = useConfig()
     const [image, setImage] = useState()
     const [name, setName] = useState()
-    const {  nfts  } = useSelector((state) => state.contract);
+    // const {  nfts  } = useSelector((state) => state.contract);
     const { address } = useAppKitAccount();
 
     const dispatch = useDispatch()
@@ -58,7 +58,7 @@ export const Image = ({ nft, index }) => {
         //     handleBuy2(id, address)
         // } else {
 
-            const value = Number(formatEther(nfts[id-1].premium)) + Number(formatEther(nfts[id-1].price)*0.07)
+            const value = Number(formatEther(nft.premium)) + Number(formatEther(nft.price)*0.07)
             console.log("value", value.toString())
             await executeContract({
                 config,
@@ -73,7 +73,7 @@ export const Image = ({ nft, index }) => {
 
     };
 
-//console.log("first",nfts)
+console.log("first",nft)
 
     return (image && name &&
 
@@ -118,10 +118,26 @@ export const Image = ({ nft, index }) => {
     )
 }
 
-const NFTGrid = ({ nfts }) => {
+const NFTGrid = () => {
+
+      const [nfts,setNFTs]= useState()  
+      const helperContract = new web3.eth.Contract(helperAbi,helperAddress)
+    
+      useEffect(()=>{
+    
+    
+        const abc = async ()=>{
+          const _nftUsed = await helperContract.methods.getNFTs().call()
+          setNFTs(_nftUsed)
+        }
+    
+        abc()
+    
+    
+      },[])
 
 //console.log("nft",nfts)
-    return (
+    return (nfts && 
         <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {nfts.map((nft, index) => {
              if(nft._owner!="0x0000000000000000000000000000000000000000"){

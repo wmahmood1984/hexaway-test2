@@ -66,7 +66,7 @@ import Footer from "./components/Footer/Footer";
 
 function App() {
   const dispatch = useDispatch();
-  const { nfts, name, NFTMayBeCreated, admin, status, error } = useSelector(
+  const { name, NFTMayBeCreated, admin, status, error } = useSelector(
     (state) => state.contract
   );
   const { address } = useAppKitAccount();
@@ -257,7 +257,7 @@ const navigate = useNavigate();
         <h2 className="text-2xl font-semibold mb-4 text-gray-700">
           NFT Collection
         </h2>
-        <NFTGrid nfts={nfts} />
+        <NFTGrid />
       </div>
 
 

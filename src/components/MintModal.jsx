@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import pinataSDK from "@pinata/sdk";
 import { useDispatch, useSelector } from "react-redux";
 import { executeContract } from "../utils/contractExecutor";
 import { useConfig } from "wagmi";
 import { readName } from "../slices/contractSlice";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { mlmcontractaddress, usdtContract } from "../config";
+import { helperAbi, helperAddress, mlmcontractaddress, usdtContract, web3 } from "../config";
 import {  parseEther } from "ethers";
 
 export default function MintModal({ isOpen, onClose }) {
-      const { nftused } = useSelector((state) => state.contract);
+//      const { nftused } = useSelector((state) => state.contract);
+
+
+      const [nftused,setNFTUsed] = useState()
           const { address } = useAppKitAccount();
     const [name, setName] = useState("");
   const [file, setFile] = useState(null);
@@ -22,6 +25,21 @@ export default function MintModal({ isOpen, onClose }) {
   //   pinataApiKey: import.meta.env.VITE_PINATA_API_KEY,
   //   pinataSecretApiKey: import.meta.env.VITE_PINATA_SECRET,
   // });
+
+  const helperContract = new web3.eth.Contract(helperAbi,helperAddress)
+
+  useEffect(()=>{
+
+
+    const abc = async ()=>{
+      const _nftUsed = await helperContract.methods.getNFTused().call()
+      setNFTUsed(_nftUsed)
+    }
+
+    abc()
+
+
+  },[])
 
 
     const handleUpdate = async (uri,add) => {
