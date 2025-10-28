@@ -24,16 +24,16 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             Package(1, 15 ether, 0 * daysSeconds, 0, 300 ether, 0, 5, 2)
         ); //0  //1
         packages.push(
-            Package(2, 20 ether, 30 * daysSeconds, 15, 700 ether, 0, 10, 3)
+            Package(2, 20 ether, 30 * daysSeconds, 5, 700 ether, 0, 10, 3)
         ); //15 //10
         packages.push(
-            Package(3, 25 ether, 60 * daysSeconds, 40, 1200 ether, 0, 15, 4)
+            Package(3, 25 ether, 60 * daysSeconds, 10, 1200 ether, 0, 15, 4)
         ); //40
         packages.push(
-            Package(4, 50 ether, 90 * daysSeconds, 100, 2200 ether, 0, 20, 5)
+            Package(4, 50 ether, 90 * daysSeconds, 15, 2200 ether, 0, 20, 5)
         ); //100
         packages.push(
-            Package(5, 165 ether, 120 * daysSeconds, 300, 5500 ether, 0, 25, 6)
+            Package(5, 165 ether, 120 * daysSeconds, 20, 5500 ether, 0, 25, 6)
         ); //300
 
         maxLevels = 25;
@@ -45,7 +45,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         percentageAtBuyforTTBonus = 15;
 
         paymentToken = IERC20(0x951f3Cc97326eB18D6d3F2dc869e0Ca504023BBB);
-        timelimit = 60 * 20; //60*60*48;
+        timelimit = 60 * 60; //60*60*48;
 
         userRegistered[msg.sender] = true;
         Package memory tx1 = packages[5];
@@ -135,7 +135,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
         require(users[_user].referrer == address(0), "2");
         require(_referrer != _user, "3");
-        require(userRegistered[_referrer], "4");
+        require(userRegistered[_referrer], "already registered");
 
         address placement = findAvailableSlot(_referrer);
 
@@ -147,22 +147,32 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         users[_referrer].direct.push(_user);
 
         // ✅ Add to referrer's indirect network
-        users[_referrer].indirect.push(_user);
+        // users[_referrer].indirect.push(_user);
 
-        // ✅ Also add this user to every upline's allReferrals
-        address current = _referrer;
+        // // ✅ Also add this user to every upline's allReferrals
+        // address current = placement;//_referrer;
+        // for (uint i = 0; i < maxLevels; i++) {
+        //     // limit to prevent infinite loops
+        //     address upper = users[current].parent;
+        //     if (upper == address(0)) break;
+        //     users[upper].indirect.push(_user);
+        //     current = upper;
+        // }
+
+        address current = placement;
         for (uint i = 0; i < maxLevels; i++) {
-            // limit to prevent infinite loops
-            address upper = users[current].referrer;
-            if (upper == address(0)) break;
-            users[upper].indirect.push(_user);
-            current = upper;
+            if (current == address(0)) break;
+            users[current].indirect.push(_user);
+            current = users[current].parent;
         }
+
+        // if (_referrer != placement) {
+        //     users[_referrer].indirect.push(_user);
+        // }
 
         userRegistered[_user] = true;
 
         sendConditional(_referrer, amount / 2, 1);
-
 
         userTradingTime[_user] = block.timestamp;
         userLevelIncomeBlockTime[_user] = block.timestamp;
@@ -246,7 +256,6 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
         paymentToken.transfer(owner(), (amount * 10) / 100);
 
-        
         address up = users[_user].referrer;
 
         sendConditional(up, (amount * 20) / 100, 2);
@@ -272,7 +281,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function buyNFT(
         uint id,
         address _user
-     ) public returns (bool _burn, address _owner) {
+    ) public returns (bool _burn, address _owner) {
         require(id > 0, "invalid id");
         uint index = id - 1;
         require(index < nfts.length, "NFT does not exist");
@@ -346,7 +355,8 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             oldOwner,
             ((amount * percentageAtBuyToTrader) / percentageAtBuy)
         );
-        userTradingIncome[oldOwner]+=((amount * percentageAtBuyToTrader) / percentageAtBuy);
+        userTradingIncome[oldOwner] += ((amount * percentageAtBuyToTrader) /
+            percentageAtBuy);
         paymentToken.transfer(
             owner(),
             ((amount * percentageAtBuyToAdmin) / percentageAtBuy)

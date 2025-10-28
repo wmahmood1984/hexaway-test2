@@ -121,7 +121,7 @@ const NFTQuebalance1 = normalizedQue.indexOf(normalizedAddr) !== 0
     ? "0"
     : formatEther(NFTQueBalance);
 
-
+console.log("nft",downlines)
 return (status === "loading" ? <p className="text-gray-600">Loading...</p> :
     error ? <p className="text-red-600 font-semibold">{error}</p> :
         registered ?
@@ -143,12 +143,20 @@ return (status === "loading" ? <p className="text-gray-600">Loading...</p> :
                         </div> */}
                     <div className="singlepckagebox shadow">
                         <h2 className="text-sm text-gray-500">Team size</h2>
-                        <p className="font-bold text-gray-800">{downlines.indirect.length-2<0?downlines.indirect.length:downlines.indirect.length-2}</p>
+                        <p className="font-bold text-gray-800">{
+                        //downlines.indirect.length-2<0?
+                        downlines.indirect.length
+                        //:downlines.indirect.length-2
+                        }</p>
                     </div>
 
                     <div className="singlepckagebox shadow">
                         <h2 className="text-sm text-gray-500">Team size</h2>
-                        <p className="font-bold text-gray-800">{downlines.indirect.length-2<0?downlines.indirect.length:downlines.indirect.length-2}</p>
+                        <p className="font-bold text-gray-800">{
+                        //downlines.indirect.length-2<0?
+                        downlines.indirect.length
+                        //:downlines.indirect.length-2
+                        }</p>
                     </div>
                     <div className="singlepckagebox shadow">
                         <h2 className="text-sm text-gray-500">Direct Referrals</h2>

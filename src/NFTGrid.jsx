@@ -138,7 +138,7 @@ const NFTGrid = () => {
     
       },[toggle])
 
-console.log("nft",nfts)
+
     return (nfts && 
         <div className=" p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {nfts.map((nft, index) => {
