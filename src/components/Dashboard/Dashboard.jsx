@@ -545,7 +545,7 @@ export default function MagicverseDashboard() {
           <h2 className="text-2xl font-bold">Profile</h2>
           <button onClick={() => setIsProfileOpen(false)} className="text-gray-300 hover:text-white font-bold text-xl">×</button>
         </div>
-        <ProfileSection />
+        <ProfileSection onClose={()=>setIsProfileOpen(false)}/>
       </Modal>
 
       <Footer />

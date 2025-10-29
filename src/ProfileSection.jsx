@@ -11,7 +11,7 @@ import { Image } from "./NFTGrid";
 import MintModal from "./components/MintModal";
 //import { saveRelationship } from "./utils/saveRelationship";
 
-const ProfileSection = () => {
+const ProfileSection = ({onClose}) => {
     const config = useConfig()
     const { Package, myNFTs, packages, downlines, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
 
@@ -33,7 +33,7 @@ const handleRegister2 = async () => {
             console.log("🎉 Tx Hash:", txHash);
             console.log("🚀 Tx Receipt:", receipt);
             dispatch(readName({ address: receipt.from }));
-            updatetree()
+            onClose()
         },
         onError: (err) => {
             console.error("Registration failed:", err);
@@ -186,19 +186,19 @@ return (status === "loading" ? <p className="text-gray-600">Loading...</p> :
                     <div className="singlepckagebox shadow">
                         <h2 className="text-sm text-gray-500">Level Income</h2>
                         <p className="font-bold text-green-600">
-                            {formatEther(levelIncome)} $
+                            {levelIncome>0?formatEther(levelIncome):0} $
                         </p>
                     </div>
                     <div className="singlepckagebox shadow">
                         <h2 className="text-sm text-gray-500">Referral Income</h2>
                         <p className="font-bold text-green-600">
-                            {formatEther(referralIncome)} $
+                            {referralIncome>0?formatEther(referralIncome):0} $
                         </p>
                     </div>
                     <div className="singlepckagebox shadow">
                         <h2 className="text-sm text-gray-500">Trading Income</h2>
                         <p className="font-bold text-green-600">
-                            {formatEther(tradingIncome)} $
+                            {tradingIncome>0?formatEther(tradingIncome):0} $
                         </p>
                     </div>
                 </div>

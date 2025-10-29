@@ -75,9 +75,9 @@ export const readName = createAsyncThunk(
         limitUtilized = await safeCall("userLimitUtilized", () => contract.methods.userLimitUtilized(a.address).call());
         myNFTs = await safeCall("getNFTs(address)", () => contract.methods.getNFTs(a.address).call());
         NFTQueBalance = await safeCall("NFTQueBalance", () => contract.methods.NFTQueBalance(a.address).call());
-        levelIncome = await safeCall("NFTQueBalance", () => contract.methods.userLevelIncome(a.address).call());
-        referralIncome = await safeCall("NFTQueBalance", () => contract.methods.userReferralIncome(a.address).call());
-        tradingIncome = await safeCall("NFTQueBalance", () => contract.methods.userTradingIncome(a.address).call());
+        levelIncome = await safeCall("levelIncome", () => contract.methods.userLevelIncome(a.address).call());
+        referralIncome = await safeCall("referralIncome", () => contract.methods.userReferralIncome(a.address).call());
+        tradingIncome = await safeCall("tradingIncome", () => contract.methods.userTradingIncome(a.address).call());
 
       }
 
