@@ -55,9 +55,11 @@ const handleRegister2 = async () => {
 
 
 const handleRegister = async () => {
+
     if (allowance >= packages[0].price) {
         handleRegister2()
     } else {
+   
         await executeContract({
             config,
             functionName: "approve",
@@ -121,7 +123,7 @@ const NFTQuebalance1 = normalizedQue.indexOf(normalizedAddr) !== 0
     ? "0"
     : formatEther(NFTQueBalance);
 
-console.log("nft",downlines)
+console.log("levelincome",levelIncome)
 return (status === "loading" ? <p className="text-gray-600">Loading...</p> :
     error ? <p className="text-red-600 font-semibold">{error}</p> :
         registered ?

@@ -1,12 +1,17 @@
 import Web3 from "web3";
 
+
+export const web31 = new Web3( new Web3.providers.HttpProvider("https://bsc-testnet-rpc.publicnode.com"))
+
 export const web3 = new Web3(
   new Web3.providers.HttpProvider(
     //	"https://opbnb-testnet-rpc.publicnode.com"   //op bnb
- "https://bsc-testnet-rpc.publicnode.com"
-//"https://bsc-testnet-dataseed.bnbchain.org"
+ //"https://bsc-testnet-rpc.publicnode.com"
+"https://bsc-testnet-dataseed.bnbchain.org"
   )
 );
+
+export const url = "https://testnet.bscscan.com/tx/"
 
 export const incomeKeys=["referralIncome","tradingIncome","levelIncome"]
 

@@ -90,7 +90,16 @@ function App() {
   return (
     <div className="">
 
-      <Header onRegister={() => setIsProfileOpen(true)} />
+      <Header onRegister={() => {
+        console.log("address",address);
+        if(!address){
+          //alert("Please connect the wallet first")
+        }else{
+        setIsProfileOpen(true)
+        }
+
+        
+        }} />
       <section className="hero-section relative overflow-hidden py-20 bg-gradient-to-b from-[#0a0125] via-[#120038] to-[#1a003f]">
 
         <div className="absolute top-10 left-10 w-8 h-8 bg-gradient-to-b from-purple-400 to-purple-700 rounded-full blur-lg opacity-80 animate-bounce"></div>

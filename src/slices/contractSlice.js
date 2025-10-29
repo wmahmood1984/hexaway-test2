@@ -53,7 +53,7 @@ export const readName = createAsyncThunk(
       const nextTokenId = await safeCall("_nextTokenId", () => nftContract.methods._nextTokenId().call());
       //      const nftused = await safeCall("nftused(0)", () => contract.methods.getNFTused().call());
 
-  
+     
       let Package = null;
       let uplines = [];
       let downlines = [];

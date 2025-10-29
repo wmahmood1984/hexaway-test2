@@ -3,7 +3,7 @@ import "../../App.css";
 import Header from "../Header/Header.jsx";
 import Footer from "../Footer/Footer.jsx";
 import Sidebar from "../Sidebar/Sidebar.jsx";
-import { erc20abi, erc20Add, helperAbi, helperAddress, incomeKeys, mlmcontractaddress, usdtContract, web3 } from "../../config";
+import { erc20abi, erc20Add, helperAbi, helperAddress, incomeKeys, mlmcontractaddress, url, usdtContract, web3, web31 } from "../../config";
 import { executeContract } from "../../utils/contractExecutor";
 import { useDispatch, useSelector } from "react-redux";
 import { useAppKitAccount } from "@reown/appkit/react";
@@ -46,102 +46,104 @@ export default function MagicverseDashboard() {
 
   const [active, setActive] = useState("dashboard");
   const [loading, setLoading] = useState(false);
-  const [ transactions,setTransaction] = useState()
+  const [transactions, setTransaction] = useState()
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-          const [usdBalance,setUsdBalance]= useState(0)  
-                    const [toggle,setToggle]= useState(false)  
-        const helperContract = new web3.eth.Contract(helperAbi,helperAddress)
-                const usdtContract = new web3.eth.Contract(erc20abi,erc20Add)
-      
-        useEffect(()=>{
-      
-      
-          const abc = async ()=>{
-            if(address){
-            const _usdtBalance = await usdtContract.methods.balanceOf(address).call()
-            setUsdBalance(Number(formatEther(_usdtBalance)).toFixed(4))
-            }
+  const [usdBalance, setUsdBalance] = useState(0)
+  const [toggle, setToggle] = useState(false)
+  const helperContract = new web31.eth.Contract(helperAbi, helperAddress)
+  const usdtContract1 = new web3.eth.Contract(erc20abi, erc20Add)
 
-          }
-      
-          abc()
-      
-      
-        },[address,toggle])
+  useEffect(() => {
 
 
-       useEffect(() => {
-  const bringTransaction = async () => {
-    if (!address) return;
-
-    const fromBlock = 70443060;
-    const latestBlock = await web3.eth.getBlockNumber();
-    const step = 5000; // or smaller if node still complains
-    let allEvents = [];
-
-    for (let i = fromBlock; i <= latestBlock; i += step) {
-      const toBlock = Math.min(i + step - 1, latestBlock);
-
-      try {
-        const events = await helperContract.getPastEvents("Incomes", 
-          
-          {
-          
-          fromBlock: i,
-          toBlock: toBlock,
-        });
-        allEvents = allEvents.concat(events);
-        setTransaction(allEvents)
-        // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
-      } catch (error) {
-        console.warn(`Error fetching from ${i} to ${toBlock}`, error);
+    const abc = async () => {
+      if (address) {
+        const _usdtBalance = await usdtContract1.methods.balanceOf(address).call()
+        setUsdBalance(Number(formatEther(_usdtBalance)).toFixed(4))
       }
+
     }
 
-    console.log("All events:", allEvents);
-  };
-
-  bringTransaction();
-}, [address, toggle]);
+    abc()
 
 
+  }, [address, toggle])
 
-  
+
+  useEffect(() => {
+    const bringTransaction = async () => {
+      if (!address) return;
+
+
+      const latestBlock = await web3.eth.getBlockNumber();
+            const fromBlock = latestBlock-50000;
+      const step = 5000; // or smaller if node still complains
+      let allEvents = [];
+
+      for (let i = fromBlock; i <= latestBlock; i += step) {
+        const toBlock = Math.min(i + step - 1, latestBlock);
+
+        try {
+          const events = await helperContract.getPastEvents("Incomes",
+
+            {
+
+              fromBlock: i,
+              toBlock: toBlock,
+            });
+          allEvents = allEvents.concat(events);
+          setTransaction(allEvents)
+          // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
+        } catch (error) {
+          console.warn(`Error fetching from ${i} to ${toBlock}`, error);
+        }
+      }
+
+      console.log("All events:", allEvents);
+    };
+
+    bringTransaction();
+  }, [address, toggle]);
+
+
+
+
   const handleUpdate = async (pkg) => {
     // if (allowance >= pkg.price) {
     //     handleUpdate2(pkg.id)
     // } else {
+    console.log("updagre", pkg);
     await executeContract({
-        config,
-        functionName: "approve",
-        args: [mlmcontractaddress, pkg.price],
-        onSuccess: () => handleUpdate2(pkg.id),
-        onError: (err) => alert("Transaction failed", err),
-        contract: usdtContract
+      config,
+      functionName: "approve",
+      args: [mlmcontractaddress, pkg.price],
+      onSuccess: () => handleUpdate2(pkg.id),
+      onError: (err) => alert("Transaction failed", err),
+      contract: usdtContract
     });
     //}
 
 
-};
+  };
 
-const handleUpdate2 = async (id) => {
+  const handleUpdate2 = async (id) => {
     console.log("🚀 Upgrading to package ID:", id);
     await executeContract({
-        config,
-        functionName: "buyPackage",
-        args: [id],
-        onSuccess: (txHash, receipt) => {
-            console.log("🎉 Tx Hash:", txHash);
-            console.log("🚀 Tx Receipt:", receipt);
-            dispatch(readName({ address: receipt.from }));
-        },
-        onError: (err) => {
-            console.error("🔥 Error in register:", err);
-            alert("Transaction failed");
-        },
+      config,
+      functionName: "buyPackage",
+      args: [id],
+      onSuccess: (txHash, receipt) => {
+        console.log("🎉 Tx Hash:", txHash);
+        console.log("🚀 Tx Receipt:", receipt);
+        dispatch(readName({ address: receipt.from }));
+      },
+      onError: (err) => {
+        console.error("🔥 Error in register:", err);
+        alert("Transaction failed");
+      },
     });
-};
+  };
 
   useEffect(() => {
     if (address) {
@@ -166,11 +168,11 @@ const handleUpdate2 = async (id) => {
     }
   };
 
-//   const handleUpdate = (nextPackage) => {
-//     // placeholder action — replace with your contract call flow
-//     if (!nextPackage) return;
-//     alert(`Upgrading to Package #${nextPackage.id} (${format(nextPackage.price)} ETH)`);
-//   };
+  //   const handleUpdate = (nextPackage) => {
+  //     // placeholder action — replace with your contract call flow
+  //     if (!nextPackage) return;
+  //     alert(`Upgrading to Package #${nextPackage.id} (${format(nextPackage.price)} ETH)`);
+  //   };
 
   const directCount = downlines?.direct?.length ?? 0;
   const indirectCount = downlines?.indirect?.length ?? 0;
@@ -210,17 +212,26 @@ const handleUpdate2 = async (id) => {
     right: { id: "771275", children: ["773001", "773002", "773003"] },
   };
 
-  const purchaseTime = `${new Date(Package?.purchaseTime*1000).getDate()}-${new Date(Package?.purchaseTime*1000).getMonth()}-${new Date(Package?.purchaseTime*1000).getFullYear()}`
+  const purchaseTime = `${new Date(Package?.purchaseTime * 1000).getDate()}-${new Date(Package?.purchaseTime * 1000).getMonth()+1}-${new Date(Package?.purchaseTime * 1000).getFullYear()}`
 
-  const filteredTransactions = transactions && transactions.filter(e=>e.
-returnValues.
-_user===address).map((v,e)=>{return ({values:v.returnValues,hash:v.transactionHash})})
+  const filteredTransactions = transactions && transactions.filter(e => e.
+    returnValues.
+    _user === address).map((v, e) => { return ({ values: v.returnValues, hash: v.transactionHash }) })
 
 
-transactions && console.log("usdt",filteredTransactions);
-  return ( 
+
+  return (
     <div className="min-h-screen bg-gradient-to-b from-[#040213] via-[#070427] to-[#07031a] text-slate-100">
-      <Header onRegister={() => setIsProfileOpen(true)} />
+      <Header onRegister={() => {
+        console.log("address", address);
+        if (!address) {
+          alert("Please connect the wallet first")
+        } else {
+          setIsProfileOpen(true)
+        }
+
+
+      }} />
       <div className="container">
         <main className="flex-1 p-6 md:p-10">
           {!address ? (
@@ -250,9 +261,9 @@ transactions && console.log("usdt",filteredTransactions);
                     <div className="text-lg font-bold">{usdBalance} USDT</div>
                   </div>
 
-                  <button onClick={() => setIsProfileOpen(true)} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10">
+                  {/* <button onClick={() => setIsProfileOpen(true)} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10">
                     View Profile
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
@@ -261,7 +272,7 @@ transactions && console.log("usdt",filteredTransactions);
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-white text-gray-900 paddingcstm rounded-2xl shadow-lg border border-gray-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                       <div className="text-sm font-semibold text-indigo-600">Total Income</div>
-                      <div className="mt-2 text-2xl font-extrabold text-gray-900">{tradingIncome+referralIncome+levelIncome} USDT</div>
+                      <div className="mt-2 text-2xl font-extrabold text-gray-900">{tradingIncome + referralIncome + levelIncome} USDT</div>
                       <div className="text-xs text-gray-500 mt-1">All-time earnings</div>
                     </div>
 
@@ -339,69 +350,88 @@ transactions && console.log("usdt",filteredTransactions);
                     </div> */}
 
                     <div className="mt-6">
-  <h3 className="text-sm font-semibold text-gray-700 mb-3">Upgrade Options</h3>
+                      <h3 className="text-sm font-semibold text-gray-700 mb-3">Upgrade Options</h3>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    {Array.isArray(packages) &&
-      packages.map((pkg) => {
-        const pkgId = Number(pkg.id);
-        const activeId = Number(currentPackage?.id ?? Package?.id ?? 0);
-        const isActive = pkgId === activeId;
-        const isNext = pkgId === activeId + 1;
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        // teamSize should be computed earlier in component:
-        const teamSize = (downlines?.direct?.length ?? 0) + (downlines?.indirect?.length ?? 0);
-        const requiredTeam = Number(pkg.team ?? 0);
-        const canUpgradeNext = isNext && teamSize >= requiredTeam;
+                        {registered ? Array.isArray(packages) &&
 
-        return (
-          <div
-            key={pkg.id}
-            className={`p-4 rounded-2xl border shadow-sm transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl ${
-              isActive ? "border-indigo-500 bg-indigo-50" : "border-gray-200 bg-white"
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs text-gray-500">Package #{pkg.id}</div>
-                <div className="font-bold text-gray-900 mt-1">{format(pkg.price)} ETH</div>
-              </div>
-              <div className="text-sm text-gray-600">Team: {pkg.team}</div>
-            </div>
+                          packages.map((pkg) => {
+                            const pkgId = Number(pkg.id);
+                            const activeId = Number(currentPackage?.id ?? Package?.id ?? 0);
+                            const isActive = pkgId === activeId;
+                            const isNext = pkgId === activeId + 1;
+                            console.log("usdt", activeId);
+                            // teamSize should be computed earlier in component:
+                            const teamSize = (downlines?.direct?.length ?? 0) + (downlines?.indirect?.length ?? 0);
+                            const requiredTeam = Number(pkg.team ?? 0);
+                            const canUpgradeNext = isNext && teamSize >= requiredTeam;
 
-            {/* Action button area */}
-            <div className="mt-4">
-              {isActive ? (
-                <button disabled className="w-full py-2 rounded-lg bg-gray-200 text-gray-600 font-semibold">
-                  Active
-                </button>
-              ) : isNext ? (
-                // Next package: primary upgrade CTA (enabled only when eligible)
-                <button
-                  onClick={() => handleUpdate(pkg)}
-                  disabled={!canUpgradeNext}
-                  className={`w-full py-2 rounded-lg font-semibold transition-all duration-300 ${
-                    canUpgradeNext
-                      ? "bg-indigo-600 hover:bg-indigo-700 text-white"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
-                >
-                  {canUpgradeNext
-                    ? `Upgrade to ${format(pkg.price)} $ (Limit ${format(pkg.limit)})`
-                    : `Need ${requiredTeam} total team members to upgrade`}
-                </button>
-              ) : (
-                // Other packages: show disabled upgrade (not the immediate next)
-                <button disabled className="w-full py-2 rounded-lg bg-gray-100 text-gray-400 font-semibold">
-                  Upgrade
-                </button>
-              )}
-            </div>
-          </div>
-        );
-      })}
-  </div>
-</div>
+                            return (
+                              <div
+                                key={pkg.id}
+                                className={`p-4 rounded-2xl border shadow-sm transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl ${isActive ? "border-indigo-500 bg-indigo-50" : "border-gray-200 bg-white"
+                                  }`}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div className="text-xs text-gray-500">Package #{pkg.id}</div>
+                                    <div className="font-bold text-gray-900 mt-1">{format(pkg.price)} ETH</div>
+                                  </div>
+                                  <div className="text-sm text-gray-600">Team: {pkg.team}</div>
+                                </div>
+
+                                {/* Action button area */}
+                                <div className="mt-4">
+                                  {isActive ? (
+                                    <button disabled className="w-full py-2 rounded-lg bg-gray-200 text-gray-600 font-semibold">
+                                      Active
+                                    </button>
+                                  ) : isNext ? (
+                                    // Next package: primary upgrade CTA (enabled only when eligible)
+                                    <button
+                                      onClick={() => handleUpdate(pkg)}
+                                      disabled={!canUpgradeNext}
+                                      className={`w-full py-2 rounded-lg font-semibold transition-all duration-300 ${canUpgradeNext
+                                          ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                        }`}
+                                    >
+                                      {canUpgradeNext
+                                        ? `Upgrade to ${format(pkg.price)} $ (Limit ${format(pkg.limit)})`
+                                        : `Need ${requiredTeam} total team members to upgrade`}
+                                    </button>
+                                  ) : (
+                                    // Other packages: show disabled upgrade (not the immediate next)
+                                    <button disabled className="w-full py-2 rounded-lg bg-gray-100 text-gray-400 font-semibold">
+                                      Upgrade
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }) : <div>
+                          <p>
+                            You are not registered. Please get your self registered
+                          </p>
+                          <button
+                            onClick={() => {
+                              console.log("address", address);
+                              if (!address) {
+                                alert("Please connect the wallet first")
+                              } else {
+                                setIsProfileOpen(true)
+                              }
+
+
+                            }}
+                          >Register</button>
+
+
+
+                        </div>}
+                      </div>
+                    </div>
 
 
                   </div>
@@ -423,17 +453,20 @@ transactions && console.log("usdt",filteredTransactions);
                         <tbody>
                           {transactions && filteredTransactions.map((it, i) => (
                             <tr key={i} className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-indigo-50 transition-all duration-200`}>
-                              <td className="py-3 px-4 text-gray-900 font-medium">{i+1}</td>
+                              <td className="py-3 px-4 text-gray-900 font-medium">{i + 1}</td>
                               <td className="py-3 px-4 text-gray-900">{formatEther(it.values.amount)}</td>
                               <td className={`py-3 px-4 font-semibold ${it.status === "Completed" ? "text-green-600" : "text-yellow-600"}`}>
-                                {`${it.hash.slice(0,4)}...${it.hash.slice(-4)}`}
+                                <a
+                                href={`${url}${it.hash}`}
+                                target="_blank"
+                                >{`${it.hash.slice(0, 4)}...${it.hash.slice(-4)}`}</a>
                               </td>
-                              <td className="py-3 px-4 text-gray-900">{incomeKeys[Number(it.values._type)-1]}</td>
+                              <td className="py-3 px-4 text-gray-900">{incomeKeys[Number(it.values._type) - 1]}</td>
                               <td className="py-3 px-4 text-gray-600">{
-                                `${new Date(it.values.time*1000).getDate()}-
-                                ${new Date(it.values.time*1000).getMonth()}-
-                                ${new Date(it.values.time*1000).getFullYear()}`
-                                }</td>
+                                `${new Date(it.values.time * 1000).getDate()}-
+                                ${new Date(it.values.time * 1000).getMonth()}-
+                                ${new Date(it.values.time * 1000).getFullYear()}`
+                              }</td>
                             </tr>
                           ))}
                         </tbody>
@@ -456,7 +489,7 @@ transactions && console.log("usdt",filteredTransactions);
 
                   <div className="bg-white text-gray-900 p-4 rounded-2xl shadow-lg border border-gray-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                     <div className="text-sm font-semibold text-indigo-600">Referred By</div>
-                    <div className="mt-2 text-xl font-extrabold text-gray-900">#{`${downlines?.referrer?.slice(0,4)}...${downlines?.referrer?.slice(-4)}`}</div>
+                    <div className="mt-2 text-xl font-extrabold text-gray-900">#{`${downlines?.referrer?.slice(0, 4)}...${downlines?.referrer?.slice(-4)}`}</div>
                     <div className="text-xs text-gray-500 mt-1">{purchaseTime}</div>
                   </div>
 
