@@ -10,7 +10,7 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import { ethers, formatEther } from "ethers";
 import { useConfig } from "wagmi";
 import { init, readName } from "../../slices/contractSlice";
-
+import { Image } from "../../NFTGrid";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
 import ProfileSection from "../../ProfileSection.jsx";
@@ -318,7 +318,7 @@ export default function MagicverseDashboard() {
                       <div className="flex gap-3">
                         <button onClick={() => navigate("/contract")} className="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 font-semibold">Contract</button>
 
-                        <button onClick={() => alert('Feature: Withdraw (implement)')} className="px-4 py-2 rounded-md bg-transparent border border-white/10">Withdraw</button>
+                        {/* <button onClick={() => alert('Feature: Withdraw (implement)')} className="px-4 py-2 rounded-md bg-transparent border border-white/10">Withdraw</button> */}
                       </div>
                     </div>
 
@@ -473,6 +473,18 @@ export default function MagicverseDashboard() {
                       </table>
                     </div>
                   </div>
+
+                  {/* NFTs Owned */}
+                    <div className="mt-10 nftsbtns">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-700">
+                            My NFTs
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {myNFTs && myNFTs.map((nft, i) => (
+                                <Image nft={nft} index={i} />
+                            ))}
+                        </div>
+                    </div>
 
                 </div>
 
