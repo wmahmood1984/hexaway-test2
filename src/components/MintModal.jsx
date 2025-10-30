@@ -174,12 +174,12 @@ const handleMint = async () => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-xl w-96">
-        <h2 className="text-lg font-bold mb-4">Mint NFT</h2>
+        <h2 className="text-lg text-black font-bold mb-4">Mint NFT</h2>
 
         <input
           type="text"
           placeholder="NFT Name"
-          className="w-full border p-2 mb-4"
+          className="w-full border p-2 mb-4 text-black"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -187,7 +187,7 @@ const handleMint = async () => {
         <input
           type="file"
           accept="image/*"
-          className="mb-4"
+          className="mb-4 text-black"
           onChange={handleFileChange}
         />
 

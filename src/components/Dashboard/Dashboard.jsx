@@ -14,6 +14,7 @@ import { Image } from "../../NFTGrid";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
 import ProfileSection from "../../ProfileSection.jsx";
+import MintModal from "../../components/MintModal";
 
 Modal.setAppElement("#root");
 
@@ -21,7 +22,9 @@ export default function MagicverseDashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const config = useConfig();
-
+  const { name, NFTMayBeCreated} = useSelector(
+      (state) => state.contract
+    );
   const { address } = useAppKitAccount();
 
   // Defensive selector with defaults so the UI never crashes
@@ -44,6 +47,7 @@ export default function MagicverseDashboard() {
     error,
   } = useSelector((state) => state.contract);
 
+  const [isOpen, setIsOpen] = useState(false);
   const [active, setActive] = useState("dashboard");
   const [loading, setLoading] = useState(false);
   const [transactions, setTransaction] = useState()
@@ -70,7 +74,11 @@ export default function MagicverseDashboard() {
 
   }, [address, toggle])
 
-
+  
+  const handleMint = () => {
+    setIsOpen(true);
+  };
+  
   useEffect(() => {
     const bringTransaction = async () => {
       if (!address) return;
@@ -266,6 +274,18 @@ export default function MagicverseDashboard() {
                   </button> */}
                 </div>
               </div>
+              {NFTMayBeCreated && (
+                <div className="text-center mb-6">
+                  <button
+                    onClick={handleMint}
+                    className="w-full py-3 rounded-lg font-semibold transition-colors bg-indigo-700 text-white hover:bg-indigo-800"
+                  >
+                    Create NFT
+                  </button>
+                </div>
+              )}
+              
+              <MintModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
@@ -316,7 +336,7 @@ export default function MagicverseDashboard() {
                       </div>
 
                       <div className="flex gap-3">
-                        <button onClick={() => navigate("/contract")} className="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 font-semibold">Contract</button>
+                        <button onClick={() => navigate("/contract")} className="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 font-semibold">Buy NFT</button>
 
                         {/* <button onClick={() => alert('Feature: Withdraw (implement)')} className="px-4 py-2 rounded-md bg-transparent border border-white/10">Withdraw</button> */}
                       </div>
@@ -551,6 +571,8 @@ export default function MagicverseDashboard() {
       <Footer />
     </div>
   );
+
+  
 
 }
 
