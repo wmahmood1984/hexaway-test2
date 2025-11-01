@@ -44,7 +44,12 @@ export default function Nav() {
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center h-14 sm:h-16">
                         <div class="flex items-center">
-                            <h1 id="company-name" class="text-xl sm:text-2xl font-bold font-display bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">HEXAWAY</h1>
+                            <Link to={"/"}>
+                            <h1 id="company-name" 
+                            class="text-xl sm:text-2xl font-bold font-display bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                HEXAWAY</h1>
+                            </Link>
+                            
                         </div>
                         <div class="hidden lg:flex items-center space-x-6 xl:space-x-8">
                             {registered && <>

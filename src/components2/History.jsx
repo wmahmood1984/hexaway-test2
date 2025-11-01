@@ -1,53 +1,156 @@
 import React, { useEffect, useState } from 'react'
-import { helperAbi, helperAddress, web3, web31 } from '../config';
+import { helperAbi, helperAddress, incomeKeys, mlmabi, mlmcontractaddress, tradeKeys, url, web3, web31 } from '../config';
 import { useAppKitAccount } from '@reown/appkit/react';
+import { formatEther } from 'ethers';
+import { formatDate } from '../utils/contractExecutor';
+import axios from 'axios';
 
 export default function History() {
-  const { address } = useAppKitAccount();
-      const [transactions, setTransaction] = useState()
-      const helperContract = new web31.eth.Contract(helperAbi, helperAddress)
-      useEffect(() => {
+    const { address } = useAppKitAccount();
+    const [transactions, setTransaction] = useState()
+    const [trades, setTrades] = useState()
+        const [filter, setFilter] = useState("All Transactions")
+
+    const helperContract = new web31.eth.Contract(helperAbi, helperAddress)
+
+    useEffect(() => {
         const bringTransaction = async () => {
-          if (!address) return;
-    
-    
-          const latestBlock = await web3.eth.getBlockNumber();
-                const fromBlock = latestBlock-50000;
-          const step = 5000; // or smaller if node still complains
-          let allEvents = [];
-    
-          for (let i = fromBlock; i <= latestBlock; i += step) {
-            const toBlock = Math.min(i + step - 1, latestBlock);
-    
-            try {
-              const events = await helperContract.getPastEvents("Incomes",
-    
-                {
-    
-                  fromBlock: i,
-                  toBlock: toBlock,
-                });
-              allEvents = allEvents.concat(events);
-              setTransaction(allEvents)
-              // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
-            } catch (error) {
-              console.warn(`Error fetching from ${i} to ${toBlock}`, error);
+            if (!address) return;
+
+
+            const latestBlock = await web3.eth.getBlockNumber();
+            const fromBlock = latestBlock - 50000;
+            const step = 5000; // or smaller if node still complains
+            let allEvents = [];
+
+            for (let i = fromBlock; i <= latestBlock; i += step) {
+                const toBlock = Math.min(i + step - 1, latestBlock);
+
+                try {
+                    const events = await helperContract.getPastEvents("Incomes",
+
+                        {
+
+                            fromBlock: i,
+                            toBlock: toBlock,
+                        });
+                    allEvents = allEvents.concat(events);
+                    setTransaction(allEvents)
+                    // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
+                } catch (error) {
+                    console.warn(`Error fetching from ${i} to ${toBlock}`, error);
+                }
             }
-          }
-    
-          console.log("All events:", allEvents);
+
+            console.log("All events:", allEvents);
         };
-    
+
+        const bringTrades = async () => {
+            if (!address) return;
+
+
+            const latestBlock = await web3.eth.getBlockNumber();
+            const fromBlock = latestBlock - 50000;
+            const step = 5000; // or smaller if node still complains
+            let allEvents = [];
+
+            for (let i = fromBlock; i <= latestBlock; i += step) {
+                const toBlock = Math.min(i + step - 1, latestBlock);
+
+                try {
+                    const events = await helperContract.getPastEvents("Trades",
+
+                        {
+
+                            fromBlock: i,
+                            toBlock: toBlock,
+                        });
+                    allEvents = allEvents.concat(events);
+                    setTrades(allEvents)
+                    // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
+                } catch (error) {
+                    console.warn(`Error fetching from ${i} to ${toBlock}`, error);
+                }
+            }
+
+            console.log("All trandes:", allEvents);
+        };
+
         bringTransaction();
-      }, [address]);
+        bringTrades()
+    }, [address]);
 
 
-        const filteredTransactions = transactions && transactions.filter(e => e.
-    returnValues.
-    _user === address).map((v, e) => { return ({ values: v.returnValues, hash: v.transactionHash }) })
+    const filteredTransactions = transactions && transactions.filter(e => e.
+        returnValues.
+        _user === address).map((v, e) => {
+            console.log("object", v.returnValues.level);
+            return (
+                {
+                    eventType: "Income",
+                    time: Number(v.returnValues.time),
+                    amount: formatEther(v.returnValues.amount),
+                    details: v.returnValues._type == '2' ? `Level ${v.returnValues.level} Commission` : `Package Upgrade Bonus / Trading bonus`,
+                    svg: incomeKeys[v.returnValues._type].svg,
+                    class: incomeKeys[v.returnValues._type].class,
 
-        console.log("NFT",filteredTransactions);
+                    name: incomeKeys[v.returnValues._type].name
+                    , hash: v.transactionHash,
+                    values: v.returnValues
+                })
+        })
+
+    const filteredTrades = trades && trades.filter(e => e.
+        returnValues.
+        _user === address).map((v, e) => {
+            return ({
+                eventType: "Trade",
+                time: Number(v.returnValues.time),
+                amount: formatEther(v.returnValues.amount),
+                details: `Token ID : ${v.returnValues.nft.id}`,
+                svg: tradeKeys[v.returnValues._type].svg,
+                class: tradeKeys[v.returnValues._type].class,
+                name: tradeKeys[v.returnValues._type].name,
+                hash: v.transactionHash,
+                values: v.returnValues
+            })
+        })
+
+
+
+
+
+
+
+    const merged = transactions && trades && [...filteredTransactions, ...filteredTrades].sort(
+        (a, b) => b.time - a.time
+    ).filter((e)=>{
+        console.log("filter",filter);
+        if(filter==`All Transactions`){
+            return true
+        }else{
+            return e.name==filter
+        }
+    })
+    ;
+
     
+
+
+    const isLoading = !transactions || !trades;
+
+    if (isLoading) {
+        // show a waiting/loading screen
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
+                <p className="text-gray-600 text-lg font-medium">Loading your data...</p>
+            </div>
+        );
+    }
+
+    console.log("NFT",merged);
+
     return (
         <div>
 
@@ -59,11 +162,51 @@ export default function History() {
                             <h2 class="text-3xl font-bold text-gray-900 mb-2">Transaction History</h2>
                             <p class="text-gray-600">View all your transactions and earnings</p>
                         </div>
-                        <div class="mt-4 sm:mt-0"><select id="transaction-filter" onchange="filterTransactions()" class="px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"> <option value="all">All Transactions</option> <option value="nft-trade">NFT Trade</option> <option value="referral-income">Referral Bonus</option> <option value="level-income">Level Bonus</option> <option value="direct-income">Direct Referral Bonus</option> <option value="nft-purchase">NFT Purchase</option> <option value="nft-creation">NFT Creation</option>  <option value="nft-creation">Team Trading Bonus</option>  </select>
+                        <div class="mt-4 sm:mt-0">
+                            <select id="transaction-filter"
+                             onChange={(e)=>{setFilter(e.target.value)}} 
+                             class="px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                             <option value="All Transactions">All Transactions</option>
+                              <option value="NFT Trade">NFT Trade</option>
+                               <option value="Referral Bonus">Referral Bonus</option> 
+                               <option value="Level Bonus">Level Bonus</option>
+                       
+                                 <option value="NFT Purchase">NFT Purchase</option>
+                                  <option value="NFT Creation">NFT Creation</option> 
+                                   <option value="Team Trading Bonus">Team Trading Bonus</option>  </select>
                         </div>
                     </div>
                     <div id="transaction-list" class="space-y-4">
-                        <div class="transaction-card bg-white rounded-xl shadow-lg p-6 border border-gray-100" data-type="nft-trade">
+                        {merged.map((v, e) => {
+
+                            return (
+                                <div class="transaction-card bg-white rounded-xl shadow-lg p-6 border border-gray-100" data-type="nft-trade">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                        <div class="flex items-center space-x-4 mb-4 sm:mb-0">
+                                            <div class={v.class}>
+                                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={v.svg}></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h3 class="font-semibold text-gray-900">{v.name}</h3>
+                                                <p class="text-sm text-gray-600">{v.details}</p>
+                                                <p class="text-xs text-gray-500">{formatDate(v.time)}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-2xl font-bold text-green-600">
+                                                +${v.amount}
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                Hash: <a href={`${url}/${v.hash}`} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline cursor-pointer">{`${v.hash.slice(0, 10)}...`}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+
+                        {/* <div class="transaction-card bg-white rounded-xl shadow-lg p-6 border border-gray-100" data-type="nft-trade">
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                                 <div class="flex items-center space-x-4 mb-4 sm:mb-0">
                                     <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
@@ -200,7 +343,7 @@ export default function History() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     <div class="text-center mt-8"><button class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium"> Load More Transactions </button>
                     </div>

@@ -55,7 +55,8 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         //userLevelIncomeBlockTime[msg.sender] = block.timestamp;
     }
 
-    event Incomes(uint time, uint amount, uint _type, address _user);
+    event Incomes(uint time, uint amount, uint _type, address _user, uint level);
+    event Trades(uint time, uint amount, uint _type, address _user,NFT nft);
 
     uint timelimit;
     struct Package {
@@ -192,7 +193,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             if (block.timestamp - userTradingTime[up] <= (timelimit)) {
                 paymentToken.transfer(up, amount);
                 userReferralIncome[up] += amount;
-                emit Incomes(block.timestamp, amount, 1, up);
+                emit Incomes(block.timestamp, amount, 0, up,0);
             } else {
                 userLevelIncomeBlockTime[up] = block.timestamp;
             }
@@ -364,9 +365,11 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         emit Incomes(
             block.timestamp,
             ((amount * percentageAtBuyToTrader) / percentageAtBuy),
-            2,
-            oldOwner
+            1,
+            oldOwner,0
         );
+        emit Trades(block.timestamp,((amount * percentageAtBuyToTrader) / percentageAtBuy),0,oldOwner,_nft);
+        emit Trades(block.timestamp,amount,1,_user,_nft);
         paymentToken.transfer(
             owner(),
             ((amount * percentageAtBuyToAdmin) / percentageAtBuy)
@@ -415,9 +418,9 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             emit Incomes(
                 block.timestamp,
                 (_amount * 10) / 100,
-                3,
+                2,
                 _uplines[24]
-            );
+            ,25);
         } else {
             paymentToken.transfer(owner(), (_amount * 10) / 100);
         }
@@ -455,8 +458,8 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
                     emit Incomes(
                         block.timestamp,
                         ((_amount * 70) / 100) / levelD,
-                        3,
-                        up
+                        2,
+                        up,i+1
                     );
                     leftOver++;
                 } else {
@@ -535,6 +538,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             tx1.premium = 0;
             tx1.price = 50 ether;
             removeFirst2();
+            emit Trades(block.timestamp,tx1.price,2,_user,tx1);
         } else {
             tx1 = NFT(_nextTokenId, 50 ether, _user, _uri, 0, 1);
         }

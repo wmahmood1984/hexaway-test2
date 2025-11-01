@@ -44,3 +44,7 @@ export function formatWithCommas(value) {
 
   return num.toLocaleString("en-US");
 }
+
+export function formatDate(dat) {
+  return `${new Date(dat * 1000).getDate()}-${new Date(dat * 1000).getMonth()+1}-${new Date(dat * 1000).getFullYear()}`
+}
