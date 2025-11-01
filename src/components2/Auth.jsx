@@ -1,12 +1,34 @@
 import { useAppKitAccount } from '@reown/appkit/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ConnectButton from './ConnectButton';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { helperAbi, helperAddress, web3 } from '../config';
 
 export default function Auth() {
 const {id} = useParams()
-const { address } = useAppKitAccount();
+const navigate = useNavigate()
+
 const [referrer, setReferrer] = useState(id)
+
+
+        const [registered, setRegistered] = useState(false);
+       const { address } = useAppKitAccount()
+        const contract = new web3.eth.Contract(helperAbi, helperAddress)
+    
+        useEffect(() => {
+    
+            const abc = async () => {
+    
+                
+                const _registered = await contract.methods.userRegistered(address).call()
+                setRegistered(_registered)
+                if(_registered){
+                    navigate("/")
+                }
+            }
+    
+            abc()
+        }, [address])
     return (
         <div>
 
