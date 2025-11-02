@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Nav from './components2/Nav'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './components2/Home'
@@ -10,8 +10,24 @@ import Asset from './components2/Asset'
 import Tree from './components2/Tree'
 import History from './components2/History'
 import { Toaster } from 'react-hot-toast';
+import { useDispatch } from 'react-redux'
+import { init, readName } from './slices/contractSlice'
+import { useAppKitAccount } from '@reown/appkit/react'
 
 export default function App() {
+
+    const dispatch = useDispatch()
+    const { address } = useAppKitAccount();
+
+  useEffect(() => {
+    dispatch(init()).then(() => {
+      if (address) {
+        dispatch(readName({ address }));
+      } else {
+        dispatch(readName({ address: "0x0000000000000000000000000000000000000000" }));
+      }
+    });
+  }, [dispatch, address]);
     return (
         <div>
              <Toaster position="top-right" reverseOrder={false} />

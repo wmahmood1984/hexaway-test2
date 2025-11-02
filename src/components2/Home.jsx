@@ -5,15 +5,15 @@ import { useAppKitAccount } from '@reown/appkit/react';
 
 export default function Home() {
 
-const dispatch = useDispatch();
-  const { address } = useAppKitAccount();
-    useEffect(() => {
-    dispatch(init()).then(() => {
-      if (address) {
-        dispatch(readName({ address }));
-      }
-    });
-  }, [dispatch, address]);
+// const dispatch = useDispatch();
+//   const { address } = useAppKitAccount();
+//     useEffect(() => {
+//     dispatch(init()).then(() => {
+//       if (address) {
+//         dispatch(readName({ address }));
+//       }
+//     });
+//   }, [dispatch, address]);
 
     return (
         <div>            <div id="home-page" class="page">

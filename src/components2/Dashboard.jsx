@@ -24,13 +24,7 @@ export default function Dashboard() {
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        dispatch(init()).then(() => {
-            if (address) {
-                dispatch(readName({ address }));
-            }
-        });
-    }, [dispatch, address]);
+
 
 
     const inputRef = useRef();
