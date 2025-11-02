@@ -151,7 +151,8 @@ export default function Create() {
         // if (allowance >= (nftused.price+nftused.premium)) {
         //     handleMint()
         // } else {
-        const value = formatEther(nftused[0].price)*.07
+        const value = Number(formatEther(nftused[0].price) * .07) + Number(formatEther(nftused[0].premium))
+
         console.log("value", value.toString())
         await executeContract({
             config,

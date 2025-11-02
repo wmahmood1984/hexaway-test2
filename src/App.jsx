@@ -10,7 +10,7 @@ import Asset from './components2/Asset'
 import Tree from './components2/Tree'
 import History from './components2/History'
 import { Toaster } from 'react-hot-toast';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { init, readName } from './slices/contractSlice'
 import { useAppKitAccount } from '@reown/appkit/react'
 
@@ -19,6 +19,10 @@ export default function App() {
     const dispatch = useDispatch()
     const { address } = useAppKitAccount();
     const navigate = useNavigate()
+
+      const {
+        status,
+      } = useSelector((state) => state.contract);
 
   useEffect(() => {
     dispatch(init()).then(() => {
@@ -30,6 +34,20 @@ export default function App() {
       }
     });
   }, [dispatch, address]);
+
+
+
+
+  if (status!="succeeded") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
+        <p className="text-gray-600 text-lg font-medium">Loading your data...</p>
+      </div>
+    );
+  }
+
+  console.log("selector",status);
     return (
         <div>
              <Toaster position="top-right" reverseOrder={false} />

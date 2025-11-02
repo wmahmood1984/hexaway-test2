@@ -97,7 +97,7 @@ export const NFT = ({ nft, index, toggle, setToggle }) => {
         );
     }
 
-
+console.log("nft",nft,nft.id);
 
     return (
 
