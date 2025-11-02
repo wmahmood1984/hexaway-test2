@@ -19,15 +19,22 @@ export default function Nav() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
-//   useEffect(() => {
-//     dispatch(init()).then(() => {
-//       if (address) {
-//         dispatch(readName({ address }));
-//       } else {
-//         dispatch(readName({ address: "0x0000000000000000000000000000000000000000" }));
-//       }
-//     });
-//   }, [dispatch, address]);
+  useEffect(() => {
+    dispatch(init()).then(() => {
+      if (address) {
+        dispatch(readName({ address }));
+      } 
+
+
+    });
+  }, [dispatch, address]);
+
+
+      useEffect(() => {
+          if (!registered && address) {
+              navigate("/");
+          }
+      }, [registered, navigate]);
 
   const handleClick = async () => {
     if (isConnected) {
