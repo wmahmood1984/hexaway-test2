@@ -144,11 +144,11 @@ export default function HexawayPackages({ packages, Package, downlines, handleUp
     if (!canUpgrade(i)) {
       // If both team and time are missing, show "X team members or Y time left"
       if (remainingTeam > 0 && timeRemainingStr) {
-        return `${remainingTeam} team members or ${timeRemainingStr} left`;
+        return `${remainingTeam} team size or ${timeRemainingStr} left`;
       }
       // If only team missing
       if (remainingTeam > 0) {
-        return `${remainingTeam} team members required`;
+        return `${remainingTeam} team size required`;
       }
       // If only time missing
       if (timeRemainingStr) {
