@@ -9,7 +9,7 @@ import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 const queryClient = new QueryClient()
 
 // 1. Get projectId from https://cloud.reown.com
-const projectId = '52c10a92b5e746a646872479049e9ccd'
+const projectId = 'b925b1972c5b791221c0f873204ebe63'
 
 // 2. Create a metadata object - optional
 const metadata = {
