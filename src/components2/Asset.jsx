@@ -9,7 +9,7 @@ export default function Asset() {
         , levelIncome,
         referralIncome,
         totalIncome,
-        tradingIncome, walletBalance,
+        tradingIncome, walletBalance,nftListed,
         status, error
     } = useSelector((state) => state.contract);
 
@@ -69,7 +69,7 @@ const totalEth = formatEther(totalWei);
                             <div class="flex items-center justify-between">
                                 <div>
                                     <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600">
-                                        {myNFTs.length}
+                                        {nftListed.length}
                                     </div>
                                     <div class="text-gray-600 font-medium text-xs sm:text-sm lg:text-base">
                                         Listed
@@ -98,7 +98,7 @@ const totalEth = formatEther(totalWei);
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-gray-100">
+                    {/* <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-gray-100">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                             <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                                 <div class="flex items-center space-x-2"><label class="text-xs sm:text-sm font-medium text-gray-700">Filter:</label> <select class="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm flex-1 sm:flex-none"> <option>All Items</option> <option>Listed</option> <option>Owned</option> <option>Sold</option> </select>
@@ -112,7 +112,7 @@ const totalEth = formatEther(totalWei);
                                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                                 </svg></button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                     {myNFTs.map((v,e)=>{return(

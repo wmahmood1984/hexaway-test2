@@ -68,6 +68,7 @@ export const readName = createAsyncThunk(
       let packageLevelBonus = 0
       let selfTradingProfit = 0
       let walletBalance = 0
+      let nftListed = []
 
 
       if (a.address && registered) {
@@ -85,6 +86,7 @@ export const readName = createAsyncThunk(
         packageLevelBonus = await safeCall("tradingIncome", () => contract.methods.packageLevelBonus(a.address).call());
         selfTradingProfit = await safeCall("tradingIncome", () => contract.methods.selfTradingProfit(a.address).call());
         walletBalance = await safeCall("walletbalance", () => uContract.methods.balanceOf(a.address).call());
+        nftListed = await safeCall("nftlisted", () => contract.methods.getNFTListed(a.address).call());
 
       }
 
@@ -122,7 +124,7 @@ export const readName = createAsyncThunk(
           Number(formatEther(tradingLevelBonus)) +
           Number(formatEther(packageLevelBonus)) +
           Number(formatEther(selfTradingProfit))
-        ).toFixed(4)
+        ).toFixed(4),nftListed
 
 
         //      nftused,
@@ -153,6 +155,7 @@ const contractSlice = createSlice({
     NFTque: [],
     NFTQueBalance: 0,
     myNFTs: [],
+    nftListed:[],
     NFTMayBeCreated: false,
     nextTokenId: 0,
     tradingReferralBonus: 0,

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useConfig } from "wagmi";
-import { executeContract } from "../utils/contractExecutor";
+import { executeContract, formatAddress } from "../utils/contractExecutor";
 import { readName } from "../slices/contractSlice";
 import { formatEther, parseEther } from "ethers";
 import { mlmcontractaddress, usdtContract } from "../config";
@@ -101,33 +101,53 @@ export const NFT = ({ nft, index, toggle, setToggle }) => {
 
     return (
 
-        <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-            <div class="h-48 bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 relative">
-                <img
-                    src={image}
-                    alt={name}
-                    className="h-full w-full object-cover"
-                />
+<div className="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden flex flex-col h-full">
+      {/* Image Section */}
+      <div className="h-48 bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 relative">
+        <img
+          src={image}
+          alt={name}
+          className="h-full w-full object-cover"
+        />
+      </div>
 
+      {/* Info Section */}
+      <div className="p-4 flex flex-col justify-between flex-grow">
+        <div>
+          <h3 className="font-semibold text-gray-900 mb-1 text-base sm:text-lg truncate">
+            {name} #{nft.id}
+          </h3>
 
-            </div>
-            <div class="p-4">
-                <h3 class="font-semibold text-gray-900 mb-2">{name} #{nft.id}</h3>
-                <div class="text-2xl font-bold text-blue-600 mb-3">
-                    ${Number(formatEther(nft.price) * 1.07).toFixed(2)}
-                </div>
-               {address != nft._owner && <button
+          <div className="text-xs text-gray-500 mb-2 break-all">
+            Owner: {formatAddress(nft._owner)}
+          </div>
 
-                    onClick={() => handleBuy(nft.id)}
-                    class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    {loading ? (
-                        <>
-                            <Spinner size={20} color="#fff" />
-                            <span>Processing...</span>
-                        </>
-                    ) : "Buy Now"}</button>}
-            </div>
+          <div className="text-2xl font-bold text-blue-600 mb-3">
+            ${Number(formatEther(nft.price) * 1.07).toFixed(2)}
+          </div>
         </div>
+
+        {/* Buy Button */}
+        {address !== nft._owner && (
+          <button
+            onClick={() => handleBuy(nft.id)}
+            disabled={loading}
+            className={`w-full bg-blue-600 text-white py-2 rounded-lg text-sm sm:text-base font-medium hover:bg-blue-700 transition-colors ${
+              loading ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
+          >
+            {loading ? (
+              <>
+                <Spinner size={20} color="#fff" />
+                <span>Processing...</span>
+              </>
+            ) : (
+              'Buy Now'
+            )}
+          </button>
+        )}
+      </div>
+    </div>
 
         // <div
         //     key={index}
