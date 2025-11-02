@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { helperAbi, helperAddress, web3 } from '../config';
-import { useAppKitAccount } from '@reown/appkit/react';
+import { useAppKitAccount, useDisconnect } from '@reown/appkit/react';
 import { formatAddress } from '../utils/contractExecutor';
 import { useDispatch, useSelector } from 'react-redux';
 import { init, readName } from '../slices/contractSlice';
 
 export default function Nav() {
-
+    const {disconnect} = useDisconnect()
+    const navigate = useNavigate()
 
         const { Package, myNFTs, packages, downlines, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
 
@@ -19,7 +20,7 @@ export default function Nav() {
 
 
 
-       const { address } = useAppKitAccount()
+       const { address,isConnected } = useAppKitAccount()
     
     const dispatch = useDispatch()
 
@@ -33,6 +34,14 @@ export default function Nav() {
             }
         });
     }, [dispatch, address]);
+
+    const handleClick = async()=>{
+        if(isConnected){
+            await disconnect()
+        }else{
+            navigate("/auth")
+        }
+    }
 
     console.log("nav",NFTMayBeCreated);
 
@@ -60,9 +69,10 @@ export default function Nav() {
                             <Link to={"/tree"}  class="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Team Tree</Link>
                             </>}
                             
-                            <Link 
+                            <button 
+                            onClick={handleClick}
                             to={"/auth"}
-                            id="auth-btn"  class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg text-sm xl:text-base">{address? formatAddress(address) :`Get Started`}</Link>
+                            id="auth-btn"  class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg text-sm xl:text-base">{address? formatAddress(address) :`Get Started`}</button>
                         </div>
                         <div class="lg:hidden">
                             <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-indigo-600 p-2">

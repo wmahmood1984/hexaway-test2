@@ -1,18 +1,41 @@
 import { useAppKitAccount } from '@reown/appkit/react'
-import React, {  useState } from 'react'
+import React, {  useEffect, useState } from 'react'
 import ConnectButton from './ConnectButton';
-import {  useParams } from 'react-router-dom';
+import {  useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { init, readName } from '../slices/contractSlice';
 
 
 export default function Auth() {
 const {id} = useParams()
-
+const navigate = useNavigate()
 
 const [referrer, setReferrer] = useState(id)
 
+    const { Package, myNFTs, packages, downlines, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
 
+        , levelIncome,
+        referralIncome,
+        tradingIncome, walletBalance,
+        status, error
+    } = useSelector((state) => state.contract);
+
+    const dispatch = useDispatch()
 
        const { address } = useAppKitAccount()
+
+
+           useEffect(() => {
+               dispatch(init()).then(() => {
+                   if (address) {
+                       dispatch(readName({ address }));
+                   }
+               });
+
+               if(registered){
+                navigate("/")
+               }
+           }, [dispatch, address]);
     
     return (
         <div>
