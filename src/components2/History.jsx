@@ -184,7 +184,7 @@ export default function History() {
                     </div>
                     <div id="transaction-list" class="space-y-4">
                         {merged.map((v, e) => {
-
+                                console.log("check",v.eventType== "Trade", v.values._type=="1");
                             return (
                                 <div class="transaction-card bg-white rounded-xl shadow-lg p-6 border border-gray-100" data-type="nft-trade">
                                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -200,9 +200,16 @@ export default function History() {
                                             </div>
                                         </div>
                                         <div class="text-right">
+                                            {v.eventType== "Trade"
+                                            && v.values._type=="1"?
+                                            <div class="text-2xl font-bold text-red-600">
+                                                -${v.amount}
+                                            </div>:
                                             <div class="text-2xl font-bold text-green-600">
                                                 +${v.amount}
-                                            </div>
+                                            </div> 
+                                            
+                                        }
                                             <div class="text-xs text-gray-500 mt-1">
                                                 Hash: <a href={`${url}/${v.hash}`} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline cursor-pointer">{`${v.hash.slice(0, 10)}...`}</a>
                                             </div>
