@@ -166,7 +166,7 @@ export default function Dashboard() {
                                         <input
 
                                             ref={inputRef} type="text" id="referral-link"
-                                            value={`https://hexaway.com/auth/${address}`} class="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg text-xs sm:text-sm" readonly />
+                                            value={`${window.location.origin}/auth/${address}`} class="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg text-xs sm:text-sm" readonly />
                                         <button
                                             onClick={handleCopy}
                                             class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs sm:text-sm hover:bg-indigo-700 transition-colors">Copy</button>
