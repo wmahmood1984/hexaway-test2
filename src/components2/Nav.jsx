@@ -91,7 +91,7 @@ export default function Nav() {
               id="auth-btn"
               className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg text-sm xl:text-base"
             >
-              {address ? formatAddress(address) : "Get Started"}
+              {(address || isConnected) ? formatAddress(address) : "Get Started"}
             </button>
           </div>
 

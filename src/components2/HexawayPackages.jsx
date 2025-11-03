@@ -112,7 +112,7 @@ export default function HexawayPackages({ packages, Package, downlines, handleUp
     const alreadyActive = Number(Package.id) >= i;
 
     // WELCOME package (index 0) is always available initially
-    if (i === 0) return Number(Package.id) === 0 || Number(Package.id) === -1;
+    if (i === 0) return false //Number(Package.id) === 0 || Number(Package.id) === -1;
 
     if (!hasPrevPackage || alreadyActive) return false;
 

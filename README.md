@@ -18,3 +18,4 @@ value of NFT
 change price and last price in nft of asset
 monthly time for package
 
+when address is changed in metamask and the page is other than home, it should not misbheave
