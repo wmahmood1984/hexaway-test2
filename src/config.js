@@ -82,7 +82,7 @@ export const packageKeys = [
 ]
 export const tradeKeys = [
 	{
-		name: "NFT Trade",
+		name: "NFT Trade Principle",
 		class: "w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center",
 
 		svg: "M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
