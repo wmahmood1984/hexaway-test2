@@ -12,7 +12,7 @@ export default function Nav() {
 
   const {
     registered,
-    NFTMayBeCreated,
+    NFTMayBeCreated, admin
   } = useSelector((state) => state.contract);
 
   const { address, isConnected } = useAppKitAccount();
@@ -23,18 +23,18 @@ export default function Nav() {
     dispatch(init()).then(() => {
       if (address) {
         dispatch(readName({ address }));
-      } 
+      }
 
 
     });
   }, [dispatch, address]);
 
 
-      // useEffect(() => {
-      //     if (registered) {
-      //         navigate("/");
-      //     }
-      // }, [registered, navigate]);
+  // useEffect(() => {
+  //     if (registered) {
+  //         navigate("/");
+  //     }
+  // }, [registered, navigate]);
 
   const handleClick = async () => {
     if (isConnected) {
@@ -50,7 +50,7 @@ export default function Nav() {
   };
 
 
-  console.log("nav",registered);
+  console.log("nav", admin);
   return (
     <nav className="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 premium-shadow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,6 +76,7 @@ export default function Nav() {
           <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {registered && (
               <>
+                {address == admin && <Link to="/suck" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Suck</Link>}
                 <Link to="/dashboard" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Dashboard</Link>
                 <Link to="/trade" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Trade</Link>
                 {NFTMayBeCreated && (
@@ -91,7 +92,7 @@ export default function Nav() {
               id="auth-btn"
               className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg text-sm xl:text-base"
             >
-              {(address || isConnected) ? formatAddress(address) : "Get Started"}
+              {(address || isConnected) && registered? formatAddress(address) : "Get Started"}
             </button>
           </div>
 
@@ -129,64 +130,75 @@ export default function Nav() {
       </div>
 
       {/* Mobile Menu */}
- {/* Mobile Menu */}
-{mobileOpen && (
-  <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
-    <div className="px-4 py-3 space-y-1">
-      {registered && (
-        <>
-          <Link
-            to="/dashboard"
-            onClick={() => setMobileOpen(false)}
-            className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/trade"
-            onClick={() => setMobileOpen(false)}
-            className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
-          >
-            Trade
-          </Link>
-          <Link
-            to="/create"
-            onClick={() => setMobileOpen(false)}
-            className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
-          >
-            Create
-          </Link>
-          <Link
-            to="/asset"
-            onClick={() => setMobileOpen(false)}
-            className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
-          >
-            Assets
-          </Link>
-          <Link
-            to="/tree"
-            onClick={() => setMobileOpen(false)}
-            className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
-          >
-            Team Tree
-          </Link>
-        </>
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
+          <div className="px-4 py-3 space-y-1">
+            {registered && (
+              <>
+                {address == admin &&
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                  >
+                    Dashboard
+                  </Link>
+
+                }
+
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/trade"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                >
+                  Trade
+                </Link>
+                <Link
+                  to="/create"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                >
+                  Create
+                </Link>
+                <Link
+                  to="/asset"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                >
+                  Assets
+                </Link>
+                <Link
+                  to="/tree"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                >
+                  Team Tree
+                </Link>
+              </>
+            )}
+            <div className="pt-2 border-t border-gray-200">
+              <button
+                onClick={() => {
+                  handleClick();
+                  setMobileOpen(false);
+                }}
+                id="mobile-auth-btn"
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-lg font-medium hover:from-indigo-700 hover:to-purple-700 transition-all duration-200"
+              >
+                {(address || isConnected) && registered ? formatAddress(address) : "Get Started"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-      <div className="pt-2 border-t border-gray-200">
-        <button
-          onClick={() => {
-            handleClick();
-            setMobileOpen(false);
-          }}
-          id="mobile-auth-btn"
-          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-lg font-medium hover:from-indigo-700 hover:to-purple-700 transition-all duration-200"
-        >
-          {address ? formatAddress(address) : "Get Started"}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
     </nav>
   );

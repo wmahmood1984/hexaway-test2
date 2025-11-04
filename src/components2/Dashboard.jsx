@@ -130,7 +130,7 @@ export default function Dashboard() {
                                     </div>
                                     <div class="text-center p-3 sm:p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
                                         <div class="text-sm sm:text-base lg:text-lg font-semibold text-gray-900" id="referred-by">
-                                            Direct
+                                            Referred by
                                         </div>
                                         <div class="text-xs sm:text-sm text-gray-600 mt-1">
                                             {formatAddress(downlines?.referrer)}

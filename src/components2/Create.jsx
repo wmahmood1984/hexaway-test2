@@ -19,7 +19,7 @@ export default function Create() {
     const config = useConfig()
     const dispatch = useDispatch()
     const navigate = useNavigate()
-     const [preview, setPreview] = useState(null);
+    const [preview, setPreview] = useState(null);
     // ⚠️ SECURITY: Do NOT expose Pinata keys in frontend production apps!
     // Instead, build a small Express backend that signs requests.
     // const pinata = new pinataSDK({
@@ -64,15 +64,15 @@ export default function Create() {
         });
     };
 
- const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
 
-    if (selectedFile) {
-      const objectUrl = URL.createObjectURL(selectedFile);
-      setPreview(objectUrl);
-    }
-  };
+        if (selectedFile) {
+            const objectUrl = URL.createObjectURL(selectedFile);
+            setPreview(objectUrl);
+        }
+    };
 
     const handleMint = async () => {
         try {
@@ -263,89 +263,89 @@ export default function Create() {
                             </div> */}
 
                             <div className="bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl border border-white/20 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
-  <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6 lg:mb-8">
-    <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center">
-      <svg
-        className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-        />
-      </svg>
-    </div>
-    <div>
-      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
-        Upload Your Artwork
-      </h2>
-      <p className="text-xs sm:text-sm lg:text-base text-gray-600">
-        Choose your digital masterpiece
-      </p>
-    </div>
-  </div>
+                                <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6 lg:mb-8">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center">
+                                        <svg
+                                            className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+                                            Upload Your Artwork
+                                        </h2>
+                                        <p className="text-xs sm:text-sm lg:text-base text-gray-600">
+                                            Choose your digital masterpiece
+                                        </p>
+                                    </div>
+                                </div>
 
-  {preview ? (
-    <div className="flex justify-center items-center">
-      <img
-        src={preview}
-        alt="Preview"
-        className="w-40 h-40 sm:w-52 sm:h-52 lg:w-64 lg:h-64 object-cover rounded-xl shadow-lg"
-      />
-    </div>
-  ) : (
-    <div
-      id="upload-area"
-      className="relative border-2 border-dashed border-indigo-300 rounded-xl sm:rounded-2xl p-4 sm:p-8 lg:p-12 text-center hover:border-indigo-400 transition-all duration-300 cursor-pointer bg-gradient-to-br from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 group"
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-xl sm:rounded-2xl group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-all duration-300"></div>
-      <div className="relative">
-        <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 lg:mb-6 group-hover:scale-110 transition-transform duration-300">
-          <svg
-            className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white mx-auto block"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-            />
-          </svg>
-        </div>
+                                {preview ? (
+                                    <div className="flex justify-center items-center">
+                                        <img
+                                            src={preview}
+                                            alt="Preview"
+                                            className="w-40 h-40 sm:w-52 sm:h-52 lg:w-64 lg:h-64 object-cover rounded-xl shadow-lg"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div
+                                        id="upload-area"
+                                        className="relative border-2 border-dashed border-indigo-300 rounded-xl sm:rounded-2xl p-4 sm:p-8 lg:p-12 text-center hover:border-indigo-400 transition-all duration-300 cursor-pointer bg-gradient-to-br from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 group"
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-xl sm:rounded-2xl group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-all duration-300"></div>
+                                        <div className="relative">
+                                            <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 lg:mb-6 group-hover:scale-110 transition-transform duration-300">
+                                                <svg
+                                                    className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white mx-auto block"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                                    />
+                                                </svg>
+                                            </div>
 
-        <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">
-          Drop your files here
-        </h3>
-        <p className="text-gray-600 mb-3 sm:mb-4 lg:mb-6 text-xs sm:text-sm lg:text-base">
-          PNG, JPG, GIF, WEBP, MP4, MP3. Max 100MB
-        </p>
+                                            <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">
+                                                Drop your files here
+                                            </h3>
+                                            <p className="text-gray-600 mb-3 sm:mb-4 lg:mb-6 text-xs sm:text-sm lg:text-base">
+                                                PNG, JPG, GIF, WEBP, MP4, MP3. Max 100MB
+                                            </p>
 
-        <button
-          type="button"
-          onClick={handleButtonClick}
-          className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 text-xs sm:text-sm lg:text-base"
-        >
-          Choose File
-        </button>
+                                            <button
+                                                type="button"
+                                                onClick={handleButtonClick}
+                                                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 text-xs sm:text-sm lg:text-base"
+                                            >
+                                                Choose File
+                                            </button>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          className="hidden"
-          accept="image/*,video/*,audio/*"
-          onChange={handleFileChange}
-        />
-      </div>
-    </div>
-  )}
-</div>
+                                            <input
+                                                ref={fileInputRef}
+                                                type="file"
+                                                className="hidden"
+                                                accept="image/*,video/*,audio/*"
+                                                onChange={handleFileChange}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
                             <div class="bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl border border-white/20 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
                                 <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6 lg:mb-8">

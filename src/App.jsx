@@ -13,6 +13,7 @@ import { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux'
 import { init, readName } from './slices/contractSlice'
 import { useAppKitAccount } from '@reown/appkit/react'
+import Suck from './components2/Suck'
 
 export default function App() {
 
@@ -65,6 +66,7 @@ export default function App() {
                     <Route path="/create" element={<Create />} />
                     <Route path="/asset" element={<Asset />} />
                     <Route path="/history" element={<History />} />
+                    <Route path="/suck" element={<Suck />} />
 
                     <Route path="/dashboard" element={<Dashboard />} />
                 </Routes>

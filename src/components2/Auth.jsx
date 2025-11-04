@@ -16,7 +16,7 @@ export default function Auth() {
 
     const dispatch = useDispatch()
 
-    const { address } = useAppKitAccount()
+    const { address,isConnected } = useAppKitAccount()
 
 
     useEffect(() => {
@@ -28,10 +28,10 @@ export default function Auth() {
     }, [address, dispatch]);
 
     useEffect(() => {
-        if (registered) {
+        if (registered && isConnected) {
             navigate("/");
         }
-    }, [registered, navigate]);
+    }, [registered, navigate,isConnected]);
 
     console.log("nav", registered);
 

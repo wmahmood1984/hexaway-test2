@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 
 
-export const NFT = ({ nft }) => {
+export const NFT = ({ id,price,premium,uri,owner,utilized }) => {
 
     const [image, setImage] = useState()
     const [name, setName] = useState()
@@ -14,10 +14,10 @@ export const NFT = ({ nft }) => {
         const abc = async () => {
 
 
-            const res = await axios.get(nft.uri)
+            const res = await axios.get(uri)
 
 
-            if (nft._owner != "0x0000000000000000000000000000000000000000") {
+            if (owner != "0x0000000000000000000000000000000000000000") {
                 setImage(res.data.image)
                 setName(res.data.name)
                 setDescription(res.data.description)
@@ -72,7 +72,7 @@ export const NFT = ({ nft }) => {
                 </div> */}
             
             <div class="p-3 sm:p-4">
-                <h3 class="font-bold text-gray-900 mb-1 text-sm sm:text-base">{name} #{nft.id}</h3>
+                <h3 class="font-bold text-gray-900 mb-1 text-sm sm:text-base">{name} #{id}</h3>
                 <p class="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">{description}</p>
                 <div class="flex items-center justify-between">
                     <div>
@@ -80,7 +80,7 @@ export const NFT = ({ nft }) => {
                             Live Price
                         </div>
                         <div class="font-bold text-indigo-600 text-sm sm:text-base">
-                            {(Number(formatEther(nft.price))*1.07).toFixed(4)} $
+                            {(Number(formatEther(price))*1.07).toFixed(4)} $
                         </div>
                     </div>
                     <div class="text-right">
@@ -88,7 +88,7 @@ export const NFT = ({ nft }) => {
                             Last Sale
                         </div>
                         <div class="font-bold text-gray-900 text-sm sm:text-base">
-                            {Number(formatEther(nft.price))} $
+                            {Number(formatEther(price))} $
                         </div>
                     </div>
                 </div>

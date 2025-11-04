@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suck Page - NFT Trading Platform</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nft-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .nft-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .premium-shadow {
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+        }
+        
+        .upload-area {
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: #4f46e5;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+        }
+        
+        .upload-area.dragover {
+            border-color: #7c3aed;
+            background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%);
+            transform: scale(1.02);
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="bg-gray-50 min-h-full text-gray-900"><!-- Navigation -->
+  <nav class="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 premium-shadow">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-14 sm:h-16">
+     <div class="flex items-center">
+      <h1 class="text-xl sm:text-2xl font-bold font-display bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">HEXAWAY ADMIN</h1>
+     </div>
+
+     </div>
+    </div>
+   </div>
+  </nav><!-- Main Content -->
+  <main class="min-h-screen">
+   <section class="relative hero-gradient py-12 sm:py-20 overflow-hidden">
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=" 60 height="60" viewbox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" %3e%3cg fill="none" fill-rule="evenodd" fill-opacity="0.03" %3e%3ccircle cx="30" cy="30" r="2" %3e%3c g%3e%3c svg%3e)] opacity-30></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+     <h2 id="page-title" class="text-4xl md:text-6xl lg:text-7xl font-bold font-display bg-gradient-to-r from-gray-900 via-indigo-700 to-purple-700 bg-clip-text text-transparent mb-6 leading-tight">Suck Page</h2>
+     <p class="text-lg sm:text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">Create, trade, and discover unique NFTs in our premium marketplace</p><button onclick="scrollToSection('marketplace')" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-2xl hover:shadow-indigo-500/25 transform hover:scale-105">Explore NFTs</button>
+    </div>
+   </section><!-- Create NFT Section -->
+   <section id="create" class="py-12 sm:py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 hidden">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="text-center mb-8 sm:mb-12">
+      <h3 id="create-section-title" class="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-gray-900 mb-4">Create Your NFT</h3>
+      <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">Transform your digital art into a unique NFT and list it on our marketplace</p>
+     </div><!-- Create Form -->
+     <div class="bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 p-6 sm:p-8 lg:p-10">
+      <form id="create-nft-form" class="space-y-6 sm:space-y-8"><!-- File Upload Section -->
+       <div><label class="block text-sm sm:text-base font-semibold text-gray-900 mb-4">Upload Artwork *</label>
+        <div id="upload-area" class="upload-area border-2 border-dashed border-indigo-300 rounded-xl sm:rounded-2xl p-6 sm:p-8 lg:p-12 text-center cursor-pointer bg-gradient-to-br from-indigo-50 to-purple-50">
+         <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+          <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+         </div>
+         <h4 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Drop your files here</h4>
+         <p class="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">PNG, JPG, GIF, WEBP, MP4. Max 100MB</p><button type="button" onclick="document.getElementById('file-input').click()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg text-sm sm:text-base"> Choose File </button> <input type="file" id="file-input" class="hidden" accept="image/*,video/*" required>
+        </div>
+       </div><!-- Preview Section -->
+       <div id="preview-section" class="hidden"><label class="block text-sm sm:text-base font-semibold text-gray-900 mb-4">Preview</label>
+        <div class="bg-gray-100 rounded-xl p-4 sm:p-6">
+         <div id="preview-container" class="max-w-xs mx-auto"></div>
+        </div>
+       </div><!-- NFT Details -->
+       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div><label for="nft-name" class="block text-sm sm:text-base font-semibold text-gray-900 mb-2">Name *</label> <input type="text" id="nft-name" name="name" class="w-full px-4 py-3 sm:py-4 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500 text-sm sm:text-base" placeholder="Enter NFT name" required>
+        </div>
+        <div><label for="nft-price" class="block text-sm sm:text-base font-semibold text-gray-900 mb-2">Price ($) *</label> <input type="number" id="nft-price" name="price" step="0.001" min="0.001" class="w-full px-4 py-3 sm:py-4 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500 text-sm sm:text-base" placeholder="0.001" required>
+        </div>
+       </div>
+       <div><label for="nft-description" class="block text-sm sm:text-base font-semibold text-gray-900 mb-2">Description *</label> <textarea id="nft-description" name="description" rows="4" class="w-full px-4 py-3 sm:py-4 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500 resize-none text-sm sm:text-base" placeholder="Describe your NFT..." required></textarea>
+       </div>
+       <div class="pt-4"><button type="submit" id="create-btn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 sm:py-5 px-6 rounded-lg sm:rounded-xl text-base sm:text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-[1.02]"> Create &amp; List NFT </button>
+       </div>
+      </form>
+     </div>
+    </div>
+   </section><!-- NFT Marketplace Section -->
+   <section id="marketplace" class="py-12 sm:py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="text-center mb-8 sm:mb-12">
+      <h3 id="marketplace-title" class="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-gray-900 mb-4">NFT Marketplace</h3>
+      <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">Discover and trade unique digital assets from creators worldwide</p>
+     </div><!-- Create Button and Stats -->
+     <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-8 sm:mb-12 border border-indigo-200">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"><!-- Action Buttons -->
+       <div class="text-center lg:text-left">
+        <div class="flex flex-col sm:flex-row gap-3 mb-2"><button id="show-create-btn" onclick="redirectToCreatePage()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"> 🎨 Create NFT </button> <button onclick="showBuySection()" class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"> 💰 Buy & Burn NFTs </button>
+        </div>
+        <p class="text-sm text-gray-600">Create your own NFTs or browse the marketplace</p>
+       </div><!-- Stats -->
+       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
+         <div id="total-nfts" class="text-xl sm:text-2xl lg:text-3xl font-bold text-indigo-600">
+          0
+         </div>
+         <div class="text-xs sm:text-sm text-gray-600 font-medium">
+          Total NFTs
+         </div>
+        </div>
+        <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
+         <div id="total-burned" class="text-xl sm:text-2xl lg:text-3xl font-bold text-red-600">
+          0
+         </div>
+         <div class="text-xs sm:text-sm text-gray-600 font-medium">
+          Total Burned
+         </div>
+        </div>
+        <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
+         <div id="burning-process" class="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600">
+          0
+         </div>
+         <div class="text-xs sm:text-sm text-gray-600 font-medium">
+          Total Created
+         </div>
+        </div>
+        <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
+         <div id="in-marketplace" class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
+          0
+         </div>
+         <div class="text-xs sm:text-sm text-gray-600 font-medium">
+          In Marketplace
+         </div>
+        </div>
+        <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
+         <div id="total-created" class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600">
+          0
+         </div>
+         <div class="text-xs sm:text-sm text-gray-600 font-medium">
+          In Burning Process
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Filter Section -->
+     <div class="bg-gray-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-8 sm:mb-12">
+      
+       <div class="flex items-center space-x-4"><label class="text-sm font-medium text-gray-700">Sort by:</label> <select id="sort-select" class="px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"> <option value="newest">Newest</option> <option value="price-low">Price: Low to High</option> <option value="price-high">Price: High to Low</option> <option value="popular">In Burning Process</option> </select>
+       </div>
+      </div>
+     </div><!-- Loading State -->
+     <div id="loading-state" class="text-center py-12">
+      <div class="loading-spinner w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full mx-auto mb-4"></div>
+      <p class="text-gray-600">Loading NFTs...</p>
+     </div><!-- NFT Grid -->
+     <div id="nft-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 hidden"><!-- NFTs will be dynamically loaded here -->
+     </div><!-- Empty State -->
+     <div id="empty-state" class="text-center py-12 hidden">
+      <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+       <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+       </svg>
+      </div>
+      <h4 class="text-xl font-semibold text-gray-900 mb-2">No NFTs Found</h4>
+      <p class="text-gray-600 mb-6">Be the first to create and list an NFT!</p><button onclick="scrollToSection('create')" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium"> Create NFT </button>
+     </div>
+    </div>
+   </section>
+  </main>
+  
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+   <div class="bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm">
+    <div class="flex items-center space-x-3">
+     <div id="toast-icon" class="flex-shrink-0"></div>
+     <div>
+      <div id="toast-title" class="font-semibold text-gray-900"></div>
+      <div id="toast-message" class="text-sm text-gray-600"></div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+        // Global state
+        let nftData = [];
+        let currentRecordCount = 0;
+        let fakeNFTs = [
+            {
+                id: 'fake_1',
+                name: 'Cyber Genesis #001',
+                description: 'A futuristic digital portrait with neon accents and cyberpunk aesthetics',
+                price: 53.5,
+                fileName: 'cyber_genesis.jpg',
+                fileSize: '3.2 MB',
+                createdAt: new Date(Date.now() - 86400000).toISOString(),
+                status: 'listed',
+                isFake: true
+            },
+            {
+                id: 'fake_2',
+                name: 'Abstract Dreams #247',
+                description: 'Vibrant abstract composition with flowing colors and dynamic shapes',
+                price: 53.5,
+                fileName: 'abstract_dreams.png',
+                fileSize: '4.1 MB',
+                createdAt: new Date(Date.now() - 172800000).toISOString(),
+                status: 'listed',
+                isFake: true
+            },
+            {
+                id: 'fake_3',
+                name: 'Cosmic Valley #089',
+                description: 'Ethereal landscape depicting alien worlds and distant galaxies',
+                price: 3.7,
+                fileName: 'cosmic_valley.jpg',
+                fileSize: '5.8 MB',
+                createdAt: new Date(Date.now() - 259200000).toISOString(),
+                status: 'burning',
+                isFake: true
+            },
+            {
+                id: 'fake_4',
+                name: 'Pixel Matrix #156',
+                description: 'Retro-inspired pixel art with geometric patterns and vibrant colors',
+                price: 53.5,
+                fileName: 'pixel_matrix.gif',
+                fileSize: '2.7 MB',
+                createdAt: new Date(Date.now() - 345600000).toISOString(),
+                status: 'listed',
+                isFake: true
+            },
+            {
+                id: 'fake_5',
+                name: 'Portrait Series #034',
+                description: 'Contemporary digital portrait with artistic filters and effects',
+                price: 2.2,
+                fileName: 'portrait_series.jpg',
+                fileSize: '3.9 MB',
+                createdAt: new Date(Date.now() - 432000000).toISOString(),
+                status: 'burned',
+                isFake: true
+            },
+            {
+                id: 'fake_6',
+                name: 'Neon Nights #078',
+                description: 'Urban cityscape with glowing neon lights and reflective surfaces',
+                price: 4.1,
+                fileName: 'neon_nights.jpg',
+                fileSize: '6.2 MB',
+                createdAt: new Date(Date.now() - 518400000).toISOString(),
+                status: 'sold',
+                isFake: true
+            },
+            {
+                id: 'fake_7',
+                name: 'Digital Waves #123',
+                description: 'Flowing digital waves with mesmerizing color transitions',
+                price: 1.5,
+                fileName: 'digital_waves.jpg',
+                fileSize: '2.8 MB',
+                createdAt: new Date(Date.now() - 604800000).toISOString(),
+                status: 'burning',
+                isFake: true
+            },
+            {
+                id: 'fake_8',
+                name: 'Quantum Art #456',
+                description: 'Abstract quantum-inspired artwork with particle effects',
+                price: 3.2,
+                fileName: 'quantum_art.png',
+                fileSize: '4.5 MB',
+                createdAt: new Date(Date.now() - 691200000).toISOString(),
+                status: 'burned',
+                isFake: true
+            }
+        ];
+
+        // Data SDK handler
+        const dataHandler = {
+            onDataChanged(data) {
+                nftData = data;
+                currentRecordCount = data.length;
+                renderNFTs();
+                updateStats();
+            }
+        };
+
+        // Redirect to create page
+        function redirectToCreatePage() {
+            // Create a new page for NFT creation
+            document.body.innerHTML = `
+                <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+                    <!-- Navigation -->
+                    <nav class="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 premium-shadow">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="flex justify-between items-center h-14 sm:h-16">
+                                <div class="flex items-center">
+                                    <h1 class="text-xl sm:text-2xl font-bold font-display bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">HEXAWAY </h1>
+                                </div>
+                                
+                                <div class="flex items-center space-x-4">
+                                    <button onclick="goBackToMarketplace()" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">← Back to Marketplace</button>
+                                
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <!-- Create NFT Section -->
+                    <section class="py-12 sm:py-20">
+                        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="text-center mb-8 sm:mb-12">
+                                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-gray-900 mb-4">Create Your NFT</h2>
+                                <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">Transform your digital art into a unique NFT and list it on our marketplace</p>
+                            </div>
+
+                            <!-- Create Form -->
+                            <div class="bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 p-6 sm:p-8 lg:p-10">
+                                <form id="create-nft-form" class="space-y-6 sm:space-y-8">
+                                    <!-- File Upload Section -->
+                                    <div>
+                                        <label class="block text-sm sm:text-base font-semibold text-gray-900 mb-4">Upload Artwork *</label>
+                                        <div id="upload-area" class="upload-area border-2 border-dashed border-indigo-300 rounded-xl sm:rounded-2xl p-6 sm:p-8 lg:p-12 text-center cursor-pointer bg-gradient-to-br from-indigo-50 to-purple-50">
+                                            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                                                <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Drop your files here</h4>
+                                            <p class="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">PNG, JPG, GIF, WEBP, MP4. Max 100MB</p>
+                                            <button type="button" onclick="document.getElementById('file-input').click()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg text-sm sm:text-base">
+                                                Choose File
+                                            </button>
+                                            <input type="file" id="file-input" class="hidden" accept="image/*,video/*" required>
+                                        </div>
+                                    </div>
+
+                                    <!-- Preview Section -->
+                                    <div id="preview-section" class="hidden">
+                                        <label class="block text-sm sm:text-base font-semibold text-gray-900 mb-4">Preview</label>
+                                        <div class="bg-gray-100 rounded-xl p-4 sm:p-6">
+                                            <div id="preview-container" class="max-w-xs mx-auto"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- NFT Details -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="nft-name" class="block text-sm sm:text-base font-semibold text-gray-900 mb-2">Name *</label>
+                                            <input type="text" id="nft-name" name="name" class="w-full px-4 py-3 sm:py-4 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500 text-sm sm:text-base" placeholder="Enter NFT name" required>
+                                        </div>
+                                       
+                                    </div>
+
+                                    <div>
+                                        <label for="nft-description" class="block text-sm sm:text-base font-semibold text-gray-900 mb-2">Description *</label>
+                                        <textarea id="nft-description" name="description" rows="4" class="w-full px-4 py-3 sm:py-4 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500 resize-none text-sm sm:text-base" placeholder="Describe your NFT..." required></textarea>
+                                    </div>
+
+                                    <div class="pt-4">
+                                        <button type="submit" id="create-btn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 sm:py-5 px-6 rounded-lg sm:rounded-xl text-base sm:text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-[1.02]">
+                                            Create & List NFT
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `;
+            
+            // Reinitialize file upload for the new page
+            setupFileUpload();
+            
+            // Add form submission handler
+            document.getElementById('create-nft-form').addEventListener('submit', handleNFTCreation);
+        }
+
+        // Go back to marketplace
+        function goBackToMarketplace() {
+            location.reload();
+        }
+
+        // Show buy section
+        function showBuySection() {
+            scrollToSection('nft-grid');
+        }
+
+        // Update stats
+        function updateStats() {
+            const allNFTs = [...nftData, ...fakeNFTs];
+            const totalNFTs = allNFTs.length;
+            const totalBurned = allNFTs.filter(nft => nft.status === 'burned').length;
+            const burningProcess = allNFTs.filter(nft => nft.status === 'burning').length;
+            const inMarketplace = allNFTs.filter(nft => nft.status === 'listed').length;
+            const totalCreated = allNFTs.length; // All NFTs are created
+
+            document.getElementById('total-nfts').textContent = totalNFTs;
+            document.getElementById('total-burned').textContent = totalBurned;
+            document.getElementById('burning-process').textContent = burningProcess;
+            document.getElementById('in-marketplace').textContent = inMarketplace;
+            document.getElementById('total-created').textContent = totalCreated;
+        }
+
+        // Element SDK configuration
+        const defaultConfig = {
+            page_title: "Decrease Page",
+            create_section_title: "Create Your NFT",
+            marketplace_title: "NFT Marketplace",
+            primary_color: "#4f46e5",
+            secondary_color: "#ffffff",
+            text_color: "#1f2937",
+            accent_color: "#7c3aed",
+            background_color: "#f8fafc"
+        };
+
+        // Initialize SDKs
+        async function initializeSDKs() {
+            try {
+                if (window.dataSdk) {
+                    const result = await window.dataSdk.init(dataHandler);
+                    if (!result.isOk) {
+                        console.error('Failed to initialize Data SDK:', result.error);
+                    }
+                }
+
+                if (window.elementSdk) {
+                    window.elementSdk.init({
+                        defaultConfig,
+                        onConfigChange: async (config) => {
+                            const pageTitleEl = document.getElementById('page-title');
+                            if (pageTitleEl) {
+                                pageTitleEl.textContent = config.page_title || defaultConfig.page_title;
+                            }
+
+                            const createTitleEl = document.getElementById('create-section-title');
+                            if (createTitleEl) {
+                                createTitleEl.textContent = config.create_section_title || defaultConfig.create_section_title;
+                            }
+
+                            const marketplaceTitleEl = document.getElementById('marketplace-title');
+                            if (marketplaceTitleEl) {
+                                marketplaceTitleEl.textContent = config.marketplace_title || defaultConfig.marketplace_title;
+                            }
+
+                            // Apply colors
+                            const primaryColor = config.primary_color || defaultConfig.primary_color;
+                            document.documentElement.style.setProperty('--primary-color', primaryColor);
+                        },
+                        mapToCapabilities: (config) => ({
+                            recolorables: [
+                                {
+                                    get: () => config.primary_color || defaultConfig.primary_color,
+                                    set: (value) => {
+                                        config.primary_color = value;
+                                        if (window.elementSdk) window.elementSdk.setConfig({ primary_color: value });
+                                    }
+                                }
+                            ],
+                            borderables: [],
+                            fontEditable: undefined,
+                            fontSizeable: undefined
+                        }),
+                        mapToEditPanelValues: (config) => new Map([
+                            ["page_title", config.page_title || defaultConfig.page_title],
+                            ["create_section_title", config.create_section_title || defaultConfig.create_section_title],
+                            ["marketplace_title", config.marketplace_title || defaultConfig.marketplace_title]
+                        ])
+                    });
+                }
+            } catch (error) {
+                console.error('SDK initialization error:', error);
+            }
+        }
+
+        // Utility functions
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const titleEl = document.getElementById('toast-title');
+            const messageEl = document.getElementById('toast-message');
+
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+
+            if (type === 'success') {
+                icon.innerHTML = '<div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center"><svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>';
+            } else if (type === 'error') {
+                icon.innerHTML = '<div class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center"><svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></div>';
+            }
+
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 4000);
+        }
+
+        // File upload handling
+        function setupFileUpload() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+
+            // Click to upload
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect(files[0]);
+                }
+            });
+
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileSelect(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleFileSelect(file) {
+            const maxSize = 100 * 1024 * 1024; // 100MB
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4'];
+
+            if (file.size > maxSize) {
+                showToast('File Too Large', 'File size must be less than 100MB', 'error');
+                return;
+            }
+
+            if (!allowedTypes.includes(file.type)) {
+                showToast('Invalid File Type', 'Please select a valid image or video file', 'error');
+                return;
+            }
+
+            // Update upload area
+            const uploadArea = document.getElementById('upload-area');
+            uploadArea.innerHTML = `
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h4 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">File Selected</h4>
+                <p class="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                <button type="button" onclick="document.getElementById('file-input').click()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg text-sm sm:text-base">
+                    Change File
+                </button>
+            `;
+
+            // Show preview
+            showPreview(file);
+        }
+
+        function showPreview(file) {
+            const previewSection = document.getElementById('preview-section');
+            const previewContainer = document.getElementById('preview-container');
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (file.type.startsWith('image/')) {
+                    previewContainer.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview" class="w-full h-48 object-cover rounded-lg shadow-lg">
+                    `;
+                } else if (file.type.startsWith('video/')) {
+                    previewContainer.innerHTML = `
+                        <video src="${e.target.result}" class="w-full h-48 object-cover rounded-lg shadow-lg" controls></video>
+                    `;
+                }
+                previewSection.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // NFT creation
+        async function handleNFTCreation(event) {
+            event.preventDefault();
+
+            if (currentRecordCount >= 999) {
+                showToast('Limit Reached', 'Maximum limit of 999 NFTs reached. Please delete some NFTs first.', 'error');
+                return;
+            }
+
+            const createBtn = document.getElementById('create-btn');
+            const originalText = createBtn.textContent;
+            
+            // Show loading state
+            createBtn.disabled = true;
+            createBtn.innerHTML = `
+                <div class="flex items-center justify-center space-x-2">
+                    <div class="loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                    <span>Creating NFT...</span>
+                </div>
+            `;
+
+            try {
+                const formData = new FormData(event.target);
+                const fileInput = document.getElementById('file-input');
+                
+                if (!fileInput.files[0]) {
+                    throw new Error('Please select a file');
+                }
+
+                const nftData = {
+                    id: `nft_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                    name: formData.get('name'),
+                    description: formData.get('description'),
+                    price: parseFloat(formData.get('price')),
+                    fileName: fileInput.files[0].name,
+                    fileSize: (fileInput.files[0].size / 1024 / 1024).toFixed(2) + ' MB',
+                    createdAt: new Date().toISOString(),
+                    status: 'listed'
+                };
+
+                const result = await window.dataSdk.create(nftData);
+                
+                if (result.isOk) {
+                    showToast('Success!', 'NFT created and listed successfully!', 'success');
+                    event.target.reset();
+                    resetUploadArea();
+                    document.getElementById('preview-section').classList.add('hidden');
+                    scrollToSection('marketplace');
+                } else {
+                    throw new Error(result.error.message || 'Failed to create NFT');
+                }
+            } catch (error) {
+                showToast('Error', error.message, 'error');
+            } finally {
+                // Reset button
+                createBtn.disabled = false;
+                createBtn.textContent = originalText;
+            }
+        }
+
+        function resetUploadArea() {
+            const uploadArea = document.getElementById('upload-area');
+            uploadArea.innerHTML = `
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                </div>
+                <h4 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Drop your files here</h4>
+                <p class="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">PNG, JPG, GIF, WEBP, MP4. Max 100MB</p>
+                <button type="button" onclick="document.getElementById('file-input').click()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg text-sm sm:text-base">
+                    Choose File
+                </button>
+            `;
+        }
+
+        // NFT rendering
+        function renderNFTs() {
+            const loadingState = document.getElementById('loading-state');
+            const nftGrid = document.getElementById('nft-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            loadingState.classList.add('hidden');
+
+            // Combine real and fake NFTs
+            const allNFTs = [...nftData, ...fakeNFTs];
+            
+            // Only show listed NFTs in the marketplace
+            const listedNFTs = allNFTs.filter(nft => nft.status === 'listed');
+
+            if (listedNFTs.length === 0) {
+                nftGrid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            nftGrid.classList.remove('hidden');
+
+            // Sort and filter NFTs
+            let filteredNFTs = [...listedNFTs];
+            const filterValue = document.getElementById('filter-select')?.value || 'all';
+            const sortValue = document.getElementById('sort-select')?.value || 'newest';
+
+            // Apply sorting
+            filteredNFTs.sort((a, b) => {
+                switch (sortValue) {
+                    case 'price-low':
+                        return a.price - b.price;
+                    case 'price-high':
+                        return b.price - a.price;
+                    case 'newest':
+                    default:
+                        return new Date(b.createdAt) - new Date(a.createdAt);
+                }
+            });
+
+            nftGrid.innerHTML = filteredNFTs.map(nft => createNFTCard(nft)).join('');
+        }
+
+        function createNFTCard(nft) {
+            const gradients = [
+                'from-purple-900 via-blue-900 to-cyan-900',
+                'from-orange-400 via-red-500 to-pink-600',
+                'from-indigo-900 via-purple-800 to-pink-900',
+                'from-emerald-400 to-teal-600',
+                'from-amber-200 via-orange-300 to-red-400'
+            ];
+            
+            const randomGradient = gradients[Math.floor(Math.random() * gradients.length)];
+            
+            return `
+                <div class="nft-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 fade-in">
+                    <div class="aspect-square bg-gradient-to-br ${randomGradient} relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <div class="w-20 h-24 bg-gradient-to-b from-white/30 to-white/10 rounded-full opacity-80"></div>
+                            <div class="absolute top-4 left-4 w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            <div class="absolute top-6 right-4 w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-white"></div>
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium"></span>
+                        </div>
+                        <div class="absolute inset-0 bg-black/0 hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
+                            <button onclick="buyNFT('${nft.id}', '${nft.name}', ${nft.price})" class="bg-white/90 backdrop-blur-sm text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-white transition-colors">
+                                Buy Now
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 mb-1 truncate">${nft.name}</h4>
+                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">${nft.description}</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <div class="text-sm text-gray-500">Price</div>
+                                <div class="font-bold text-indigo-600">${nft.price} $</div>
+                            </div>
+                           
+                        </div>
+                        <button onclick="buyNFT('${nft.id}', '${nft.name}', ${nft.price})" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
+                            💰 Buy for ${nft.price} $
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // NFT purchase
+        async function buyNFT(nftId, nftName, price) {
+            const confirmDiv = document.createElement('div');
+            confirmDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            confirmDiv.innerHTML = `
+                <div class="bg-white rounded-2xl p-6 max-w-sm w-full">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Confirm Purchase</h3>
+                    <p class="text-gray-600 mb-6">Purchase "${nftName}" for ${price} $?</p>
+                    <div class="flex space-x-3">
+                        <button onclick="confirmPurchase('${nftId}', '${nftName}', ${price})" class="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">Confirm</button>
+                        <button onclick="closeConfirmDialog()" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 font-medium">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmDiv);
+        }
+
+        async function confirmPurchase(nftId, nftName, price) {
+            try {
+                // Find NFT in real data first
+                let nft = nftData.find(n => n.id === nftId);
+                
+                if (nft) {
+                    // Real NFT - update via SDK
+                    nft.status = 'sold';
+                    const result = await window.dataSdk.update(nft);
+                    
+                    if (result.isOk) {
+                        showToast('Purchase Successful!', `You have successfully purchased "${nftName}" for ${price} ETH`, 'success');
+                    } else {
+                        throw new Error('Failed to update NFT status');
+                    }
+                } else {
+                    // Fake NFT - update locally
+                    nft = fakeNFTs.find(n => n.id === nftId);
+                    if (nft) {
+                        nft.status = 'sold';
+                        showToast('Purchase Successful!', `You have successfully purchased "${nftName}" for ${price} ETH`, 'success');
+                        renderNFTs();
+                        updateStats();
+                    }
+                }
+            } catch (error) {
+                showToast('Purchase Failed', error.message, 'error');
+            }
+            
+            closeConfirmDialog();
+        }
+
+        function closeConfirmDialog() {
+            const confirmDiv = document.querySelector('.fixed.inset-0.bg-black');
+            if (confirmDiv) {
+                confirmDiv.remove();
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSDKs();
+            setupFileUpload();
+            
+            // Form submission
+            document.getElementById('create-nft-form').addEventListener('submit', handleNFTCreation);
+            
+            // Filter and sort listeners
+            document.getElementById('filter-select')?.addEventListener('change', renderNFTs);
+            document.getElementById('sort-select')?.addEventListener('change', renderNFTs);
+            
+            // Initial render
+            setTimeout(() => {
+                renderNFTs();
+                updateStats();
+            }, 1000);
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'998daa9a332ec51e',t:'MTc2MjE5MTcyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

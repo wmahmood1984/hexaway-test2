@@ -96,6 +96,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     }
 
     Package[] public packages;
+    uint public nftBurnt;
 
     mapping(address => Package) public userPackage;
     mapping(address => uint[]) public userMint;
@@ -384,7 +385,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             0,
             _nft.id
         );
-        emit Trades(block.timestamp, amount+_nft.premium, 0, oldOwner, _nft.id);
+        emit Trades(block.timestamp, amount, 0, oldOwner, _nft.id);
         emit Trades(block.timestamp, amount+_nft.premium, 1, _user, _nft.id);
         paymentToken.transfer(
             owner(),
@@ -407,7 +408,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         }
 
         paymentToken.transfer(
-            address(this),
+            owner(),
             ((amount * percentageAtBuyforMaintenance) / percentageAtBuy)
         );
 
@@ -526,22 +527,22 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         mintPause = _cond;
     }
 
-    function ownerSettlement(string memory _uri, uint _nextTokenId) public {
-        NFT memory tx1;
+    function ownerSettlement() public {
+        // NFT memory tx1;
 
         require(nftused.length > 0, "9");
-        tx1 = NFT(
-            _nextTokenId,
-            nftused[0].price,
-            owner(),
-            _uri,
-            nftused[0].premium,
-            1
-        );
+        // tx1 = NFT(
+        //     _nextTokenId,
+        //     nftused[0].price,
+        //     owner(),
+        //     _uri,
+        //     nftused[0].premium,
+        //     1
+        // );
 
-        // uint amount = nftused[0].premium;
+        uint amount = nftused[0].premium;
         // require(paymentToken.allowance(owner(), address(this)) >= amount, "11");
-        // paymentToken.transferFrom(owner(), nftused[0]._owner, amount);
+        paymentToken.transfer(nftused[0]._owner, amount);
 
         removeFirst2();
     }
@@ -600,6 +601,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function burn(uint index) public {
         nftused.push(nfts[index]);
         delete nfts[index];
+        nftBurnt++;
     }
 
     function getNFTs() public view returns (NFT[] memory) {
@@ -679,7 +681,7 @@ contract MyNFT is
         _nextTokenId = 1;
         helper = Helper(_helper);
 
-        ownerMint();
+        ownerInitialMint();
     }
     //0xD82Ca1cb89bcFFBF119AB2b4eD0Be7Ecf7325BcB
     using Strings for uint256;
@@ -735,7 +737,7 @@ contract MyNFT is
         _nextTokenId++;
     }
 
-    function ownerMint() public onlyOwner {
+    function ownerInitialMint() internal onlyOwner {
         string memory _uri;
         for (uint8 i = 0; i < 20; i++) {
             _uri = string.concat(
@@ -743,17 +745,23 @@ contract MyNFT is
                 (uint256(i + 1)).toString(),
                 ".json"
             );
+
+            ownerMint(_uri);
+
+        }
+    }
+
+    function ownerMint(string memory _uri) public onlyOwner {
             helper.mint2(_uri, msg.sender, _nextTokenId);
             _tokenURIs[_nextTokenId] = _uri;
             _safeMint(msg.sender, _nextTokenId);
             _nextTokenId++;
-        }
     }
 
-    function ownerSettlement(string memory _uri, uint _id) public {
+    function ownerSettlement() public {
         uint allowance = paymentToken.allowance(msg.sender, address(this));
         paymentToken.transferFrom(msg.sender, address(helper), allowance);
-        helper.ownerSettlement(_uri, _id);
+        helper.ownerSettlement();
     }
 
     function withdrawUSDT() public onlyOwner {
