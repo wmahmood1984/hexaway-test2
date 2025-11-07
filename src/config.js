@@ -93,11 +93,11 @@ export const tradeKeys = [
 		class: "w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center",
 		svg: "M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
 	},
-	{
-		name: "NFT Creation",
-		class: "w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center",
-		svg: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-	}
+	// {
+	// 	name: "NFT Creation",
+	// 	class: "w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center",
+	// 	svg: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+	// }
 
 
 ]
@@ -2266,9 +2266,9 @@ export const helperAbi = [
 	}
 ]
 
-export const helperAddress = "0x3BA404DbE1ee29149aEFdA8f8a6759212B13A88A"
+export const helperAddress = "0x9D8FeD8BA7f2F948d0fBd7AA172AeC34dd9B3F0e"
 
-export const mlmcontractaddress = "0x0D6CbC10439554118952E2F88a17D99D993B152d";
+export const mlmcontractaddress = "0x811bFA14BB4CFc8eab1D0EcC5DF56d4C91417be4";
 
 export const mlmcontractaddressImplementation =
 	"0xB9605fAe41F3D602e576a5Fa30dfCa810A35B76E";
