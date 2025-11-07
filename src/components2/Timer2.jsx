@@ -1,10 +1,20 @@
+import { useAppKitAccount } from "@reown/appkit/react";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { readName } from "../slices/contractSlice";
 
 const CountdownTimer2 = ({ durationInSeconds }) => {
   const [timeLeft, setTimeLeft] = useState(durationInSeconds);
 
+    const { address, isConnected } = useAppKitAccount();
+    const dispatch = useDispatch()
+
   useEffect(() => {
-    if (durationInSeconds <= 0) return;
+    if (durationInSeconds <= 0) {
+    dispatch(readName({ address }));
+      return;
+    
+    };
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {

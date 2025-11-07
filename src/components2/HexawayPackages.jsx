@@ -9,7 +9,8 @@ export default function HexawayPackages({ packages, Package, downlines, handleUp
   const getRemainingTime = (pkg) => {
     const now = Math.floor(Date.now() / 1000); // current time in seconds
     const purchaseTime = Number(Package.purchaseTime || 0);
-    const unlockTime = purchaseTime + Number(pkg.time || 0);
+       const remainingPackage = Number(pkg.id)-Number(Package.id) >0? Number(pkg.id)-Number(Package.id) : 1
+    const unlockTime = purchaseTime + Number(pkg.time*remainingPackage || 0);
     const remaining = unlockTime - now;
     if (remaining <= 0) return 0;
 
@@ -56,7 +57,8 @@ if (Number(Package.id) >= i) return `Active`;
 
     const now = Math.floor(Date.now() / 1000);
     const purchaseTime = Number(Package.purchaseTime || 0);
-    const unlockTime = purchaseTime + Number(pkg.time || 0);
+    const remainingPackage = Number(pkg.id)-Number(Package.id) >0? Number(pkg.id)-Number(Package.id)+1 : 1
+    const unlockTime = purchaseTime + Number(pkg.time*remainingPackage || 0);
     const timeRemainingSec = unlockTime - now;
     const timeRemainingStr = timeRemainingSec > 0 ? getRemainingTime(pkg) : null;
     const timeFulfilled = timeRemainingSec <= 0;

@@ -51,6 +51,8 @@ export const readName = createAsyncThunk(
 
       const NFTMayBeCreated = await safeCall("NFTMayBeCreated", () => contract.methods.NFTMayBeCreated().call());
       const nextTokenId = await safeCall("_nextTokenId", () => nftContract.methods._nextTokenId().call());
+      const timeLimit = await safeCall("timelimit", () => contract.methods.timelimit().call());
+
       //      const nftused = await safeCall("nftused(0)", () => contract.methods.getNFTused().call());
 
 
@@ -116,6 +118,7 @@ export const readName = createAsyncThunk(
         myNFTs,
         NFTMayBeCreated,
         nextTokenId,
+        timeLimit,
 
         tradingReferralBonus: Number(formatEther(tradingReferralBonus)).toFixed(4),
         packageReferralBonus: Number(formatEther(packageReferralBonus)).toFixed(4),
@@ -173,6 +176,7 @@ const contractSlice = createSlice({
     totalIncome: 0,
     nftPurchaseTime: 0,
     incomeBlockTime:0,
+    timeLimit:0,
     //nftused: null,
     status: "idle",
     error: null,

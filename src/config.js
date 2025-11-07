@@ -1238,6 +1238,11 @@ export const helperAbi = [
 				"internalType": "address",
 				"name": "_user",
 				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "funds",
+				"type": "uint256"
 			}
 		],
 		"name": "buyNFT",
@@ -1267,6 +1272,11 @@ export const helperAbi = [
 				"internalType": "address",
 				"name": "_user",
 				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "funds",
+				"type": "uint256"
 			}
 		],
 		"name": "buyPackage",
@@ -1639,6 +1649,11 @@ export const helperAbi = [
 				"internalType": "uint256",
 				"name": "_nextTokenId",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "funds",
+				"type": "uint256"
 			}
 		],
 		"name": "mint",
@@ -1816,7 +1831,13 @@ export const helperAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "funds",
+				"type": "uint256"
+			}
+		],
 		"name": "ownerSettlement",
 		"outputs": [],
 		"stateMutability": "nonpayable",
@@ -1951,6 +1972,11 @@ export const helperAbi = [
 				"internalType": "address",
 				"name": "_user",
 				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "funds",
+				"type": "uint256"
 			}
 		],
 		"name": "register",
@@ -2222,6 +2248,25 @@ export const helperAbi = [
 				"type": "address"
 			}
 		],
+		"name": "userTradingLimitTime",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
 		"name": "userTradingTime",
 		"outputs": [
 			{
@@ -2266,9 +2311,9 @@ export const helperAbi = [
 	}
 ]
 
-export const helperAddress = "0x4dB48e0B7029236514A309335F0539c2b2EA523b"
+export const helperAddress = "0xAbd9CdaE3E663C4F6b4f3e7Ed227Ef2F6c3553Ab"
 
-export const mlmcontractaddress = "0xd6895A7972953d35975821A45d8F59440FbA6449";
+export const mlmcontractaddress = "0xc6642A9c97ae55663e5Bf7e413eb9af7dc9B6798";
 
 export const mlmcontractaddressImplementation =
 	"0xB9605fAe41F3D602e576a5Fa30dfCa810A35B76E";

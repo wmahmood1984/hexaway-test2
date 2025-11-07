@@ -20,7 +20,7 @@ export default function Dashboard() {
     const { Package, myNFTs, packages, downlines, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
 
         , walletBalance, tradingReferralBonus, packageReferralBonus, tradingLevelBonus, packageLevelBonus, selfTradingProfit, nftPurchaseTime, incomeBlockTime,
-        status, error, totalIncome
+        status, error, totalIncome, timeLimit
     } = useSelector((state) => state.contract);
     const { address } = useAppKitAccount();
     const [referrer, setReferrer] = useState()
@@ -101,6 +101,8 @@ export default function Dashboard() {
 
     // console.log("dashoard", packageKeys[Package.id].name);
 
+
+
     if (isLoading) {
         // show a waiting/loading screen
         return (
@@ -110,6 +112,12 @@ export default function Dashboard() {
             </div>
         );
     }
+    console.log({
+        now: Math.floor(Date.now() / 1000),
+        purchaseTime: Number(Package.purchaseTime),
+        time: Number(Package.time),
+        expiry: Number(Package.purchaseTime) + Number(Package.time)
+    });
 
 
     return (
@@ -176,11 +184,18 @@ export default function Dashboard() {
                                 </div>
                             </div>
 
-                            <CountdownTimer durationInSeconds={Number(Package.purchaseTime) + 60 * 1 - now / 1000} />
-                            {levelBlockSeconds > 0 ? <IncomeBlockTimer durationInSeconds={Number(incomeBlockTime) + 60 * 60 - now / 1000} />
-                                : Number(nftPurchaseTime) + 60 * 60 * 3 - now / 1000 > 0 ?
+                            <CountdownTimer
 
-                                    <CountdownTimer2 durationInSeconds={Number(nftPurchaseTime) + 60 * 60 * 3 - now / 1000} />
+                                durationInSeconds={Math.max(
+                                    0,
+                                    Number(Package.purchaseTime) + Number(Package.time) - Math.floor(Date.now() / 1000)
+                                )}
+
+                            />
+                            {levelBlockSeconds > 0 ? <IncomeBlockTimer durationInSeconds={Number(incomeBlockTime) + Number(timeLimit) - now / 1000} />
+                                : Number(nftPurchaseTime) + Number(timeLimit) - now / 1000 > 0 ?
+
+                                    <CountdownTimer2 durationInSeconds={Number(nftPurchaseTime) + Number(timeLimit) - now / 1000} />
                                     : <h1 className="text-red-600 text-xl sm:text-2xl font-bold">
                                         Please Buy an NFT to get your income Unlocked
                                     </h1>
