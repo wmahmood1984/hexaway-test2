@@ -18,17 +18,56 @@ export const NFT = ({ nft, index, toggle, setToggle }) => {
   // const {  nfts  } = useSelector((state) => state.contract);
   const { address } = useAppKitAccount();
   const [loading, setLoading] = useState(false);
-        const { Package, myNFTs, packages, downlines, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
+  const { Package, myNFTs, packages, downlines, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
 
-        , levelIncome,
-        referralIncome,
-        tradingIncome, walletBalance,packageExpiryLimit,
-        status, error
-    } = useSelector((state) => state.contract);
+    , levelIncome,
+    referralIncome,
+    tradingIncome, walletBalance, packageExpiryLimit,
+    status, error
+  } = useSelector((state) => state.contract);
 
-  const now = new Date().getTime()/1000
+  const now = new Date().getTime() / 1000
 
-  const canBuy = now - Number(Package.packageUpgraded)<=packageExpiryLimit
+  const canBuy = () => {
+    const nowSec = Math.floor(Date.now() / 1000); // current time in seconds
+
+    // 1️⃣ Check package expiry
+    const packageValid = nowSec - Number(Package.packageUpgraded) <= packageExpiryLimit;
+
+    // 2️⃣ Calculate remaining trading limit
+    const remainingLimit = Number(formatEther(Package.limit)) - Number(limitUtilized);
+
+    // 3️⃣ Calculate NFT total cost (price + 7%)
+    const nftValue =
+      Number(formatEther(nft.price)) * 1.07 + Number(formatEther(nft.premium));
+
+    // 4️⃣ Now check both conditions sequentially
+    if (!packageValid) {
+      return {
+        cond: false,
+        msg: "Your package is expired.",
+      };
+    }
+
+    console.log("object",remainingLimit,nftValue, Number(Package.limit), Number(limitUtilized));
+
+    if (remainingLimit < nftValue) {
+      return {
+        cond: false,
+        msg: "Your trade limit is exceeding.",
+      };
+    }
+
+    // ✅ Both conditions satisfied
+    return {
+      cond: true,
+      msg: "You can buy this NFT.",
+    };
+  };
+
+
+
+
 
 
   const dispatch = useDispatch()
@@ -79,24 +118,26 @@ export const NFT = ({ nft, index, toggle, setToggle }) => {
     //     handleBuy2(id, address)
     // } else {
 
-    if(canBuy){
-    setLoading(true)
-    const value = Number(formatEther(nft.price) * .07) + Number(formatEther(nft.premium))
-    console.log("value", Number(value).toFixed(8))
-    await executeContract({
-      config,
-      functionName: "approve",
-      args: [mlmcontractaddress, parseEther(Number(value).toFixed(8))],
-      onSuccess: () => handleBuy2(id, address),
-      onError: (err) => {
-        setLoading(false)
-        let reason = extractRevertReason(err)
-        toast.error("Transaction failed:", reason)
-      },
-      contract: usdtContract
-    });
-    }else{
-      toast.error("Your package has been expired. Please upgrade")
+    const { cond, msg } = canBuy()
+
+    if (cond) {
+      setLoading(true)
+      const value = Number(formatEther(nft.price) * .07) + Number(formatEther(nft.premium))
+      console.log("value", Number(value).toFixed(8))
+      await executeContract({
+        config,
+        functionName: "approve",
+        args: [mlmcontractaddress, parseEther(Number(value).toFixed(8))],
+        onSuccess: () => handleBuy2(id, address),
+        onError: (err) => {
+          setLoading(false)
+          let reason = extractRevertReason(err)
+          toast.error("Transaction failed:", reason)
+        },
+        contract: usdtContract
+      });
+    } else {
+      toast.error(msg)
     }
 
     //        }
@@ -116,7 +157,7 @@ export const NFT = ({ nft, index, toggle, setToggle }) => {
     );
   }
 
-  console.log("nft", nft, nft.id);
+
 
   return (
 

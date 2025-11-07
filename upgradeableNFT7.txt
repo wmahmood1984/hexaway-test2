@@ -20,24 +20,34 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         __UUPSUpgradeable_init();
         uint32 daysSeconds = (60);
 
-        packageExpiry=60*5;
+        packageExpiry = 60 * 5;
         packages.push(
-            Package(0, 2 ether, 0 * daysSeconds, 0, 100 ether, 0, 0, 0,0)
+            Package(0, 2 ether, 0 * daysSeconds, 0, 100 ether, 0, 0, 0, 0)
         ); //0
         packages.push(
-            Package(1, 15 ether, 0 * daysSeconds, 0, 300 ether, 0, 5, 2,0)
+            Package(1, 15 ether, 0 * daysSeconds, 0, 300 ether, 0, 5, 2, 0)
         ); //0  //1
         packages.push(
-            Package(2, 20 ether, packageExpiry, 5, 700 ether, 0, 10, 3,0)
+            Package(2, 20 ether, packageExpiry, 5, 700 ether, 0, 10, 3, 0)
         ); //15 //10 //30
         packages.push(
-            Package(3, 25 ether, packageExpiry*2, 10, 1200 ether, 0, 15, 4,0)
+            Package(3, 25 ether, packageExpiry * 2, 10, 1200 ether, 0, 15, 4, 0)
         ); //40 //60
         packages.push(
-            Package(4, 50 ether, packageExpiry*3, 15, 2200 ether, 0, 20, 5,0)
+            Package(4, 50 ether, packageExpiry * 3, 15, 2200 ether, 0, 20, 5, 0)
         ); //100 //90
         packages.push(
-            Package(5, 165 ether, packageExpiry*4, 20, 6000 ether, 0, 25, 6,0)
+            Package(
+                5,
+                165 ether,
+                packageExpiry * 4,
+                20,
+                6000 ether,
+                0,
+                25,
+                6,
+                0
+            )
         ); //300//120
 
         maxLevels = 25;
@@ -47,7 +57,6 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         percentageAtBuyToNFTQue = 15;
         percentageAtBuyforMaintenance = 10;
         percentageAtBuyforTTBonus = 15;
-
 
         paymentToken = IERC20(0x951f3Cc97326eB18D6d3F2dc869e0Ca504023BBB);
         timelimit = 60 * 60 * 3; //60*60*48;
@@ -103,7 +112,6 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     Package[] public packages;
     uint public nftBurnt;
-
 
     mapping(address => Package) public userPackage;
     mapping(address => uint[]) public userMint;
@@ -190,8 +198,8 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         uint _id
     ) internal {
         bool eligible = _type != 1 // (block.timestamp - userPackage[up].purchaseTime) <=
-        // :
-            ? //     60 * 60 * 24 * 30
+        //     60 * 60 * 24 * 30
+            ? // :
             userPackage[up].id > 0
             : true;
 
@@ -273,7 +281,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         require(funds >= amount, "insufficient funds");
 
         require(checkEligibility(_user, id), "not eligible");
-        require(id>=userPackage[_user].id, "cannot upgrade old package");
+        require(id >= userPackage[_user].id, "cannot upgrade old package");
         require(userRegistered[_user], "6");
         Package memory tx1 = packages[id];
         tx1.packageUpgraded = block.timestamp;
@@ -290,7 +298,6 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
         processLevelIncome(uplines, amount, 25, 2, 0);
         emit Upgrades(block.timestamp, amount, id, _user);
-
     }
 
     function checkEligibility(
@@ -302,7 +309,8 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         Package memory _currentPackage = userPackage[_user];
 
         condition =
-            block.timestamp - _currentPackage.purchaseTime >= _currentPackage.time ||
+            block.timestamp - _currentPackage.purchaseTime >=
+                _currentPackage.time ||
             users[_user].indirect.length >= _package.team;
     }
 
@@ -317,21 +325,25 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
         NFT storage _nft = nfts[index];
         Package storage _package = userPackage[_user];
-        
-        if(block.timestamp-userTradingLimitTime[_user]<=60*3){
-            require(
-                (_package.limit - userLimitUtilized[_user]) >=
-                    (_nft.price + (_nft.price * 7) / 100),
-                "7"
-            );
-        }else{
-            userTradingLimitTime[_user]=block.timestamp;
-            userLimitUtilized[_user]=0;
+
+        if (block.timestamp - userTradingLimitTime[_user] > 3 minutes) {
+            // Reset after 3 minutes
+            userTradingLimitTime[_user] = block.timestamp;
+            userLimitUtilized[_user] = 0;
         }
 
+        // Always enforce the limit check
+        require(
+            (_package.limit - userLimitUtilized[_user]) >=
+                (_nft.price + (_nft.price * 7) / 100),
+            "7"
+        );
 
-
-        require(block.timestamp-userPackage[_user].packageUpgraded<=packageExpiry,"package expired");
+        require(
+            block.timestamp - userPackage[_user].packageUpgraded <=
+                packageExpiry,
+            "package expired"
+        );
 
         (uint forDis) = goDistribute(_nft, _nft._owner, _user, funds);
         userLimitUtilized[_user] += (_nft.price + (_nft.price * 7) / 100);
@@ -498,13 +510,13 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         for (uint i = 0; i < _uplines.length; i++) {
             address up = _uplines[i];
             bool cond = _type == 2 // Package Buy
-            // ((userPackage[up].id == 5 &&
-                ? //     userLimitUtilized[up] >= (userPackage[up].limit / 2)) ||
+            //     userLimitUtilized[up] >= (userPackage[up].limit / 2)) ||
+                ? // ((userPackage[up].id == 5 &&
                 //     userPackage[up].id != 5) &&
 
                 users[up].direct.length >= 2 // ((userPackage[up].id == 5 && // Package buy
-                //     userPackage[up].id != 5) &&
-                : //     userLimitUtilized[up] >= (userPackage[up].limit / 2)) ||
+                //     userLimitUtilized[up] >= (userPackage[up].limit / 2)) ||
+                : //     userPackage[up].id != 5) &&
                 userPackage[up].levelUnlock >= i &&
                     users[up].direct.length >= userPackage[up].directrequired;
             uint transactionType = _type == 1 ? 2 : 3;
