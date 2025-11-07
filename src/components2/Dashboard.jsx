@@ -176,7 +176,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
 
-                            <CountdownTimer durationInSeconds={Number(Package.purchaseTime) + 60 * 30 - now / 1000} />
+                            <CountdownTimer durationInSeconds={Number(Package.purchaseTime) + 60 * 1 - now / 1000} />
                             {levelBlockSeconds > 0 ? <IncomeBlockTimer durationInSeconds={Number(incomeBlockTime) + 60 * 60 - now / 1000} />
                                 : Number(nftPurchaseTime) + 60 * 60 * 3 - now / 1000 > 0 ?
 
