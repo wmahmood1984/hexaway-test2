@@ -17,11 +17,15 @@ export default function Trade() {
     } = useSelector((state) => state.contract);
 
 
-    function shuffleArray(array) {
+function shuffleArray(arr) {
+  // make a shallow copy so we can safely modify
+  const array = [...arr];
+
   for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1)); // random index
-    [array[i], array[j]] = [array[j], array[i]];   // swap
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
+
   return array;
 }
 
@@ -34,8 +38,8 @@ export default function Trade() {
         
         
             const abc = async ()=>{
-              const _nftUsed = await helperContract.methods.getNFTs().call()
-              setNFTs(shuffleArray(_nftUsed))
+              const _nfts = await helperContract.methods.getNFTs().call()
+              setNFTs(_nfts)
             }
         
             abc()
@@ -45,6 +49,8 @@ export default function Trade() {
 
 
                const isLoading = !nfts || !Package
+
+
 
   if (isLoading) {
     // show a waiting/loading screen
@@ -58,10 +64,12 @@ export default function Trade() {
 
   const now = new Date().getTime()/1000
 
-  const revisedLimitUtilized = now-Number(userTradingTime)>60*10?0:limitUtilized 
+  const revisedLimitUtilized = now-Number(userTradingTime)>60*10?0:limitUtilized
 
+    const randomeNFTs = nfts && shuffleArray(nfts) 
 
-  console.log("nn", limitUtilized);
+                 console.log("nn",randomeNFTs);
+
 
 
 
@@ -141,8 +149,8 @@ export default function Trade() {
                         </div>
                     </div>
                     <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
-                        {nfts.map((v,e)=>{
-                             if(v._owner!="0x0000000000000000000000000000000000000000"){
+                        {randomeNFTs.map((v,e)=>{
+                             if(v._owner!="0x0000000000000000000000000000000000000000" && e<15){
                             return (
                                 <NFT nft={v} index={e} toggle={toggle} setToggle={setToggle} revisedLimitUtilized={revisedLimitUtilized}/>
                                 //     <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
