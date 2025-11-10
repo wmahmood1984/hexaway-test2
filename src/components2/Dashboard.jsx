@@ -92,7 +92,7 @@ export default function Dashboard() {
     };
 
     const normalizedAddr = address && address.toLowerCase();
-    const normalizedQue = NFTque && NFTque.map(a => a.toLowerCase());
+    const normalizedQue = NFTque && NFTque.map(a => a.user.toLowerCase());
 
 
     const NFTQueStatus = NFTque && normalizedQue.indexOf(normalizedAddr) < 0
