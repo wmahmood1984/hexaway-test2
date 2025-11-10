@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { NFT } from './NFT2';
 import { helperAbi, helperAddress, web3 } from '../config';
 import { useAppKitAccount } from '@reown/appkit/react';
+import { Link } from 'react-router-dom';
 
 export default function Asset() {
     const { Package, myNFTs, packages, downlines, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
@@ -152,9 +153,8 @@ export default function Asset() {
                         <h2 id="page-title" class="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-gray-900 mb-3">My Assets</h2>
                         <p id="page-subtitle" class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">Track Your NFT Portfolio</p>
                     </header>
-                    <section class="bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 p-6 sm:p-8 mb-8 sm:mb-12">
-                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
-                            <div class="flex justify-center mt-10 -mb-[-10px]">
+
+                    <div class="flex justify-center mt-10 -mb-[-10px]">
                                 <button
                                     onclick="showPage('history')"
                                     class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg flex items-center space-x-2"
@@ -163,9 +163,12 @@ export default function Asset() {
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    <Link to="/nftcreationdetails">Creation History</Link>
+                                    <Link to="/createhistory">Creation History</Link>
                                 </button>
                             </div>
+                    <section class="bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 p-6 sm:p-8 mb-8 sm:mb-12">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+                            
                             {/* <div class="text-center p-4 sm:p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200 shadow-sm hover:shadow-lg transition-all">
                                 <div class="text-3xl sm:text-4xl lg:text-5xl font-bold text-green-600 mb-2">
                                     {createdNFTs.length}
