@@ -105,7 +105,7 @@ export default function Dashboard() {
 
     const now = new Date().getTime()
 
-    console.log("dashboard",NFTQueStatus);
+    console.log("dashboard",NFTque,nftQueIndex);
     const isLoading = !Package || !downlines || !packages;
 
     const levelBlockSeconds = Number(incomeBlockTime) + 60 * 60 - now / 1000 < 0 ? 0 : Number(incomeBlockTime) + 60 * 60 - now / 1000
