@@ -84,7 +84,7 @@ export default function Asset() {
                     ) {
                         status = "burn"; // Burned NFTs only if owned by current address
                     } else if (nft.creator?.toLowerCase() === address?.toLowerCase()) {
-                        status = "created"; // Creator is current user
+                        status = "purchased"; // Creator is current user
                     } else if (nft.source === "market") {
                         status = "purchased"; // Others in marketplace
                     } else {
@@ -130,10 +130,10 @@ export default function Asset() {
             default:
                 return true; // show everything
         }
-    }).filter((e) => e.status != "created");
+    });
 
 
-    console.log("my nft", allNFTs);
+    console.log("my nft", filteredNFTs,allNFTs);
 
     const totalWei = allNFTs.filter((e) => e.status != "created").reduce(
         (acc, nft) => acc + Number(nft.price), 0
@@ -185,7 +185,7 @@ export default function Asset() {
                                     {purchasedNFTs.length}
                                 </div>
                                 <div class="text-sm sm:text-base text-gray-700 font-semibold">
-                                    Purchased
+                                    Purchased / Created
                                 </div>
                             </div>
                             <div class="text-center p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200 shadow-sm hover:shadow-lg transition-all">
@@ -260,7 +260,7 @@ export default function Asset() {
                                         image={v.image}
                                         price={v.price}
                                         status={v.status}
-
+                                        id={v.id}
                                         index={e}></NFT>
                                 )
                             })}

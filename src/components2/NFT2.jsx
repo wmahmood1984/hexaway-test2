@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 
 
-export const NFT = ({ name,description,image,price,status }) => {
+export const NFT = ({ name,description,image,price,status,id }) => {
 
     // const [image, setImage] = useState()
     // const [name, setName] = useState()
@@ -73,7 +73,8 @@ export const NFT = ({ name,description,image,price,status }) => {
             </div>
 
             <div class="p-4">
-                <h4 class="font-bold text-gray-900 mb-1 truncate text-base">{name} </h4>
+                <h4 class="font-bold text-gray-900 mb-1 truncate text-base">{name} #{id} </h4>
+                
                 <p class="text-sm text-gray-600 mb-3 line-clamp-2">{description}</p>
 
 

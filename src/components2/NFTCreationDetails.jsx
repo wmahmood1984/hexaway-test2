@@ -6,7 +6,7 @@ import { formatEther } from 'ethers';
 
 export default function NFTCreationDetails() {
 
-    const { NFTQueBalance
+    const { NFTQueBalance,nftListed,
     } = useSelector((state) => state.contract);
     const { address } = useAppKitAccount();
 
@@ -69,6 +69,7 @@ export default function NFTCreationDetails() {
                             </svg>
                         </div>
                         <p class="text-5xl font-bold font-display mb-2">${NFTQueBalance}</p>
+                        <p class="text-2xl font-bold font-display mb-2" >NFT Created: {nftListed.length}</p>
                         <p class="text-sm opacity-80">All-time earnings from NFT royalties</p>
                     </div>
                 </section>
