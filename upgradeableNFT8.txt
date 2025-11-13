@@ -20,7 +20,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         __UUPSUpgradeable_init();
         uint32 daysSeconds = (60);
 
-        packageExpiry = 60 * 60 * 4;
+        packageExpiry = 60 * 60 * 24*30;
         packages.push(
             Package(0, 2 ether, 0 * daysSeconds, 0, 100 ether, 0, 0, 0, 0)
         ); //0
@@ -28,20 +28,20 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             Package(1, 15 ether, 0 * daysSeconds, 0, 300 ether, 0, 5, 2, 0)
         ); //0  //1
         packages.push(
-            Package(2, 20 ether, packageExpiry, 5, 700 ether, 0, 10, 3, 0)
+            Package(2, 20 ether, packageExpiry, 15, 700 ether, 0, 10, 3, 0)
         ); //15 //10 //30
         packages.push(
-            Package(3, 25 ether, packageExpiry * 2, 10, 1200 ether, 0, 15, 4, 0)
+            Package(3, 25 ether, packageExpiry * 2, 40, 1200 ether, 0, 15, 4, 0)
         ); //40 //60
         packages.push(
-            Package(4, 50 ether, packageExpiry * 3, 15, 2200 ether, 0, 20, 5, 0)
+            Package(4, 50 ether, packageExpiry * 3, 100, 2200 ether, 0, 20, 5, 0)
         ); //100 //90
         packages.push(
             Package(
                 5,
                 165 ether,
                 packageExpiry * 4,
-                20,
+                300,
                 6000 ether,
                 0,
                 25,
@@ -59,7 +59,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         percentageAtBuyforTTBonus = 15;
 
         paymentToken = IERC20(0x951f3Cc97326eB18D6d3F2dc869e0Ca504023BBB);
-        timelimit = 60 * 60 * 3; //60*60*48;
+        timelimit = 60 * 60 * 48; //60*60*48;
 
         userRegistered[msg.sender] = true;
         Package memory tx1 = packages[1];
@@ -367,7 +367,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         _nft.premium += forDis;
 
         // // increment utilization or burn
-        if (_nft.utilized < 2) {
+        if (_nft.utilized < 6) {
             _nft.utilized++;
             _burn = false;
         } else {
@@ -376,7 +376,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             NFTMayBeCreated = true;
         }
         // NFTQue handling if threshold reached
-        // if (NFTQue.length > 1 && NFTQue[nftQueIndex].income >= 3 ether) {
+        // if (NFTQue.length > 1 && NFTQue[nftQueIndex].income >= 45 ether) {
 
 
         //     // removeFirst();
@@ -459,7 +459,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             ((amount * percentageAtBuyToAdmin) / percentageAtBuy)
         );
 
-        if (NFTQue.length > 1 && NFTQue[nftQueIndex].income <= 3 ether) {
+        if (NFTQue.length > 1 && NFTQue[nftQueIndex].income <= 45 ether) {
             paymentToken.transfer(
                 NFTQue[nftQueIndex].user,
                 ((amount * percentageAtBuyToNFTQue) / percentageAtBuy)
@@ -581,7 +581,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
                 users[up].direct.length >= 2
                 : ((userPackage[up].id == 5 && // Package buy
-                    userLimitUtilized[up] >= (userPackage[up].limit / 10)) ||
+                    userLimitUtilized[up] >= (userPackage[up].limit / 2)) ||
                     userPackage[up].id != 5) &&
                     userPackage[up].levelUnlock >= i &&
                     users[up].direct.length >= userPackage[up].directrequired;

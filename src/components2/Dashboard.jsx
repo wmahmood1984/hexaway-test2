@@ -108,7 +108,7 @@ export default function Dashboard() {
     console.log("dashboard",NFTque,nftQueIndex);
     const isLoading = !Package || !downlines || !packages;
 
-    const levelBlockSeconds = Number(incomeBlockTime) + 60 * 60 - now / 1000 < 0 ? 0 : Number(incomeBlockTime) + 60 * 60 - now / 1000
+    const levelBlockSeconds = Number(incomeBlockTime) + 60 * 60 * 48 - now / 1000 < 0 ? 0 : Number(incomeBlockTime) + 60 * 60 *48- now / 1000
 
     // console.log("dashoard", packageKeys[Package.id].name);
 

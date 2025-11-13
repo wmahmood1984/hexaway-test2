@@ -64,7 +64,7 @@ export default function Trade() {
 
     const now = new Date().getTime() / 1000
 
-    const revisedLimitUtilized = now - Number(userTradingTime) > 60 * 10 ? 0 : limitUtilized
+    const revisedLimitUtilized = now - Number(userTradingTime) > 60 * 60 *24 ? 0 : limitUtilized
 
     const randomeNFTs = nfts && shuffleArray(nfts)
 
