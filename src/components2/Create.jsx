@@ -99,15 +99,17 @@ export default function Create() {
 
             const result = response.data;
             const nudity = result.nudity || {};
+            const gore = result.gore || {};
             const nsfwScore =
-                nudity.sexual_activity ||
-                nudity.sexual_display ||
-                nudity.erotica ||
-                0;
+                Math.max(nudity.sexual_activity,
+                    nudity.sexual_display,
+                    nudity.erotica,
+                    gore.prob,
+                    0);
 
-            console.log("nsfw",result);
+            console.log("nsfw", nsfwScore);
 
-            if (nsfwScore > 0.3) {
+            if (nsfwScore > 0.15) {
                 toast.error("This image may contain NSFW content. Please upload a safe image.");
                 e.target.value = "";
                 return;
