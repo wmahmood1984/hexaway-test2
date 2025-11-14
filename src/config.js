@@ -14,7 +14,7 @@ export const web3 = new Web3(
 	)
 );
 
-export const url = "https://testnet.bscscan.com/tx/"
+export const url = "https://testnet.opbnbscan.com/tx/"
 
 export const incomeKeys = [
 	{
