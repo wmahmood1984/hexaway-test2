@@ -19,13 +19,13 @@ export default function Auth() {
     const { address,isConnected } = useAppKitAccount()
 
 
-    useEffect(() => {
-        dispatch(init()).then(() => {
-            if (address) {
-                dispatch(readName({ address }));
-            }
-        });
-    }, [address, dispatch]);
+    // useEffect(() => {
+    //     dispatch(init()).then(() => {
+    //         if (address) {
+    //             dispatch(readName({ address }));
+    //         }
+    //     });
+    // }, [address, dispatch]);
 
     useEffect(() => {
         if (registered && isConnected) {

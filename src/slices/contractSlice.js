@@ -196,6 +196,9 @@ const contractSlice = createSlice({
     setUSDTContract: (state, action) => {
       state.usdtContract = action.payload;
     },
+     setRegisteredFalse: (state) => {
+      state.registered = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -214,5 +217,5 @@ const contractSlice = createSlice({
   },
 });
 
-export const { setContract, setUSDTContract } = contractSlice.actions;
+export const { setContract, setUSDTContract,setRegisteredFalse } = contractSlice.actions;
 export default contractSlice.reducer;

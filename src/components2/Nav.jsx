@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppKitAccount, useDisconnect } from '@reown/appkit/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { formatAddress } from '../utils/contractExecutor';
-import { init, readName } from '../slices/contractSlice';
+import { init, readName, setRegisteredFalse } from '../slices/contractSlice';
 import { mlmabi, mlmcontractaddress, web3 } from '../config';
 
 export default function Nav() {
@@ -61,8 +61,10 @@ export default function Nav() {
   // }, [registered, navigate]);
 
   const handleClick = async () => {
+      console.log("nav",registered);
     if (isConnected) {
       await disconnect();
+      dispatch(setRegisteredFalse());
       navigate("/")
     } else {
       navigate("/auth");
@@ -74,7 +76,7 @@ export default function Nav() {
   };
 
 
-  console.log("nav",status);
+
 
 
   return (
