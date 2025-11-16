@@ -2,7 +2,7 @@ import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { executeContract, extractRevertReason } from "../utils/contractExecutor";
 import { useConfig } from "wagmi";
 import { useEffect, useState } from "react";
-import { helperAbi, helperAddress, mlmcontractaddress, usdtContract, web3 } from "../config";
+import { erc20abi, erc20Add, helperAbi, helperAddress, mlmcontractaddress, usdtContract, web3 } from "../config";
 import { useDispatch, useSelector } from "react-redux";
 import { readName } from "../slices/contractSlice";
 import { useNavigate } from "react-router-dom";
@@ -15,20 +15,21 @@ export default function ConnectButton({ referrer }) {
     const navigate = useNavigate()
     // const { disconnect } = useDisconnect()
     const config = useConfig()
-    const { isConnected, } = useAppKitAccount()
+    const { isConnected,address } = useAppKitAccount()
     const [admin, setAdmin] = useState()
+    const [walletBalance, setWalletBalance] = useState(0)
     const [packages, setPackages] = useState([])
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false);
 
         const { Package, myNFTs, downlines, registered,  allowance, NFTQueBalance, limitUtilized, NFTque
 
-        , walletBalance, tradingReferralBonus, packageReferralBonus, tradingLevelBonus, packageLevelBonus, selfTradingProfit, nftPurchaseTime, incomeBlockTime,
+        , tradingReferralBonus, packageReferralBonus, tradingLevelBonus, packageLevelBonus, selfTradingProfit, nftPurchaseTime, incomeBlockTime,
         status, error, totalIncome, timeLimit, packageExpiryLimit, nftQueIndex
     } = useSelector((state) => state.contract);
 
     const contract = new web3.eth.Contract(helperAbi, helperAddress)
-
+    const usdtContract = new web3.eth.Contract(erc20abi, erc20Add)
     useEffect(() => {
 
         const abc = async () => {
@@ -37,10 +38,13 @@ export default function ConnectButton({ referrer }) {
             setAdmin(_admin)
             const _packages = await contract.methods.getPackages().call()
             setPackages(_packages)
+
+            const balance = await usdtContract.methods.balanceOf(address).call()
+            setWalletBalance(formatEther(balance))
         }
 
         abc()
-    }, [])
+    }, [address])
 
 
     const handleRegister2 = async () => {
