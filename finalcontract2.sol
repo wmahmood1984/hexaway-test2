@@ -1,0 +1,906 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+// Import upgradeable versions instead of regular contracts
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+
+contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
+    constructor() {
+        _disableInitializers(); // prevents logic contract from being initialized directly
+    }
+
+    function initialize(address initialOwner) public initializer {
+        __Ownable_init(initialOwner);
+
+        __UUPSUpgradeable_init();
+
+        packageExpiry = 60 * 60 * 24 * 30;
+        packages.push(Package(0, 2 ether, 0, 0, 100 ether, 0, 0, 0, 0));
+        packages.push(Package(1, 15 ether, 0, 0, 300 ether, 0, 5, 2, 0));
+        packages.push(
+            Package(2, 20 ether, packageExpiry, 15, 700 ether, 0, 10, 3, 0)
+        );
+        packages.push(
+            Package(3, 25 ether, packageExpiry * 2, 40, 1200 ether, 0, 15, 4, 0)
+        );
+        packages.push(
+            Package(
+                4,
+                50 ether,
+                packageExpiry * 3,
+                100,
+                2200 ether,
+                0,
+                20,
+                5,
+                0
+            )
+        ); //100 //90
+        packages.push(
+            Package(
+                5,
+                165 ether,
+                packageExpiry * 4,
+                300,
+                6000 ether,
+                0,
+                25,
+                6,
+                0
+            )
+        );
+
+        maxLevels = 25;
+        percentageAtBuy = 70;
+        percentageAtBuyToTrader = 20;
+        percentageAtBuyToAdmin = 10;
+        percentageAtBuyToNFTQue = 15;
+        percentageAtBuyforMaintenance = 10;
+        percentageAtBuyforTTBonus = 15;
+        paymentToken = IERC20(
+//            0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3
+            0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9
+            );
+        timelimit = 60 * 60 * 48;
+        userRegistered[msg.sender] = true;
+        Package memory tx1 = packages[1];
+        tx1.purchaseTime = block.timestamp;
+        userPackage[msg.sender] = tx1;
+        userTradingTime[msg.sender] = block.timestamp;
+        incomeWallet = 0x17425382Ad386B410A42a1Ef17789A3d38b18C57;
+        maintenanceWallet = 0xaf9525B035Cf2166e8955909654708495CE429b0;
+    }
+
+    event Incomes(
+        uint time,
+        uint amount,
+        uint _type,
+        address _user,
+        uint level,
+        uint id
+    );
+
+    event Trades(uint time, uint amount, uint _type, address _user, uint id);
+
+    event Upgrades(uint time, uint amount, uint _type, address _user);
+
+    uint public timelimit;
+
+    struct Package {
+        uint id;
+        uint price;
+        uint time;
+        uint team;
+        uint limit;
+        uint purchaseTime;
+        uint levelUnlock;
+        uint8 directrequired;
+        uint packageUpgraded;
+    }
+
+    struct NFT {
+        uint id;
+        uint price;
+        address _owner;
+        string uri;
+        uint premium;
+        uint utilized;
+    }
+
+    struct User {
+        address referrer;
+        address parent;
+        address[] children;
+        address[] indirect;
+        address[] direct;
+    }
+
+    struct queIncome {
+        address user;
+        uint id;
+        uint income;
+    }
+
+    Package[] public packages;
+    uint public nftBurnt;
+
+    mapping(address => Package) public userPackage;
+    mapping(address => NFT[]) public userMint;
+    mapping(address => uint) public tradingReferralBonus;
+    mapping(address => uint) public packageReferralBonus;
+    mapping(address => uint) public tradingLevelBonus;
+    mapping(address => uint) public packageLevelBonus;
+    mapping(address => uint) public selfTradingProfit;
+    NFT[] public nfts;
+    mapping(address => uint) public ownerNFTindex;
+    mapping(address => bool) public userRegistered;
+    mapping(address => uint) public userTradingTime;
+    mapping(address => uint) public userLevelIncomeBlockTime;
+    mapping(address => uint) public userLimitUtilized;
+    mapping(address => uint) public userTradingLimitTime;
+    mapping(address => uint) public NFTQueBalance;
+    mapping(address => User) public users;
+    uint8 maxLevels;
+    uint8 percentageAtBuy;
+    uint8 percentageAtBuyToTrader;
+    uint8 percentageAtBuyToAdmin;
+    uint8 percentageAtBuyToNFTQue;
+    uint8 percentageAtBuyforMaintenance;
+    uint8 percentageAtBuyforTTBonus;
+    bool public NFTMayBeCreated;
+    uint public packageExpiry;
+    bool public mintPause;
+    uint public nftQueIndex;
+    queIncome[] public NFTQue;
+    NFT[] public nftused;
+    address public adminRep;
+    address public incomeWallet;
+    address public maintenanceWallet;
+
+    IERC20 public paymentToken; // ERC20 token used for payments
+
+    function register(address _ref, address _user, uint funds) public {
+        address _referrer = _ref != address(0) ? _ref : owner();
+        uint amount = packages[0].price;
+        Package memory tx1 = packages[0];
+        tx1.purchaseTime = block.timestamp;
+        tx1.packageUpgraded = block.timestamp;
+        userPackage[_user] = tx1;
+
+        require(funds >= amount, "insufficient funds");
+        require(users[_user].referrer == address(0), "zero address");
+        require(_referrer != _user, "self referrer");
+        require(userRegistered[_referrer], "already registered");
+
+        address placement = findAvailableSlot(_referrer);
+
+        users[_user].referrer = _referrer;
+        users[_user].parent = placement;
+        users[placement].children.push(_user);
+
+        // Direct referral list
+        users[_referrer].direct.push(_user);
+
+        // ✅ Add to referrer's indirect network
+
+        address current = placement;
+        for (uint i = 0; i < maxLevels; i++) {
+            if (current == address(0)) break;
+            users[current].indirect.push(_user);
+            current = users[current].parent;
+        }
+
+        userRegistered[_user] = true;
+
+        sendConditional(_referrer, amount / 2, 1, 0);
+        paymentToken.transfer(incomeWallet, amount / 2);
+
+        userTradingTime[_user] = block.timestamp;
+
+        emit Upgrades(block.timestamp, amount, 0, _user);
+    }
+
+    function sendConditional(
+        address up,
+        uint amount,
+        uint _type,
+        uint _id
+    ) internal {
+        bool eligible = _type != 1 ? userPackage[up].id > 0 : true;
+
+        uint8 transactionType = _type == 3 ? 0 : 1;
+        if (
+            eligible &&
+            block.timestamp - userLevelIncomeBlockTime[up] >= (timelimit)
+        ) {
+            if (block.timestamp - userTradingTime[up] <= (timelimit)) {
+                paymentToken.transfer(up, amount);
+                if (_type == 3) {
+                    tradingReferralBonus[up] += amount;
+                } else {
+                    packageReferralBonus[up] += amount;
+                }
+                emit Incomes(
+                    block.timestamp,
+                    amount,
+                    transactionType,
+                    up,
+                    0,
+                    _id
+                );
+            } else {
+                userLevelIncomeBlockTime[up] = block.timestamp;
+            }
+        }
+    }
+
+    function findAvailableSlot(
+        address _root
+    ) public view returns (address placement) {
+        // Quick win: if root has space, return it immediately
+        if (users[_root].children.length < 2) {
+            placement = _root;
+            return placement;
+        }
+
+        address[] memory upline = users[_root].indirect;
+
+        for (uint i = 0; i < upline.length; i++) {
+            if (users[upline[i]].children.length < 2) {
+                placement = upline[i];
+                return placement;
+            }
+        }
+    }
+
+    function getUplines(address user) public view returns (address[] memory) {
+        address[] memory temp = new address[](maxLevels); // temporary
+        uint8 count = 0;
+
+        for (uint8 i = 0; i < maxLevels; i++) {
+            address parent = users[user].parent;
+            if (parent == address(0)) break;
+            temp[count] = parent;
+            user = parent;
+            count++;
+        }
+
+        // resize to actual count
+        address[] memory uplines = new address[](count);
+        for (uint8 j = 0; j < count; j++) {
+            uplines[j] = temp[j];
+        }
+
+        return uplines;
+    }
+
+    function getUser(address _user) external view returns (User memory) {
+        return (users[_user]);
+    }
+
+    function buyPackage(uint8 id, address _user, uint funds) public {
+        uint amount = packages[id].price;
+
+        require(funds >= amount, "insufficient funds");
+        require(checkEligibility(_user, id), "not eligible");
+        require(id >= userPackage[_user].id, "cannot upgrade old package");
+        require(userRegistered[_user], "6");
+
+        Package memory tx1 = packages[id];
+        tx1.packageUpgraded = block.timestamp;
+        tx1.purchaseTime = userPackage[_user].purchaseTime;
+        userPackage[_user] = tx1;
+        userLimitUtilized[_user] = 0;
+        paymentToken.transfer(incomeWallet, (amount * 10) / 100);
+
+        address up = users[_user].referrer;
+
+        sendConditional(up, (amount * 20) / 100, 2, 0);
+
+        address[] memory uplines = getUplines(_user);
+
+        processLevelIncome(uplines, amount, 25, 2, 0);
+        emit Upgrades(block.timestamp, amount, id, _user);
+    }
+
+    function checkEligibility(
+        address _user,
+        uint8 _id
+    ) public view returns (bool condition) {
+        Package memory _package = packages[_id];
+
+        Package memory _currentPackage = userPackage[_user];
+
+        condition =
+            block.timestamp - _currentPackage.purchaseTime >=
+                _currentPackage.time ||
+            users[_user].indirect.length >= _package.team;
+    }
+
+    function buyNFT(
+        uint id,
+        address _user,
+        uint funds
+    ) public returns (bool _burn, address _owner) {
+        require(id > 0, "invalid id");
+        uint index = id - 1;
+        require(index < nfts.length, "NFT does not exist");
+
+        NFT storage _nft = nfts[index];
+        Package storage _package = userPackage[_user];
+
+        if (block.timestamp - userTradingLimitTime[_user] > 24 hours) {
+            // Reset after 3 minutes
+            userTradingLimitTime[_user] = block.timestamp;
+            userLimitUtilized[_user] = 0;
+        }
+
+        // Always enforce the limit check
+        require(
+            (_package.limit - userLimitUtilized[_user]) >=
+                (_nft.price + (_nft.price * 7) / 100),
+            "7"
+        );
+
+        require(
+            block.timestamp - userPackage[_user].packageUpgraded <=
+                packageExpiry,
+            "package expired"
+        );
+
+        (uint forDis) = goDistribute(_nft, _nft._owner, _user, funds, 3);
+        userLimitUtilized[_user] += (_nft.price + (_nft.price * 7) / 100);
+        // transfer token (ERC721) — use tokenId `id`
+
+        // update owner on stored NFT after transfer
+
+        _nft._owner = _user;
+
+        _nft.price += forDis;
+        _nft.premium += forDis;
+
+        // // increment utilization or burn
+        if (_nft.utilized < 6) {
+            _nft.utilized++;
+            _burn = false;
+        } else {
+            _burn = true;
+            burn(index);
+            NFTMayBeCreated = true;
+        }
+
+        userTradingTime[_user] = block.timestamp;
+
+        return (_burn, _nft._owner);
+    }
+
+    function goDistribute(
+        NFT memory _nft,
+        address oldOwner,
+        address _user,
+        uint funds,
+        uint8 _type
+    ) internal returns (uint) {
+        uint amount = (_nft.price * percentageAtBuy) / 1000;
+
+        require(
+            funds >= (_nft.price * percentageAtBuy) / 1000 + _nft.premium,
+            "insufficient funds"
+        );
+
+        paymentToken.transfer(oldOwner, _nft.premium);
+
+        paymentToken.transfer(
+            oldOwner,
+            ((amount * percentageAtBuyToTrader) / percentageAtBuy)
+        );
+        selfTradingProfit[oldOwner] += ((amount * percentageAtBuyToTrader) /
+            percentageAtBuy);
+        emit Incomes(
+            block.timestamp,
+            ((amount * percentageAtBuyToTrader) / percentageAtBuy),
+            4,
+            oldOwner,
+            0,
+            _nft.id
+        );
+        emit Trades(block.timestamp, _nft.premium, 0, oldOwner, _nft.id);
+        if (_type == 1) {
+            emit Trades(
+                block.timestamp,
+                amount + _nft.premium,
+                2,
+                _user,
+                _nft.id
+            );
+        } else {
+            emit Trades(
+                block.timestamp,
+                amount + _nft.premium,
+                1,
+                _user,
+                _nft.id
+            );
+        }
+
+        paymentToken.transfer(
+            incomeWallet,
+            ((amount * percentageAtBuyToAdmin) / percentageAtBuy)
+        );
+
+        // if (NFTQue.length > 0 && NFTQue[nftQueIndex].income <= 45 ether) {
+        //     paymentToken.transfer(
+        //         NFTQue[nftQueIndex].user,
+        //         ((amount * percentageAtBuyToNFTQue) / percentageAtBuy)
+        //     );
+        //     NFTQueBalance[NFTQue[nftQueIndex].user] += ((amount *
+        //         percentageAtBuyToNFTQue) / percentageAtBuy);
+
+        //     NFTQue[nftQueIndex].income += ((amount * percentageAtBuyToNFTQue) /
+        //         percentageAtBuy);
+
+        //     emit Incomes(
+        //         block.timestamp,
+        //         ((amount * percentageAtBuyToNFTQue) / percentageAtBuy),
+        //         5,
+        //         NFTQue[nftQueIndex].user,
+        //         0,
+        //         _nft.id
+        //     );
+        // } else {
+        //     if (NFTQue.length > 0 && nftQueIndex < NFTQue.length - 1) {
+        //         nftQueIndex++;
+        //         paymentToken.transfer(
+        //             NFTQue[nftQueIndex].user,
+        //             ((amount * percentageAtBuyToNFTQue) / percentageAtBuy)
+        //         );
+        //         NFTQueBalance[NFTQue[nftQueIndex].user] += ((amount *
+        //             percentageAtBuyToNFTQue) / percentageAtBuy);
+
+        //         NFTQue[nftQueIndex].income += ((amount *
+        //             percentageAtBuyToNFTQue) / percentageAtBuy);
+
+        //         emit Incomes(
+        //             block.timestamp,
+        //             ((amount * percentageAtBuyToNFTQue) / percentageAtBuy),
+        //             5,
+        //             NFTQue[nftQueIndex].user,
+        //             0,
+        //             _nft.id
+        //         );
+        //     } else {
+        //         paymentToken.transfer(
+        //             incomeWallet,
+        //             ((amount * percentageAtBuyToNFTQue) / percentageAtBuy)
+        //         );
+        //     }
+
+        //     // fallback: send to admin (or keep in contract) — choose behavior you want
+        // }
+
+        // paymentToken.transfer(
+        //     //owner(),
+        //     maintenanceWallet,
+        //     ((amount * percentageAtBuyforMaintenance) / percentageAtBuy)
+        // );
+
+        uint256 payout = (amount * percentageAtBuyToNFTQue) / percentageAtBuy;
+
+        if (NFTQue.length == 0) {
+            // Queue empty → send to income wallet
+            paymentToken.transfer(incomeWallet, payout);
+        } else {
+            // Queue not empty
+            queIncome storage current = NFTQue[nftQueIndex];
+
+            // Check if adding payout would exceed 45
+            if (current.income + payout <= 45 ether) {
+                // Safe to give to current index
+                paymentToken.transfer(current.user, payout);
+                NFTQueBalance[current.user] += payout;
+                current.income += payout;
+
+                emit Incomes(
+                    block.timestamp,
+                    payout,
+                    5,
+                    current.user,
+                    0,
+                    _nft.id
+                );
+            } else {
+                // Move to next index
+                if (nftQueIndex < NFTQue.length - 1) {
+                    nftQueIndex++;
+                    queIncome storage next = NFTQue[nftQueIndex];
+
+                    paymentToken.transfer(next.user, payout);
+                    NFTQueBalance[next.user] += payout;
+                    next.income += payout;
+
+                    emit Incomes(
+                        block.timestamp,
+                        payout,
+                        5,
+                        next.user,
+                        0,
+                        _nft.id
+                    );
+                } else {
+                    // No more users → send to wallet
+                    paymentToken.transfer(incomeWallet, payout);
+                }
+            }
+        }
+
+        processTTBBonus(
+            ((amount * percentageAtBuyforTTBonus) / percentageAtBuy),
+            _user,
+            _nft.id
+        );
+
+        // update NFT queue balance
+
+        return amount;
+    }
+
+    function processTTBBonus(uint _amount, address _user, uint _id) internal {
+        paymentToken.transfer(incomeWallet, (_amount * 10) / 100);
+        address up = users[_user].referrer;
+        sendConditional(up, (_amount * 10) / 100, 3, _id);
+
+        address[] memory _uplines = getUplines(_user);
+
+        if (_uplines.length == 25) {
+            if (
+                userPackage[up].id == 5 &&
+                users[up].direct.length >= 6 &&
+                block.timestamp - userLevelIncomeBlockTime[up] >= (timelimit) &&
+                userPackage[up].id > 0
+            ) {
+                if (block.timestamp - userTradingTime[up] <= (timelimit)) {
+                    paymentToken.transfer(_uplines[24], (_amount * 10) / 100);
+                    tradingLevelBonus[_uplines[24]] += (_amount * 10) / 100;
+                    emit Incomes(
+                        block.timestamp,
+                        (_amount * 10) / 100,
+                        2,
+                        _uplines[24],
+                        25,
+                        _id
+                    );
+                } else {
+                    userLevelIncomeBlockTime[up] = block.timestamp;
+                }
+            }
+        } else {
+            paymentToken.transfer(incomeWallet, (_amount * 10) / 100);
+        }
+
+        processLevelIncome(_uplines, _amount, 24, 1, _id);
+    }
+
+    function processLevelIncome(
+        address[] memory _uplines,
+        uint _amount,
+        uint8 levelD,
+        uint8 _type,
+        uint _id
+    ) internal {
+        uint leftOver = 0;
+
+        for (uint i = 0; i < _uplines.length; i++) {
+            address up = _uplines[i];
+            bool cond = _type == 2 // Package Buy
+                ? users[up].direct.length >= 2
+                : ((userPackage[up].id == 5 && // NFT buy
+                    userLimitUtilized[up] >= (userPackage[up].limit / 2)) ||
+                    userPackage[up].id != 5) &&
+                    userPackage[up].levelUnlock >= i &&
+                    users[up].direct.length >= userPackage[up].directrequired;
+            uint transactionType = _type == 1 ? 2 : 3;
+            if (
+                cond &&
+                block.timestamp - userLevelIncomeBlockTime[up] >= (timelimit) &&
+                userPackage[up].id > 0
+            ) {
+                if (block.timestamp - userTradingTime[up] <= (timelimit)) {
+                    paymentToken.transfer(up, ((_amount * 70) / 100) / levelD);
+                    if (_type == 1) {
+                        tradingLevelBonus[up] +=
+                            ((_amount * 70) / 100) / levelD;
+                    } else {
+                        packageLevelBonus[up] +=
+                            ((_amount * 70) / 100) / levelD;
+                    }
+
+                    emit Incomes(
+                        block.timestamp,
+                        ((_amount * 70) / 100) / levelD,
+                        transactionType,
+                        up,
+                        i + 1,
+                        _id
+                    );
+                    leftOver++;
+                } else {
+                    userLevelIncomeBlockTime[up] = block.timestamp;
+                }
+            }
+        }
+
+        uint validLeftOver = leftOver > levelD ? levelD : leftOver;
+        paymentToken.transfer(
+            incomeWallet,
+            (((_amount * 70) / 100) * (levelD - validLeftOver)) / levelD
+        );
+    }
+
+    function removeFirst2() internal {
+        for (uint i = 0; i < nftused.length - 1; i++) {
+            nftused[i] = nftused[i + 1];
+        }
+        nftused.pop(); // remove last element
+    }
+
+    function setMintPause(bool _cond) public onlyOwner {
+        mintPause = _cond;
+    }
+
+    function ownerSettlement(uint funds) public {
+        require(nftused.length > 0, "9");
+
+        goDistribute(nftused[0], nftused[0]._owner, owner(), funds, 2);
+
+        removeFirst2();
+
+        if (nftused.length == 0) {
+            NFTMayBeCreated = false;
+        }
+    }
+
+    /// @notice Mint a new NFT to `to`
+    function mint(
+        string memory _uri,
+        address _user,
+        uint _nextTokenId,
+        uint funds
+    ) public {
+        require(
+            _user == owner() || (NFTMayBeCreated == true && !mintPause),
+            "minting not authorized"
+        );
+
+        NFT memory tx1;
+
+        if (NFTMayBeCreated) {
+            tx1 = NFT(
+                _nextTokenId,
+                nftused[0].price,
+                _user,
+                _uri,
+                nftused[0].premium,
+                1
+            );
+            goDistribute(tx1, nftused[0]._owner, _user, funds, 1);
+            tx1.premium = 0;
+            tx1.price = 50 ether;
+            removeFirst2();
+            userMint[_user].push(tx1);
+        } else {
+            tx1 = NFT(_nextTokenId, 50 ether, _user, _uri, 0, 1);
+        }
+
+        nfts.push(tx1);
+
+        if (NFTMayBeCreated == true) {
+            NFTQue.push(queIncome(_user, _nextTokenId, 0));
+        }
+
+        if (nftused.length == 0) {
+            NFTMayBeCreated = false;
+        }
+    }
+
+    function mint2(
+        string memory _uri,
+        address _user,
+        uint _nextTokenId
+    ) public {
+        NFT memory tx1;
+
+        tx1 = NFT(_nextTokenId, 50 ether, _user, _uri, 0, 1);
+
+        nfts.push(tx1);
+    }
+
+    function burn(uint index) internal {
+        nftused.push(nfts[index]);
+        delete nfts[index];
+        nftBurnt++;
+    }
+
+    function getNFTs() public view returns (NFT[] memory) {
+        return nfts;
+    }
+
+    function getPackages() public view returns (Package[] memory) {
+        return packages;
+    }
+
+    function getNFTque() public view returns (queIncome[] memory) {
+        return NFTQue;
+    }
+
+    function getNFTs(address _user) public view returns (NFT[] memory) {
+        //    require(userRegistered[user], "the user is not registered");
+        NFT[] memory temp = new NFT[](nfts.length); // temporary
+        uint8 count = 0;
+
+        for (uint8 i = 0; i < nfts.length; i++) {
+            if (nfts[i]._owner == _user) {
+                temp[count] = nfts[i];
+                count++;
+            }
+        }
+
+        // resize to actual count
+        NFT[] memory myNFTs = new NFT[](count);
+        for (uint8 j = 0; j < count; j++) {
+            myNFTs[j] = temp[j];
+        }
+
+        return myNFTs;
+    }
+
+    function getNFTused() public view returns (NFT[] memory) {
+        return nftused;
+    }
+
+    function getNFTListed(address _user) public view returns (NFT[] memory) {
+        return userMint[_user];
+    }
+
+    function withdrawUSDT() public onlyOwner {
+        paymentToken.transfer(owner(), paymentToken.balanceOf(address(this)));
+    }
+
+    function changeWallets(
+        address _incomeWallet,
+        address _maintenanceWallet
+    ) public onlyOwner {
+        incomeWallet = _incomeWallet;
+        maintenanceWallet = _maintenanceWallet;
+    }
+
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyOwner {}
+}
+
+contract MyNFT is
+    Initializable,
+    ERC721Upgradeable,
+    OwnableUpgradeable,
+    UUPSUpgradeable
+{
+    Helper public helper;
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers(); // prevents logic contract from being initialized directly
+    }
+
+    uint256 public _nextTokenId;
+
+    function initialize(
+        address initialOwner,
+        address _helper
+    ) public initializer {
+        __ERC721_init("HexaNFT", "HNFT");
+        __Ownable_init(initialOwner);
+        __UUPSUpgradeable_init();
+
+        paymentToken = IERC20(
+            //0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3
+            0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9
+            );
+        _nextTokenId = 1;
+        helper = Helper(_helper);
+
+        adminRep = 0x71F0ec0fFA38E3F715deF9c8b37ca46dfFa92326;
+    }
+
+    using Strings for uint256;
+    address public adminRep;
+
+    mapping(uint256 => string) private _tokenURIs;
+
+    IERC20 public paymentToken;
+
+    function tokenURI(
+        uint256 tokenId
+    ) public view override returns (string memory) {
+        return _tokenURIs[tokenId];
+    }
+
+    function register(address _referrer) public {
+        uint before = paymentToken.balanceOf(address(helper));
+        uint allowance = paymentToken.allowance(msg.sender, address(this));
+        paymentToken.transferFrom(msg.sender, address(helper), allowance);
+        uint _after = paymentToken.balanceOf(address(helper));
+        helper.register(_referrer, msg.sender, _after - before);
+    }
+
+    function buyPackage(uint8 id) public {
+        uint before = paymentToken.balanceOf(address(helper));
+        uint allowance = paymentToken.allowance(msg.sender, address(this));
+        paymentToken.transferFrom(msg.sender, address(helper), allowance);
+        uint _after = paymentToken.balanceOf(address(helper));
+        helper.buyPackage(id, msg.sender, _after - before);
+    }
+
+    function buyNFT(uint id) public {
+        uint before = paymentToken.balanceOf(address(helper));
+        uint allowance = paymentToken.allowance(msg.sender, address(this));
+        paymentToken.transferFrom(msg.sender, address(helper), allowance);
+        uint _after = paymentToken.balanceOf(address(helper));
+        (bool yes, ) = helper.buyNFT(id, msg.sender, _after - before);
+        _transfer(ownerOf(id), msg.sender, id);
+
+        if (yes) {
+            _burn(id);
+        }
+    }
+
+    function mint(string memory _uri) public {
+        uint before = paymentToken.balanceOf(address(helper));
+        uint allowance = paymentToken.allowance(msg.sender, address(this));
+        paymentToken.transferFrom(msg.sender, address(helper), allowance);
+        uint _after = paymentToken.balanceOf(address(helper));
+        helper.mint(_uri, msg.sender, _nextTokenId, _after - before);
+        _safeMint(msg.sender, _nextTokenId);
+        _tokenURIs[_nextTokenId] = _uri;
+        _nextTokenId++;
+    }
+
+    function ownerMint(string memory _uri) public {
+        require(
+            msg.sender == adminRep || msg.sender == owner(),
+            "you are not authorized"
+        );
+        helper.mint2(_uri, msg.sender, _nextTokenId);
+        _tokenURIs[_nextTokenId] = _uri;
+        _safeMint(msg.sender, _nextTokenId);
+        _nextTokenId++;
+    }
+
+    function ownerSettlement() public {
+        require(
+            msg.sender == adminRep || msg.sender == owner(),
+            "you are not authorized"
+        );
+        uint before = paymentToken.balanceOf(address(helper));
+        uint allowance = paymentToken.allowance(msg.sender, address(this));
+        paymentToken.transferFrom(msg.sender, address(helper), allowance);
+        uint _after = paymentToken.balanceOf(address(helper));
+        helper.ownerSettlement(_after - before);
+    }
+
+    function withdrawUSDT() public onlyOwner {
+        paymentToken.transfer(owner(), paymentToken.balanceOf(address(this)));
+    }
+
+    function changeadminrep(address _rep) public onlyOwner {
+        adminRep = _rep;
+    }
+
+    /// ✅ Required by UUPS — only owner can upgrade
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyOwner {}
+}

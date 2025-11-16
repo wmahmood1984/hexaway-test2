@@ -105,7 +105,7 @@ export default function Dashboard() {
 
     const now = new Date().getTime()
 
-    console.log("dashboard",NFTque,nftQueIndex);
+
     const isLoading = !Package || !downlines || !packages;
 
     const levelBlockSeconds = Number(incomeBlockTime) + 60 * 60 * 48 - now / 1000 < 0 ? 0 : Number(incomeBlockTime) + 60 * 60 *48- now / 1000
@@ -137,7 +137,7 @@ export default function Dashboard() {
         remaining: Number(Package.purchaseTime) + Number(Package.time) - Math.floor(Date.now() / 1000)
     }
 
-
+    console.log("dashboard",Package.packageUpgraded,packageExpiryLimit,60*60*24*30,time);
 
     return (
         <div>
