@@ -1,7 +1,7 @@
 import Web3 from "web3";
 
-const rpc = 	"https://opbnb-testnet-rpc.publicnode.com"   //op bnb
-			//"https://opbnb-mainnet-rpc.bnbchain.org"	
+const rpc = //	"https://opbnb-testnet-rpc.publicnode.com"   //op bnb
+			"https://opbnb-mainnet-rpc.bnbchain.org"	
 
 
 export const web31 = new Web3(new Web3.providers.HttpProvider(rpc))
@@ -16,8 +16,8 @@ export const web3 = new Web3(
 );
 
 export const url = 
-			"https://opbnb-testnet.bscscan.com//tx"
-		//"https://opbnb.bscscan.com/tx"
+		//	"https://opbnb-testnet.bscscan.com//tx"
+		"https://opbnb.bscscan.com/tx"
 
 export const incomeKeys = [
 	{
@@ -2487,9 +2487,9 @@ export const helperAbi = [
 	}
 ]
 
-export const helperAddress = "0x5545c5ad024B8A4b752Cd258bDF71Bee8EF5d826"//"0x7d8893388408923708493bAd6704F0e6BC62a69e"  // Implementation 0x6C41D5bDC97714d50332766F58dE42a243942264
+export const helperAddress = "0x7d8893388408923708493bAd6704F0e6BC62a69e"  // Implementation 0x6C41D5bDC97714d50332766F58dE42a243942264
 
-export const mlmcontractaddress = "0xB37Ec2F03E8942d8feE9c74b856B74C72201D832"//"0x431322e00c4F877F4B58D3e20b791b27b2E1BEd8"; // Implementation 0x6337B82a7F7fdff5EDA67521d61827fc067E505F
+export const mlmcontractaddress = "0x431322e00c4F877F4B58D3e20b791b27b2E1BEd8"; // Implementation 0x6337B82a7F7fdff5EDA67521d61827fc067E505F
 
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
@@ -2682,8 +2682,8 @@ export const erc20abi = [
 
 //export const erc20Add = "0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9"
 //export const erc20Add = "0x951f3Cc97326eB18D6d3F2dc869e0Ca504023BBB"; //97
-export const erc20Add = "0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9"; //op bnb
-//export const erc20Add = "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3"; //op bnb mainnet
+//export const erc20Add = "0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9"; //op bnb
+export const erc20Add = "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3"; //op bnb mainnet
 
 export const mlmContract = {
 	address: mlmcontractaddress,
