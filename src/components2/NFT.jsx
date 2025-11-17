@@ -39,7 +39,7 @@ export const NFT = ({ nft, index, toggle, setToggle,revisedLimitUtilized }) => {
 
     // 3️⃣ Calculate NFT total cost (price + 7%)
     const nftValue =
-      Number(formatEther(nft.price)) * 1.07 + Number(formatEther(nft.premium));
+      Number(formatEther(nft.price)) * 0.07 + Number(formatEther(nft.premium));
 
     // 4️⃣ Now check both conditions sequentially
     if (!packageValid) {
@@ -48,7 +48,7 @@ export const NFT = ({ nft, index, toggle, setToggle,revisedLimitUtilized }) => {
         msg: "Your package is expired.",
       };
     }
-
+    console.log("object",remainingLimit,nftValue,nft.price, nft.premium);
 
     if (remainingLimit < nftValue) {
       return {
@@ -164,7 +164,7 @@ export const NFT = ({ nft, index, toggle, setToggle,revisedLimitUtilized }) => {
     );
   }
 
-    console.log("object",nft);
+
 
 
   return (
