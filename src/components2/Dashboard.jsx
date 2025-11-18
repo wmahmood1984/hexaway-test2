@@ -80,7 +80,7 @@ export default function Dashboard() {
                    const contract = new web3.eth.Contract(erc20abi, erc20Add)
                    const balance = await contract.methods.balanceOf(address).call();
                         console.log("object",formatEther(balance),formatEther(pkg.price)); 
-                   if(formatEther(balance) < formatEther(pkg.price)){
+                   if(Number(formatEther(balance)) < Number(formatEther(pkg.price))){
                     toast.error("Insufficient USDT balance.")
                     setLoading(false)
                     return
