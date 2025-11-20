@@ -57,7 +57,7 @@ const IncomeBlockTimer = ({ durationInSeconds }) => {
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
           <div className="text-center p-3 sm:p-4 bg-white/70 rounded-lg border border-blue-100">
             <div
-              className="text-2xl sm:text-3xl font-bold text-blue-600"
+              className="text-2xl sm:text-3xl font-bold text-red-600"
               id="countdown-hours"
             >
               {String(totalHours).padStart(2, "0")}
@@ -67,7 +67,7 @@ const IncomeBlockTimer = ({ durationInSeconds }) => {
 
           <div className="text-center p-3 sm:p-4 bg-white/70 rounded-lg border border-blue-100">
             <div
-              className="text-2xl sm:text-3xl font-bold text-blue-600"
+              className="text-2xl sm:text-3xl font-bold text-red-600"
               id="countdown-minutes"
             >
               {String(minutes).padStart(2, "0")}
@@ -77,7 +77,7 @@ const IncomeBlockTimer = ({ durationInSeconds }) => {
 
           <div className="text-center p-3 sm:p-4 bg-white/70 rounded-lg border border-blue-100">
             <div
-              className="text-2xl sm:text-3xl font-bold text-blue-600"
+              className="text-2xl sm:text-3xl font-bold text-red-600"
               id="countdown-seconds"
             >
               {String(seconds.toFixed(0)).padStart(2, "0")}
