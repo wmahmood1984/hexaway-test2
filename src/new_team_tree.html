@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Tree - HEXAWAY</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+        }
+        
+        .premium-shadow {
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .level-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .level-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+        }
+
+        .level-card.active {
+            border: 2px solid #4f46e5;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+        }
+
+        .member-card {
+            transition: transform 0.2s ease;
+        }
+
+        .member-card:hover {
+            transform: scale(1.02);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .nft-badge {
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            color: white;
+        }
+
+        .package-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 min-h-full text-gray-900"><!-- Navigation -->
+  <nav class="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 premium-shadow">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-14 sm:h-16">
+     <div class="flex items-center">
+      <h1 class="text-xl sm:text-2xl font-bold font-display bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">HEXAWAY</h1>
+     </div>
+    </div>
+   </div>
+  </nav><!-- Main Content -->
+  <main class="min-h-screen py-6 sm:py-8">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><!-- Page Header -->
+    <header class="mb-6">
+     <h2 id="page-title" class="text-3xl sm:text-4xl font-bold font-display text-gray-900 mb-2">Team View</h2>
+     <p class="text-gray-600">Manage and view your team structure across all levels</p>
+    </header><!-- Summary Stats -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"><!-- Direct Members -->
+     <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl shadow-lg p-6 text-white fade-in">
+      <div class="flex items-center justify-between mb-3">
+       <h3 class="text-lg font-semibold opacity-90">Direct Members</h3>
+       <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+       </svg>
+      </div>
+      <p class="text-5xl font-bold font-display mb-2">24</p>
+      <p class="text-sm opacity-80">Direct Members</p>
+     </div><!-- Total Members -->
+     <div class="bg-gradient-to-br from-purple-600 to-pink-700 rounded-xl shadow-lg p-6 text-white fade-in">
+      <div class="flex items-center justify-between mb-3">
+       <h3 class="text-lg font-semibold opacity-90">Total Members</h3>
+       <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+       </svg>
+      </div>
+      <p class="text-5xl font-bold font-display mb-2">1,247</p>
+      <p class="text-sm opacity-80">All levels combined</p>
+     </div><!-- Active Levels -->
+     <div class="bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl shadow-lg p-6 text-white fade-in sm:col-span-2 lg:col-span-1">
+      <div class="flex items-center justify-between mb-3">
+       <h3 class="text-lg font-semibold opacity-90">Active Levels</h3>
+       <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+       </svg>
+      </div>
+      <p class="text-5xl font-bold font-display mb-2">18 / 25</p>
+      <p class="text-sm opacity-80">Levels with members</p>
+     </div>
+    </section><!-- View Selection -->
+    <section class="mb-6">
+     <div class="mb-4">
+      <h3 class="text-xl font-bold text-gray-900">Select View</h3>
+     </div>
+     <div class="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-10 gap-2" id="level-grid"><!-- Direct Referrals card -->
+      <div id="direct-card" class="level-card bg-white rounded-lg shadow p-3 text-center active cursor-pointer" onclick="selectLevel('direct')">
+       <div class="text-xs text-gray-600 mb-1">
+        Direct
+       </div>
+       <div class="text-xl font-bold text-indigo-600">
+        👥
+       </div>
+       <div class="text-xs text-gray-500 mt-1">
+        8
+       </div>
+      </div><!-- Level buttons will be dynamically generated -->
+     </div>
+    </section><!-- Members List -->
+    <section>
+     <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xl font-bold text-gray-900"><span id="level-title">Direct Referrals</span> <span class="text-sm font-normal text-gray-600 ml-2">(<span id="member-count">8</span> members)</span></h3>
+     </div>
+     <div class="space-y-3" id="members-container"><!-- Member cards will be dynamically generated -->
+     </div><!-- Pagination -->
+     <div class="flex items-center justify-between mt-6 bg-white rounded-xl shadow p-4"><button id="prev-btn" onclick="previousPage()" class="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+       </svg><span>Previous</span> </button>
+      <div class="text-sm text-gray-600">
+       Page <span id="current-page" class="font-bold text-gray-900">1</span> of <span id="total-pages" class="font-bold text-gray-900">1</span>
+      </div><button id="next-btn" onclick="nextPage()" class="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"> <span>Next</span>
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+       </svg></button>
+     </div>
+    </section>
+   </div>
+  </main>
+  <script>
+        // Function to generate random members
+        function generateMembers(count, level, baseId) {
+            const members = [];
+            const packages = ["Di", "Welcome"];
+            const statuses = ["Active", "Pending", "Inactive"];
+            const months = ["Jan", "Feb", "Mar", "Apr", "May"];
+            
+            for (let i = 0; i < count; i++) {
+                const randomWallet = "0x" + Math.random().toString(16).substr(2, 40).toUpperCase();
+                const randomRef = "0x" + Math.random().toString(16).substr(2, 40).toUpperCase();
+                const randomPackage = packages[Math.floor(Math.random() * packages.length)];
+                const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                const randomMonth = months[Math.floor(Math.random() * months.length)];
+                const randomDay = Math.floor(Math.random() * 28) + 1;
+                
+                members.push({
+                    id: baseId + i,
+                    wallet: randomWallet,
+                    package: randomPackage,
+                    nftStatus: randomStatus,
+                    referredBy: randomRef,
+                    joinDate: `${randomMonth} ${randomDay}, 2024`,
+                    teamSize: Math.floor(Math.random() * 50) + 1
+                });
+            }
+            return members;
+        }
+
+        // Sample team data structure
+        const teamData = {
+            direct: generateMembers(8, 0, 1),
+            1: generateMembers(12, 1, 1000),
+            2: generateMembers(18, 2, 2000),
+            3: generateMembers(24, 3, 3000),
+            4: generateMembers(32, 4, 4000),
+            5: generateMembers(28, 5, 5000),
+            6: generateMembers(35, 6, 6000),
+            7: generateMembers(42, 7, 7000),
+            8: generateMembers(38, 8, 8000),
+            9: generateMembers(45, 9, 9000),
+            10: generateMembers(52, 10, 10000),
+            11: generateMembers(48, 11, 11000),
+            12: generateMembers(55, 12, 12000),
+            13: generateMembers(62, 13, 13000),
+            14: generateMembers(58, 14, 14000),
+            15: generateMembers(65, 15, 15000),
+            16: generateMembers(72, 16, 16000),
+            17: generateMembers(78, 17, 17000),
+            18: generateMembers(85, 18, 18000),
+            19: generateMembers(92, 19, 19000),
+            20: generateMembers(98, 20, 20000),
+            21: generateMembers(105, 21, 21000),
+            22: generateMembers(118, 22, 22000),
+            23: generateMembers(132, 23, 23000),
+            24: generateMembers(145, 24, 24000),
+            25: generateMembers(155, 25, 25000)
+        };
+
+        let currentLevel = 'direct';
+        let currentPage = 1;
+        const membersPerPage = 10;
+
+        // Initialize level grid
+        function initializeLevelGrid() {
+            const levelGrid = document.getElementById('level-grid');
+            for (let i = 1; i <= 25; i++) {
+                const levelCard = document.createElement('div');
+                levelCard.className = `level-card bg-white rounded-lg shadow p-3 text-center`;
+                levelCard.setAttribute('data-level', i);
+                levelCard.innerHTML = `
+                    <div class="text-xs text-gray-600 mb-1">Level</div>
+                    <div class="text-xl font-bold text-gray-900">${i}</div>
+                    <div class="text-xs text-gray-500 mt-1">${teamData[i] ? teamData[i].length : 0}</div>
+                `;
+                levelCard.onclick = () => selectLevel(i);
+                levelGrid.appendChild(levelCard);
+            }
+        }
+
+        // Select a level
+        function selectLevel(level) {
+            currentLevel = level;
+            currentPage = 1; // Reset to page 1 when changing levels
+            
+            // Update active state for direct card
+            const directCard = document.getElementById('direct-card');
+            if (level === 'direct') {
+                directCard.classList.add('active');
+            } else {
+                directCard.classList.remove('active');
+            }
+            
+            // Update active state for level cards
+            const levelCards = document.querySelectorAll('[data-level]');
+            levelCards.forEach((card) => {
+                const cardLevel = parseInt(card.getAttribute('data-level'));
+                if (cardLevel === level) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+
+            // Update level title
+            const levelTitle = level === 'direct' ? 'Direct Referrals' : `Level ${level} Members`;
+            document.getElementById('level-title').textContent = levelTitle;
+            
+            // Update member count
+            const memberCount = teamData[level] ? teamData[level].length : 0;
+            document.getElementById('member-count').textContent = memberCount;
+
+            // Render members
+            renderMembers(level);
+        }
+
+        // Next page function
+        function nextPage() {
+            const members = teamData[currentLevel] || [];
+            const totalPages = Math.ceil(members.length / membersPerPage);
+            
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderMembers(currentLevel);
+                scrollToMembers();
+            }
+        }
+
+        // Previous page function
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderMembers(currentLevel);
+                scrollToMembers();
+            }
+        }
+
+        // Scroll to members section
+        function scrollToMembers() {
+            const levelTitle = document.getElementById('level-title');
+            if (levelTitle) {
+                levelTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Render members for selected level
+        function renderMembers(level) {
+            const membersContainer = document.getElementById('members-container');
+            const members = teamData[level] || [];
+
+            if (members.length === 0) {
+                membersContainer.innerHTML = `
+                    <div class="bg-white rounded-xl shadow p-8 text-center">
+                        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <p class="text-gray-600 text-lg">No members in this level yet</p>
+                    </div>
+                `;
+                updatePagination(0);
+                return;
+            }
+
+            // Calculate pagination
+            const totalPages = Math.ceil(members.length / membersPerPage);
+            const startIndex = (currentPage - 1) * membersPerPage;
+            const endIndex = startIndex + membersPerPage;
+            const paginatedMembers = members.slice(startIndex, endIndex);
+
+            membersContainer.innerHTML = paginatedMembers.map(member => `
+                <div class="member-card bg-white rounded-xl shadow p-5 border border-gray-100 fade-in">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white font-bold text-xl">${member.wallet.substring(2, 4).toUpperCase()}</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 text-base font-mono">${member.wallet.substring(0, 4)}...${member.wallet.substring(member.wallet.length - 2)}</h4>
+                                <p class="text-xs text-gray-500 mt-1">Joined: ${member.joinDate}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 sm:flex-col sm:items-end">
+                            <span class="status-badge package-badge">
+                                📦 ${member.package}
+                            </span>
+                            <span class="status-badge nft-badge">
+                                🎨 NFT: ${member.nftStatus}
+                            </span>
+                            <span class="status-badge" style="background-color: #e0f2fe; color: #075985;">
+                                👥 Team: ${member.teamSize}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            <span class="break-all">Referred by: <span class="font-semibold text-gray-900 font-mono">${member.referredBy.substring(0, 4)}...${member.referredBy.substring(member.referredBy.length - 2)}</span></span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update pagination controls
+            updatePagination(totalPages);
+        }
+
+        // Update pagination controls
+        function updatePagination(totalPages) {
+            document.getElementById('current-page').textContent = currentPage;
+            document.getElementById('total-pages').textContent = totalPages;
+            
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            // Disable/enable previous button
+            if (currentPage <= 1) {
+                prevBtn.disabled = true;
+                prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                prevBtn.disabled = false;
+                prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+            
+            // Disable/enable next button
+            if (currentPage >= totalPages) {
+                nextBtn.disabled = true;
+                nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                nextBtn.disabled = false;
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Element SDK configuration
+        const defaultConfig = {
+            page_title: "Team Tree",
+            background_color: "#f8fafc",
+            primary_color: "#4f46e5"
+        };
+
+        // Initialize Element SDK
+        async function initializeSDK() {
+            if (window.elementSdk) {
+                window.elementSdk.init({
+                    defaultConfig,
+                    onConfigChange: async (config) => {
+                        const pageTitleEl = document.getElementById('page-title');
+                        if (pageTitleEl) {
+                            pageTitleEl.textContent = config.page_title || defaultConfig.page_title;
+                        }
+
+                        const primaryColor = config.primary_color || defaultConfig.primary_color;
+                        document.documentElement.style.setProperty('--primary-color', primaryColor);
+                    },
+                    mapToCapabilities: (config) => ({
+                        recolorables: [
+                            {
+                                get: () => config.primary_color || defaultConfig.primary_color,
+                                set: (value) => {
+                                    config.primary_color = value;
+                                    if (window.elementSdk) window.elementSdk.setConfig({ primary_color: value });
+                                }
+                            }
+                        ],
+                        borderables: [],
+                        fontEditable: undefined,
+                        fontSizeable: undefined
+                    }),
+                    mapToEditPanelValues: (config) => new Map([
+                        ["page_title", config.page_title || defaultConfig.page_title]
+                    ])
+                });
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSDK();
+            initializeLevelGrid();
+            renderMembers('direct');
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a113ff23439c0e2',t:'MTc2MzU3MTQ3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -16,6 +16,7 @@ import { useAppKitAccount } from '@reown/appkit/react'
 import Suck from './components2/Suck'
 import CreateHistory from './components2/CreateHistory'
 import NFTCreationDetails from './components2/NFTCreationDetails'
+import Teamtree from './components2/Teamtree'
 
 export default function App() {
 
@@ -72,6 +73,7 @@ export default function App() {
                 <Route path="/suck" element={<Suck />} />
                 <Route path="/createhistory" element={<CreateHistory />} />
                 <Route path="/nftcreationdetails" element={<NFTCreationDetails />} />
+                <Route path="/teamview" element={<Teamtree />} />
 
                 <Route path="/dashboard" element={<Dashboard />} />
             </Routes>

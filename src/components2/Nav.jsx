@@ -13,7 +13,7 @@ export default function Nav() {
 
   const {
     registered,
-    NFTMayBeCreated, admin,status
+    NFTMayBeCreated, admin, status
   } = useSelector((state) => state.contract);
 
   const { address, isConnected } = useAppKitAccount();
@@ -22,22 +22,22 @@ export default function Nav() {
   const [adminRep, setAdminrep] = useState(false);
 
 
-      const mlmContract = new web3.eth.Contract(mlmabi,mlmcontractaddress)
-  
-      useEffect(() => {
-  
-  
-          const abc = async () => {
-              const _adminrep = await mlmContract.methods.adminRep().call()
-              setAdminrep(_adminrep)
-  
+  const mlmContract = new web3.eth.Contract(mlmabi, mlmcontractaddress)
 
-          }
-  
-          abc()
-  
-  
-      }, [address])
+  useEffect(() => {
+
+
+    const abc = async () => {
+      const _adminrep = await mlmContract.methods.adminRep().call()
+      setAdminrep(_adminrep)
+
+
+    }
+
+    abc()
+
+
+  }, [address])
 
   useEffect(() => {
     dispatch(init()).then(() => {
@@ -45,13 +45,13 @@ export default function Nav() {
         dispatch(readName({ address }));
       }
 
-      if(address && !registered && status=="succeeded"){
+      if (address && !registered && status == "succeeded") {
         navigate("/auth")
       }
 
 
     });
-  }, [dispatch, address,isConnected,registered]);
+  }, [dispatch, address, isConnected, registered]);
 
 
   // useEffect(() => {
@@ -61,7 +61,7 @@ export default function Nav() {
   // }, [registered, navigate]);
 
   const handleClick = async () => {
-      console.log("nav",registered);
+    console.log("nav", registered);
     if (isConnected) {
       await disconnect();
       dispatch(setRegisteredFalse());
@@ -112,6 +112,8 @@ export default function Nav() {
                 )}
                 <Link to="/asset" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Assets</Link>
                 <Link to="/tree" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Team Tree</Link>
+                <Link to="/teamview" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Team View</Link>
+
               </>
             )}
 
@@ -120,7 +122,7 @@ export default function Nav() {
               id="auth-btn"
               className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg text-sm xl:text-base"
             >
-              {(address || isConnected) && registered? formatAddress(address) : "Get Started"}
+              {(address || isConnected) && registered ? formatAddress(address) : "Get Started"}
             </button>
           </div>
 
@@ -190,13 +192,13 @@ export default function Nav() {
                   Trade
                 </Link>
                 {NFTMayBeCreated && (
-                <Link
-                  to="/create"
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
-                >
-                  Create
-                </Link>)}
+                  <Link
+                    to="/create"
+                    onClick={() => setMobileOpen(false)}
+                    className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                  >
+                    Create
+                  </Link>)}
                 <Link
                   to="/asset"
                   onClick={() => setMobileOpen(false)}
@@ -204,12 +206,21 @@ export default function Nav() {
                 >
                   Assets
                 </Link>
+
                 <Link
                   to="/tree"
                   onClick={() => setMobileOpen(false)}
                   className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                 >
                   Team Tree
+                </Link>
+
+                <Link
+                  to="/teamview"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                >
+                  Team View
                 </Link>
               </>
             )}
