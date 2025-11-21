@@ -14,8 +14,8 @@ import axios from 'axios';
 export default function Create() {
     const [nftused, setNFTUsed] = useState()
     const { address } = useAppKitAccount();
-    const [name, setName] = useState("NFT set");
-    const [description, setDescription] = useState("NFT set");
+    const [name, setName] = useState("NFT");
+    const [description, setDescription] = useState("Exclusive digital piece");
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const config = useConfig()

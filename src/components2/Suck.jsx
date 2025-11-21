@@ -30,8 +30,8 @@ export default function Suck() {
     const [nfts, setNFTs] = useState()
     const [sortType, setSortType] = useState("All")
     const { address } = useAppKitAccount();
-    const [name, setName] = useState("NFT Set");
-    const [description, setDescription] = useState("NFT Set");
+    const [name, setName] = useState("NFT");
+    const [description, setDescription] = useState("Exclusive digital piece");
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const config = useConfig()
