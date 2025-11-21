@@ -164,6 +164,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     IERC20 public paymentToken; // ERC20 token used for payments
     mapping(uint=>uint) public idPurchasedtime;
+    mapping(address=>uint) public userJoiningTime;
 
     function register(address _ref, address _user, uint funds) public {
         address _referrer = _ref != address(0) ? _ref : owner();
@@ -172,6 +173,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         tx1.purchaseTime = block.timestamp;
         tx1.packageUpgraded = block.timestamp;
         userPackage[_user] = tx1;
+        userJoiningTime[_user]=block.timestamp;
 
         require(funds >= amount, "insufficient funds");
         require(users[_user].referrer == address(0), "zero address");
