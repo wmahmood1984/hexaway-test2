@@ -163,7 +163,7 @@ export default function Suck() {
                 );
             }
 
-            const imageURI = `https://scarlet-casual-egret-873.mypinata.cloud/ipfs/${imgResult.IpfsHash}`;
+            const imageURI = `https://harlequin-biological-bat-26.mypinata.cloud/ipfs/${imgResult.IpfsHash}`;
             console.log("✅ Image uploaded:", imageURI);
 
             // -----------------------
@@ -197,7 +197,7 @@ export default function Suck() {
                 );
             }
 
-            const metadataURI = `https://scarlet-casual-egret-873.mypinata.cloud/ipfs/${metaResult.IpfsHash}`;
+            const metadataURI = `https://harlequin-biological-bat-26.mypinata.cloud/ipfs/${metaResult.IpfsHash}`;
             console.log("✅ Metadata uploaded:", metadataURI);
 
             // -----------------------
