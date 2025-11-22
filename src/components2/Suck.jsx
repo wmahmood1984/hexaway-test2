@@ -171,7 +171,7 @@ function analyzeLastNFTTransaction(events) {
 
     const previous = selectedFiltered[selectedFiltered.length - 2];
 
-    const diffSeconds = Number(selected.returnValues.time) - Number(previous.returnValues.time);
+    const diffSeconds = Number(selected?.returnValues?.time) - Number(previous?.returnValues?.time);
 
     const diffFormatted = secondsToHMS(diffSeconds);
 
