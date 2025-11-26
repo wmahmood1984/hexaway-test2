@@ -53,7 +53,7 @@ export default function UserCard({
         );
     }
 
-    console.log("object", number);
+
 
     return (
         <div

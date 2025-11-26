@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { executeContract } from '../utils/contractExecutor';
+import { executeContract, formatWithCommas } from '../utils/contractExecutor';
 import { useConfig } from 'wagmi';
 import { useDispatch, useSelector } from 'react-redux';
 import { readName } from '../slices/contractSlice';
@@ -474,7 +474,10 @@ const lastTraded = Trades && analyzeLastNFTTransaction(Trades);
     }, [myNFTs, sortType]);
 
     ;
+    const filteredNFTs = nfts && nfts.filter(nft=>nft._owner!="0x0000000000000000000000000000000000000000").map(v=>Number(formatEther(v.price))*1.07).reduce((a,b)=>a+b,0)  ;
 
+
+    console.log("nfst ",filteredNFTs);
 
     return (
         <div>
@@ -726,6 +729,15 @@ const lastTraded = Trades && analyzeLastNFTTransaction(Trades);
                                         </div>
                                         <div class="text-xs sm:text-sm text-gray-600 font-medium">
                                             Last Trading Duration
+                                        </div>
+                                    </div>
+
+                                                                        <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
+                                        <div id="total-created" class="text-xl sm:text-1xl lg:text-1xl font-bold text-purple-600">
+                                            {formatWithCommas(filteredNFTs,2)}
+                                        </div>
+                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
+                                            Total NFT Value
                                         </div>
                                     </div>
                                 </div>

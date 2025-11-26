@@ -699,9 +699,9 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function getNFTs(address _user) public view returns (NFT[] memory) {
         //    require(userRegistered[user], "the user is not registered");
         NFT[] memory temp = new NFT[](nfts.length); // temporary
-        uint8 count = 0;
+        uint count = 0;
 
-        for (uint8 i = 0; i < nfts.length; i++) {
+        for (uint i = 0; i < nfts.length; i++) {
             if (nfts[i]._owner == _user) {
                 temp[count] = nfts[i];
                 count++;
@@ -710,7 +710,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
         // resize to actual count
         NFT[] memory myNFTs = new NFT[](count);
-        for (uint8 j = 0; j < count; j++) {
+        for (uint j = 0; j < count; j++) {
             myNFTs[j] = temp[j];
         }
 
