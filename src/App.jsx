@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Nav from './components2/Nav'
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
 import Home from './components2/Home'
@@ -23,6 +23,7 @@ export default function App() {
     const dispatch = useDispatch()
     const { address } = useAppKitAccount();
     const navigate = useNavigate()
+        const [createActive, setCreateActive] = useState(false)
 
     const {
         status,
@@ -56,13 +57,13 @@ export default function App() {
     return (
         <div>
             <Toaster position="top-right" reverseOrder={false} />
-            <Nav />
+            <Nav createActive={createActive} setCreateActive={setCreateActive} />
 
 
 
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/auth" element={<Auth />} />
+                <Route path="/auth" element={<Auth createActive={createActive} setCreateActive={setCreateActive} />} />
                 <Route path="/auth/:id" element={<Auth />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/tree" element={<Tree />} />
