@@ -4,11 +4,12 @@ import { formatWithCommas } from '../utils/contractExecutor';
 import { formatEther } from 'ethers';
 import { fetcherAbi, fetcherAddress, helperAbi, helperAddress, web3 } from '../config';
 import { NFT } from './NFT';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppKitAccount } from '@reown/appkit/react';
 import TradingLimitTimer from './Timer4';
+import toast from 'react-hot-toast';
 
-export default function Trade() {
+export default function Trade({setCreateActive}) {
 
     const { Package, myNFTs, packages, downlines, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
 
@@ -20,7 +21,7 @@ export default function Trade() {
     const { address } = useAppKitAccount();
 
 
-
+    const navigate = useNavigate()
 
     const [nfts, setNFTs] = useState()
     const [toggle, setToggle] = useState(false)
@@ -182,6 +183,62 @@ useEffect(() => {
     };
 
     const abc = async () => {
+        
+
+
+                let CreateList = await helperContract.methods.getNFTListed(address).call()
+
+
+                let lastCreateTime
+                if (CreateList.length === 0) {
+
+                    lastCreateTime = await helperContract.methods.userJoiningTime(address).call();
+                } else {
+                    let lastCreate = CreateList[CreateList.length - 1];
+                    lastCreateTime = await helperContract.methods.idPurchasedtime(lastCreate.id).call();
+                }
+
+
+
+                const currentTime = Math.floor(Date.now() / 1000);
+                const timeDiff = currentTime - lastCreateTime;
+                let requiredDiff;
+
+
+
+                console.log("object",Package.id);
+
+                switch (Package.id) {   // <-- The condition goes here
+                    case "1":         // checks if option === 1
+                        requiredDiff = 9 * 24 * 60 * 60; // 7 days in seconds
+                        break;
+                    case "2":         // checks if option === 2
+                        requiredDiff = 6 * 24 * 60 * 60; // 7 days in seconds
+                        break;
+                    case "3":         // checks if option === 3
+                        requiredDiff = 5 * 24 * 60 * 60; // 7 days in seconds
+                        break;
+                    case "4":         // checks if option === 3
+                        requiredDiff = 2 * 24 * 60 * 60; // 7 days in seconds
+                        break;
+                    case "5":         // checks if option === 3
+                        requiredDiff = 1 * 24 * 60 * 60; // 7 days in seconds
+                        break;
+                    default:        // runs if none of the above match
+                        console.log("Invalid option");
+                }
+
+                if ( timeDiff >= requiredDiff) {
+                    setCreateActive(true);
+                    navigate("/create");
+                    toast.success("Please create an NFT before proceeding.");
+                    return 
+                }
+        
+        
+        
+        
+        
         try {
             // 1️⃣ User limit time
             const _userTradingLimitTime =
@@ -271,7 +328,7 @@ useEffect(() => {
         : [];//nfts && shuffleArray(nfts)
 
 
-    console.log("object", randomeNFTs);
+
 
 
 

@@ -67,7 +67,7 @@ export default function App() {
                 <Route path="/auth/:id" element={<Auth />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/tree" element={<Tree />} />
-                <Route path="/trade" element={<Trade />} />
+                <Route path="/trade" element={<Trade createActive={createActive} setCreateActive={setCreateActive}/>} />
                 <Route path="/create" element={<Create />} />
                 <Route path="/asset" element={<Asset />} />
                 <Route path="/history" element={<History />} />

@@ -47,59 +47,62 @@ export default function Auth({ setCreateActive, createActive }) {
             const abc = async () => {
 
 
-                const _package = await helperContract.methods.userPackage(address).call();
+                // const _package = await helperContract.methods.userPackage(address).call();
 
-                let CreateList = await helperContract.methods.getNFTListed(address).call()
-
-
-                let lastCreateTime
-                if (CreateList.length === 0) {
-
-                    lastCreateTime = await helperContract.methods.userJoiningTime(address).call();
-                } else {
-                    let lastCreate = CreateList[CreateList.length - 1];
-                    lastCreateTime = await helperContract.methods.idPurchasedtime(lastCreate.id).call();
-                }
+                // let CreateList = await helperContract.methods.getNFTListed(address).call()
 
 
+                // let lastCreateTime
+                // if (CreateList.length === 0) {
 
-                const currentTime = Math.floor(Date.now() / 1000);
-                const timeDiff = currentTime - lastCreateTime;
-                let requiredDiff;
+                //     lastCreateTime = await helperContract.methods.userJoiningTime(address).call();
+                // } else {
+                //     let lastCreate = CreateList[CreateList.length - 1];
+                //     lastCreateTime = await helperContract.methods.idPurchasedtime(lastCreate.id).call();
+                // }
 
 
 
+                // const currentTime = Math.floor(Date.now() / 1000);
+                // const timeDiff = currentTime - lastCreateTime;
+                // let requiredDiff;
 
 
-                switch (_package.id) {   // <-- The condition goes here
-                    case "1":         // checks if option === 1
-                        requiredDiff = 9 * 24 * 60 * 60; // 7 days in seconds
-                        break;
-                    case "2":         // checks if option === 2
-                        requiredDiff = 6 * 24 * 60 * 60; // 7 days in seconds
-                        break;
-                    case "3":         // checks if option === 3
-                        requiredDiff = 5 * 24 * 60 * 60; // 7 days in seconds
-                        break;
-                    case "4":         // checks if option === 3
-                        requiredDiff = 2 * 24 * 60 * 60; // 7 days in seconds
-                        break;
-                    case "5":         // checks if option === 3
-                        requiredDiff = 1 * 24 * 60 * 60; // 7 days in seconds
-                        break;
-                    default:        // runs if none of the above match
-                        console.log("Invalid option");
-                }
 
-                if (registered && isConnected && timeDiff >= requiredDiff) {
-                    setCreateActive(true);
-                    navigate("/create");
-                    toast.success("Please create an NFT before proceeding.");
-                } else if (registered && isConnected) {
+
+
+                // switch (_package.id) {   // <-- The condition goes here
+                //     case "1":         // checks if option === 1
+                //         requiredDiff = 9 * 24 * 60 * 60; // 7 days in seconds
+                //         break;
+                //     case "2":         // checks if option === 2
+                //         requiredDiff = 6 * 24 * 60 * 60; // 7 days in seconds
+                //         break;
+                //     case "3":         // checks if option === 3
+                //         requiredDiff = 5 * 24 * 60 * 60; // 7 days in seconds
+                //         break;
+                //     case "4":         // checks if option === 3
+                //         requiredDiff = 2 * 24 * 60 * 60; // 7 days in seconds
+                //         break;
+                //     case "5":         // checks if option === 3
+                //         requiredDiff = 1 * 24 * 60 * 60; // 7 days in seconds
+                //         break;
+                //     default:        // runs if none of the above match
+                //         console.log("Invalid option");
+                // }
+
+                // if (registered && isConnected && timeDiff >= requiredDiff) {
+                //     setCreateActive(true);
+                //     navigate("/create");
+                //     toast.success("Please create an NFT before proceeding.");
+                // }
+                // else 
+                    
+                    if (registered && isConnected) {
                     navigate("/");
                 }
 
-                console.log("nav", timeDiff);
+              //  console.log("nav", timeDiff);
 
 
 
