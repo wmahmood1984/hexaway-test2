@@ -2869,7 +2869,7 @@ export const fetcherAddress = "0x93e4A68CEDD7f7676C7e933eBE61F6416344D61E" // im
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 
-export const bulkContractAdd = "0xa37a7B10D9FACD5fE221Dec482CbcaA187af494D"
+export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"
 
 export const bulkAdd = "0x71F0ec0fFA38E3F715deF9c8b37ca46dfFa92326"
 export const erc20abi = [
@@ -3155,16 +3155,28 @@ export const bulkAddAbi = [
 		"type": "error"
 	},
 	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "newOwner",
+				"name": "newImplementation",
 				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
 			}
 		],
-		"name": "transferOwnership",
+		"name": "upgradeToAndCall",
 		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -3217,7 +3229,20 @@ export const bulkAddAbi = [
 	},
 	{
 		"inputs": [],
-		"name": "renounceOwnership",
+		"name": "removeFirst",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -3234,24 +3259,6 @@ export const bulkAddAbi = [
 		],
 		"name": "Upgraded",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
-			}
-		],
-		"name": "upgradeToAndCall",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
 	},
 	{
 		"inputs": [
