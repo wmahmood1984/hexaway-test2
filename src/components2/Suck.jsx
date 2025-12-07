@@ -511,7 +511,7 @@ export default function Suck() {
     const filteredNFTs = nfts && nfts.filter(nft => nft._owner != "0x0000000000000000000000000000000000000000").map(v => Number(formatEther(v.price)) * 1.07).reduce((a, b) => a + b, 0);
 
  
-
+    console.log("array",arrayFromContract);
 
     return (
         <div>
