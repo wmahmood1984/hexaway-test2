@@ -355,7 +355,11 @@ export default function Trade({ setCreateActive }) {
     const revisedLimitUtilized =
         now - Number(userTradingLimitTime) > 60 * 60 * 24 ? 0 : limitUtilized
 
+    const duration = Number(userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(userTradingLimitTime) + 60 * 60 * 24 - now : 0
 
+    // console.log({"duration":duration,"user trading limit time":userTradingLimitTime
+    //     ,"now":now,"utt plus time":Number(userTradingLimitTime) + 60 * 60 * 24
+    // });
 
     const randomeNFTs = nfts
         ? [...nfts].sort((a, b) => a.purchasedTime - b.purchasedTime)
@@ -441,7 +445,7 @@ export default function Trade({ setCreateActive }) {
                             </div>
                         </div>
                     </div>
-                    <TradingLimitTimer durationInSeconds={Number(userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(userTradingLimitTime) + 60 * 60 * 24 - now : 0} />
+                    <TradingLimitTimer durationInSeconds={duration} />
                     <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
                         {randomeNFTs.map((v, e) => {
                             

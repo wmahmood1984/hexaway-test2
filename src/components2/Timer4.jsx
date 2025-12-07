@@ -6,25 +6,22 @@ import { useAppKitAccount } from "@reown/appkit/react";
 const TradingLimitTimer = ({ durationInSeconds }) => {
   const [timeLeft, setTimeLeft] = useState(durationInSeconds);
   const [expiryDate, setExpiryDate] = useState("");
-    const { address, isConnected } = useAppKitAccount();
-    const dispatch = useDispatch()
+  const { address, isConnected } = useAppKitAccount();
+  const dispatch = useDispatch()
+
+      console.log("duration",timeLeft,durationInSeconds);
 
 useEffect(() => {
-  // Set expiry date only once when component loads
-  if (!expiryDate) {
-    const fixedExpiry = new Date(Date.now() + durationInSeconds * 1000).toLocaleString();
-    setExpiryDate(fixedExpiry);
-  }
+  setTimeLeft(durationInSeconds);
 
-  if (durationInSeconds <= 0) {
-    dispatch(readName({ address }));
-    return;
-  }
+  const expiry = new Date(Date.now() + durationInSeconds * 1000).toLocaleString();
+  setExpiryDate(expiry);
 
   const interval = setInterval(() => {
-    setTimeLeft((prev) => {
+    setTimeLeft(prev => {
       if (prev <= 1) {
         clearInterval(interval);
+        dispatch(readName({ address }));
         return 0;
       }
       return prev - 1;
@@ -32,12 +29,14 @@ useEffect(() => {
   }, 1000);
 
   return () => clearInterval(interval);
-}, [durationInSeconds, address, dispatch, expiryDate]);
+}, [durationInSeconds]);   // Only depend on duration
+
 
   // Convert total seconds into hours, minutes, seconds
   const totalHours = Math.floor(timeLeft / 3600);
   const minutes = Math.floor((timeLeft % 3600) / 60);
   const seconds = timeLeft % 60;
+
 
   // Expiry date (based on initial duration)
   // const expiryDate = new Date(Date.now() + durationInSeconds * 1000).toLocaleString();
