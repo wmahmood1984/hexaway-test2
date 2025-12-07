@@ -168,7 +168,7 @@ export default function Trade({ setCreateActive }) {
         }
 
         abc()
-    },[])
+    },[toggle])
 
 
     useEffect(() => {
