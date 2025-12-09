@@ -10,12 +10,32 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 interface IHelper {
+    struct NFT {
+        uint256 id;
+        uint256 price;
+        address _owner;
+        string uri;
+        uint premium;
+        uint256 utilized;
+    }
+
+    function getNFTs() external view returns (NFT[] memory);
     function idPurchasedtime(uint256 id) external view returns (uint256);
 }
 
 contract DataFetcherUpgradeable is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     IHelper public helper;
+
+    struct NFTInfo {
+        uint256 id;
+        uint256 price;
+        address _owner;
+        string uri;
+        uint premium;
+        uint256 utilized;
+        uint256 purchasedTime;
+    }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -48,4 +68,38 @@ contract DataFetcherUpgradeable is Initializable, UUPSUpgradeable, OwnableUpgrad
     }
 
     function _authorizeUpgrade(address newImpl) internal override onlyOwner {}
+
+     function getNFTs() external view returns (NFTInfo[] memory) {
+        IHelper.NFT[] memory nfts = helper.getNFTs();
+        
+
+        // First count how many valid NFTs (owner != 0)
+        uint256 count = 0;
+        for (uint256 i = 0; i < nfts.length; i++) {
+            if (nfts[i]._owner != address(0)) {
+                count++;
+            }
+        }
+
+        NFTInfo[] memory arr = new NFTInfo[](count);
+        uint256 j = 0;
+
+        for (uint256 i = 0; i < nfts.length; i++) {
+            if (nfts[i]._owner != address(0)) {
+                arr[j] = NFTInfo({
+                    id: nfts[i].id,
+                    price: nfts[i].price,
+                    _owner: nfts[i]._owner,
+                    uri: nfts[i].uri,
+                    premium: nfts[i].premium,
+                    utilized: nfts[i].utilized,
+                    purchasedTime: helper.idPurchasedtime(nfts[i].id)
+                });
+                j++;
+            }
+        }
+
+        return arr;
+    }
+
 }

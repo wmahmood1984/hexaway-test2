@@ -224,16 +224,16 @@ export default function Trade({ setCreateActive }) {
 
             switch (Package.id) {   // <-- The condition goes here
                 case "1":         // checks if option === 1
-                    requiredDiff = 9 * 24 * 60 * 60; // 7 days in seconds
+                    requiredDiff = 24 * 24 * 60 * 60; // 7 days in seconds
                     break;
                 case "2":         // checks if option === 2
-                    requiredDiff = 6 * 24 * 60 * 60; // 7 days in seconds
+                    requiredDiff = 13 * 24 * 60 * 60; // 7 days in seconds
                     break;
                 case "3":         // checks if option === 3
-                    requiredDiff = 5 * 24 * 60 * 60; // 7 days in seconds
+                    requiredDiff = 8 * 24 * 60 * 60; // 7 days in seconds
                     break;
                 case "4":         // checks if option === 3
-                    requiredDiff = 2 * 24 * 60 * 60; // 7 days in seconds
+                    requiredDiff = 6 * 24 * 60 * 60; // 7 days in seconds
                     break;
                 case "5":         // checks if option === 3
                     requiredDiff = 1 * 24 * 60 * 60; // 7 days in seconds
