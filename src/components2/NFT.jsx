@@ -6,12 +6,12 @@ import { useConfig } from "wagmi";
 import { executeContract, extractRevertReason, formatAddress } from "../utils/contractExecutor";
 import { readName } from "../slices/contractSlice";
 import { formatEther, parseEther } from "ethers";
-import { mlmcontractaddress, usdtContract } from "../config";
+import { helperAbi, helperAddress, mlmcontractaddress, usdtContract, web3 } from "../config";
 import toast from "react-hot-toast";
 import Spinner from "./Spinner";
 
 
-export const NFT = ({ nft, index, toggle, setToggle,revisedLimitUtilized }) => {
+export const NFT = ({ nft, index, toggle, setToggle, revisedLimitUtilized }) => {
   const config = useConfig()
   const [image, setImage] = useState()
   const [name, setName] = useState()
@@ -23,7 +23,7 @@ export const NFT = ({ nft, index, toggle, setToggle,revisedLimitUtilized }) => {
     , levelIncome,
     referralIncome,
     tradingIncome, walletBalance, packageExpiryLimit,
-    status, error, 
+    status, error,
   } = useSelector((state) => state.contract);
 
   const now = new Date().getTime() / 1000
@@ -48,12 +48,14 @@ export const NFT = ({ nft, index, toggle, setToggle,revisedLimitUtilized }) => {
         msg: "Your package is expired.",
       };
     }
-    console.log("object",remainingLimit,nftValue+50);
+    console.log("object", remainingLimit, nftValue + 50);
 
-                    console.log({"package limit":Number(formatEther(Package.limit))
-                    ,"limit utilized":revisedLimitUtilized,"nft value":nftValue+50 });
+    console.log({
+      "package limit": Number(formatEther(Package.limit))
+      , "limit utilized": revisedLimitUtilized, "nft value": nftValue + 50
+    });
 
-    if (remainingLimit < nftValue+50) {
+    if (remainingLimit < nftValue + 50) {
       return {
         cond: false,
         msg: "Your trade limit is exceeding.",
@@ -121,39 +123,105 @@ export const NFT = ({ nft, index, toggle, setToggle,revisedLimitUtilized }) => {
     });
   }
 
+  const helperContract = new web3.eth.Contract(helperAbi, helperAddress)
+
+  // const handleBuy = async (id) => {
+  //   const { cond, msg } = canBuy()
+
+  //   if (cond) {
+  //     setLoading(true)
+
+  //     const oldValue =
+  //     Number(formatEther(nft.price)) * 0.07 + Number(formatEther(nft.premium))+0.001;
+
+  //     const newNft = await helperContract.methods.nfts(nft.id).call();
+
+  //     const value = Number(formatEther(newNft.price) * .07) + Number(formatEther(newNft.premium))+0.001
+  //     console.log("value", Number(value).toFixed(8))
+  //     await executeContract({
+  //       config,
+  //       functionName: "approve",
+  //       args: [mlmcontractaddress, parseEther(Number(value).toFixed(8))],
+  //       onSuccess: () => handleBuy2(id, address),
+  //       onError: (err) => {
+  //         setLoading(false)
+  //         let reason = extractRevertReason(err)
+  //         toast.error("Transaction failed:", reason)
+  //       },
+  //       contract: usdtContract
+  //     });
+  //   } else {
+  //     toast.error(msg)
+  //   }
+
+  //   //        }
+
+
+  // };
+
 
   const handleBuy = async (id) => {
-    // if (allowance >= (nfts[id].price+nfts[id].premium)) {
+    // calculate OLD value
+    const oldValue =
+      Number(formatEther(nft.price)) * 0.07 +
+      Number(formatEther(nft.premium)) +
+      0.001;
 
-    //     handleBuy2(id, address)
-    // } else {
+    // fetch latest NFT data
+    const newNft = await helperContract.methods.nfts(nft.id).call();
 
-    const { cond, msg } = canBuy()
+    // calculate NEW value
+    const newValue =
+      Number(formatEther(newNft.price)) * 0.07 +
+      Number(formatEther(newNft.premium)) +
+      0.001;
 
-    if (cond) {
-      setLoading(true)
-      const value = Number(formatEther(nft.price) * .07) + Number(formatEther(nft.premium))+0.001
-      console.log("value", Number(value).toFixed(8))
+    console.log("oldValue:", oldValue.toFixed(8));
+    console.log("newValue:", newValue.toFixed(8));
+
+    // if price increased, ask for confirmation first
+    if (newValue > oldValue) {
+      const confirmed = window.confirm(
+        `Price has increased from ${oldValue.toFixed(6)} to ${newValue.toFixed(6)} USDT.\nDo you want to continue?`
+      );
+
+      if (!confirmed) {
+        return; // user rejected
+      }
+    }
+
+    // only now check canBuy
+    const { cond, msg } = canBuy();
+    if (!cond) {
+      toast.error(msg);
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const valueToApprove = parseEther(newValue.toFixed(8));
+
       await executeContract({
         config,
         functionName: "approve",
-        args: [mlmcontractaddress, parseEther(Number(value).toFixed(8))],
+        args: [mlmcontractaddress, valueToApprove],
+        contract: usdtContract,
         onSuccess: () => handleBuy2(id, address),
         onError: (err) => {
-          setLoading(false)
-          let reason = extractRevertReason(err)
-          toast.error("Transaction failed:", reason)
-        },
-        contract: usdtContract
+          setLoading(false);
+          const reason = extractRevertReason(err);
+          toast.error(`Transaction failed: ${reason}`);
+        }
       });
-    } else {
-      toast.error(msg)
+
+    } catch (err) {
+      setLoading(false);
+      toast.error("Unexpected error occurred");
+      console.error(err);
     }
-
-    //        }
-
-
   };
+
 
 
 
