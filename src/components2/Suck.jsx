@@ -18,6 +18,7 @@ export default function Suck() {
 
     const [create, setCreate] = useState(false);
     const [usersArray, setusersArray] = useState([]);
+    const [nftNo, setnftNo]= useState(0);
 
     const { myNFTs, walletBalance,
 
@@ -461,7 +462,7 @@ export default function Suck() {
         await executeContract({
             config,
             functionName: "ownerSettlement",
-            args: [],
+            args: [nftNo],
             onSuccess: (txHash, receipt) => {
                 console.log("🎉 Tx Hash:", txHash);
                 console.log("🚀 Tx Receipt:", receipt);
@@ -707,6 +708,12 @@ export default function Suck() {
                                             onClick={() => { setCreate(true) }}
                                             class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105">
                                             🎨 Create NFT </button>
+                                        <label class="flex items-center border border-gray-300 rounded-lg px-4 py-2 bg-white shadow-sm">
+                                            <span class="text-gray-600 mr-2">NFT No:</span>
+                                        </label>
+                                        <input 
+                                        placeholder='Nft to suck'
+                                        type="number" value={nftNo} onChange={(e) => setnftNo(e.target.value)}></input>
                                         <button
                                             onClick={handleUpdate}
                                             class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105">
