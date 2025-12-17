@@ -18,6 +18,7 @@ import CreateHistory from './components2/CreateHistory'
 import NFTCreationDetails from './components2/NFTCreationDetails'
 import Teamtree from './components2/Teamtree'
 import Bulk from './components2/Bulk'
+import NoteMarquee from './components2/Note'
 
 export default function App() {
 
@@ -59,7 +60,7 @@ export default function App() {
         <div>
             <Toaster position="top-right" reverseOrder={false} />
             <Nav createActive={createActive} setCreateActive={setCreateActive} />
-
+            <NoteMarquee/>
 
 
             <Routes>
