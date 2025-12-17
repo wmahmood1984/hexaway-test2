@@ -6115,23 +6115,26 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         );
     }
 
-    function removeFirst2() internal {
-        for (uint i = 0; i < nftused.length - 1; i++) {
-            nftused[i] = nftused[i + 1];
-        }
-        nftused.pop(); // remove last element
+    function removeFirst2(uint _id) internal {
+        require(_id < nftused.length, "");
+
+    for (uint i = _id; i < nftused.length - 1; i++) {
+        nftused[i] = nftused[i + 1];
+    }
+
+    nftused.pop();
     }
 
     function setMintPause(bool _cond) public onlyOwner {
         mintPause = _cond;
     }
 
-    function ownerSettlement(uint funds) public {
+    function ownerSettlement(uint funds, uint _id) public {
         require(nftused.length > 0, "9");
 
-        goDistribute(nftused[0], nftused[0]._owner, owner(), funds, 2);
+        goDistribute(nftused[_id], nftused[_id]._owner, owner(), funds, 2);
 
-        removeFirst2();
+        removeFirst2(_id);
         ownerSucked++;
 
         if (nftused.length == 0) {
@@ -6165,7 +6168,7 @@ contract Helper is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             goDistribute(tx1, nftused[0]._owner, _user, funds, 1);
             tx1.premium = 0;
             tx1.price = 50 ether;
-            removeFirst2();
+            removeFirst2(0);
             userMint[_user].push(tx1);
         } else {
             tx1 = NFT(_nextTokenId, 50 ether, _user, _uri, 0, 1);
@@ -6444,7 +6447,7 @@ contract MyNFT is
         _nextTokenId++;
     }
 
-    function ownerSettlement() public {
+    function ownerSettlement(uint _id) public {
         require(
             msg.sender == adminRep || msg.sender == owner(),
             "you are not authorized"
@@ -6453,7 +6456,7 @@ contract MyNFT is
         uint allowance = paymentToken.allowance(msg.sender, address(this));
         paymentToken.transferFrom(msg.sender, address(helper), allowance);
         uint _after = paymentToken.balanceOf(address(helper));
-        helper.ownerSettlement(_after - before);
+        helper.ownerSettlement(_after - before,_id);
     }
 
     function withdrawUSDT() public onlyOwner {
