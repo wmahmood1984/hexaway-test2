@@ -1,0 +1,376 @@
+@keyframes marquee {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-content {
+  will-change: transform;
+  cursor: pointer;
+}
+  body {
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+        }
+        
+        /* Right-to-left scrolling animation for collections - VERY SLOW */
+        @keyframes scroll-right-to-left {
+            0% {
+                transform: translateX(0%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        .scroll-animation {
+            animation: scroll-right-to-left 120s linear infinite;
+            display: flex;
+            width: max-content;
+            padding: 20px 0;
+        }
+        
+        /* Left-to-right scrolling animation for note - SLOWER SPEED */
+        @keyframes scroll-left-to-right {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        
+        .note-scroll-animation {
+            animation: scroll-left-to-right 120s linear infinite; /* Slowed down from 60s to 120s */
+            white-space: nowrap;
+            display: inline-block;
+            padding-left: 100%;
+            animation-delay: 0s !important;
+            animation-play-state: running !important;
+            will-change: transform;
+        }
+        
+        /* Alternative: CSS-only marquee without animation restart */
+        .marquee-container-alt {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .marquee-content {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: marquee 120s linear infinite;
+        }
+        
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        
+        /* Note box styling */
+        .note-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid #0ea5e9;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            border-bottom: 1px solid #bae6fd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Featured collection card styling */
+        .featured-card {
+            flex: 0 0 280px;
+            height: 280px;
+            margin: 0 20px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .featured-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Crystal effect for collection cards */
+        .crystal-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .crystal-effect::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                transparent 20%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 80%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite linear;
+        }
+        
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(30deg);
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(30deg);
+            }
+        }
+        
+        /* Gradient backgrounds for each collection */
+        .digital-brand-2020 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .global-brand-2021 {
+            background: linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%);
+        }
+        
+        .global-brand-2022 {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+        
+        .global-brand-2023 {
+            background: linear-gradient(135deg, #f687b3 0%, #d53f8c 100%);
+        }
+        
+        .global-brand-2024 {
+            background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+        }
+        
+        /* Hero gradient */
+        .hero-gradient {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+        }
+        
+        /* Glass effect */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Premium shadow */
+        .premium-shadow {
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Hover effects for cards */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Navigation styles */
+        .nav-blur {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        /* NFT image containers */
+        .nft-image-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nft-cyberpunk {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            position: relative;
+        }
+        
+        .nft-android {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+            position: relative;
+        }
+        
+        /* NFT visual elements */
+        .cyber-eye {
+            position: absolute;
+            width: 60px;
+            height: 40px;
+            background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+            border-radius: 50%;
+            top: 40%;
+            left: 30%;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+        }
+        
+        .cyber-eye::before {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: white;
+            border-radius: 50%;
+            top: 12px;
+            left: 15px;
+        }
+        
+        .android-circuit {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            top: 30%;
+            left: 35%;
+            background: 
+                radial-gradient(circle at 30% 30%, #10b981 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, #059669 0%, transparent 50%);
+            border-radius: 20px;
+            transform: rotate(45deg);
+        }
+        
+        .android-circuit::before {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            top: 10px;
+            left: 10px;
+            background: 
+                radial-gradient(circle at 30% 30%, #34d399 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, #10b981 0%, transparent 50%);
+            border-radius: 15px;
+        }
+        
+        /* Info icon */
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: #0ea5e9;
+            color: white;
+            border-radius: 50%;
+            font-size: 13px;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        /* Note wrapper to ensure continuous scrolling */
+        .note-wrapper {
+            display: flex;
+            align-items: center;
+            min-height: 28px;
+            padding: 10px 0;
+        }
+        
+        /* Note content container */
+        .note-content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Marquee container */
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Immediate visibility fix */
+        .scrolling-note {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0c4a6e;
+            padding-right: 20px;
+        }
+        
+        /* Pause on hover for better readability */
+        .note-scroll-animation:hover,
+        .marquee-content:hover {
+            animation-play-state: paused;
+            cursor: pointer;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .scrolling-note {
+                font-size: 13px;
+                font-weight: 500;
+            }
+            
+            .note-wrapper {
+                padding: 8px 0;
+                min-height: 24px;
+            }
+            
+            .info-icon {
+                width: 20px;
+                height: 20px;
+                font-size: 12px;
+                margin-right: 10px;
+            }
+            
+            /* Slower speed on mobile for better readability */
+            .note-scroll-animation,
+            .marquee-content {
+                animation-duration: 150s; /* Even slower on mobile */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .scrolling-note {
+                font-size: 12px;
+            }
+            
+            .note-wrapper {
+                padding: 6px 0;
+            }
+            
+            .note-scroll-animation,
+            .marquee-content {
+                animation-duration: 180s; /* Slowest on small screens */
+            }
+        }

@@ -18,6 +18,8 @@ import CreateHistory from './components2/CreateHistory'
 import NFTCreationDetails from './components2/NFTCreationDetails'
 import Teamtree from './components2/Teamtree'
 import Bulk from './components2/Bulk'
+import NoteMarquee from './components2/Note'
+import MyForm from './components2/Admin'
 
 export default function App() {
 
@@ -59,7 +61,7 @@ export default function App() {
         <div>
             <Toaster position="top-right" reverseOrder={false} />
             <Nav createActive={createActive} setCreateActive={setCreateActive} />
-
+            <NoteMarquee/>
 
 
             <Routes>
@@ -77,6 +79,7 @@ export default function App() {
                 <Route path="/nftcreationdetails" element={<NFTCreationDetails />} />
                 <Route path="/teamview" element={<Teamtree />} />
                 <Route path="/bulk" element={<Bulk />} />
+                <Route path="/admin" element={<MyForm />} />
             </Routes>
 
 
