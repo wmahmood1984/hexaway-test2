@@ -72,7 +72,7 @@ export default function Trade({ setCreateActive }) {
         return () => clearInterval(intervalId);
     }, [toggle]);
 
-
+//.
 
 
     useEffect(() => {
