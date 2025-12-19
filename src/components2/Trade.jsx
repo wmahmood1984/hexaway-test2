@@ -52,6 +52,7 @@ export default function Trade({ setCreateActive }) {
             const firstSlice = firstArray.filter(nft=>Number(nft.id)==unitsTotake)     //.slice(0, unitsTotake);
             const secondSlice = secondArray.slice(0, 14); // 15 items
 
+            console.log("_nfts",_nfts,idThreshold);
             console.log("First array:", firstArray);
             console.log("Second array:", secondSlice);
 
