@@ -98,7 +98,7 @@ export const NFT = ({ nft, index, toggle, setToggle, revisedLimitUtilized }) => 
 
     abc()
 
-  }, [])
+  }, [nft])
 
 
   const handleBuy2 = async (id) => {
