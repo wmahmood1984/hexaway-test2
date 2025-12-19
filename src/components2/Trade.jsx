@@ -47,24 +47,31 @@ export default function Trade({ setCreateActive }) {
             // Array with NFTs having id > 2500
             const secondArray = _nfts.filter(nft => Number(nft.id) > idThreshold).sort(
                 (a, b) => Number(a.purchasedTime) - Number(b.purchasedTime)
-                );
+            );
 
-            const firstSlice = firstArray.filter(nft=>Number(nft.id)==unitsTotake)     //.slice(0, unitsTotake);
+            const firstSlice = firstArray.filter(nft => Number(nft.id) == unitsTotake)     //.slice(0, unitsTotake);
             const secondSlice = secondArray.slice(0, 14); // 15 items
 
-            console.log("_nfts",_nfts,idThreshold);
+            console.log("_nfts", _nfts, idThreshold);
             console.log("First array:", firstArray);
             console.log("Second array:", secondSlice);
 
 
             const mergedSorted = [...firstSlice, ...secondSlice].sort(
                 (a, b) => Number(a.purchasedTime) - Number(b.purchasedTime)
-            ).slice(0,1);
+            ).slice(0, 10);
 
-                        console.log("nft call", mergedSorted);
+
+
+
+            console.log("nft call", mergedSorted);
 
             // Save to state
-            setNFTs(mergedSorted);
+            const randomIndex = Math.floor(Math.random() * mergedSorted.length);
+            const randomNFT = mergedSorted[randomIndex];
+
+            // Save as array of length 1
+            setNFTs([randomNFT]);
         };
 
         fetchNFTs();
@@ -73,7 +80,7 @@ export default function Trade({ setCreateActive }) {
         return () => clearInterval(intervalId);
     }, [toggle]);
 
-//.
+    //.
 
 
     useEffect(() => {
@@ -185,7 +192,7 @@ export default function Trade({ setCreateActive }) {
         : [];//nfts && shuffleArray(nfts)
 
 
-    
+
 
 
 
