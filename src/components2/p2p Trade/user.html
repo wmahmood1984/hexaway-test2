@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P2P Trade Exchange</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      background: #f1f5f9;
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .order-row {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .order-row:hover {
+      background: rgba(59, 130, 246, 0.05);
+      transform: translateX(4px);
+    }
+
+    .buy-order {
+      border-left: 3px solid #10b981;
+    }
+
+    .sell-order {
+      border-left: 3px solid #ef4444;
+    }
+
+    .trade-button {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .trade-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .trade-button:active {
+      transform: translateY(0);
+    }
+
+    .stat-value {
+      font-variant-numeric: tabular-nums;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .price-pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .loading-spinner {
+      border: 3px solid rgba(59, 130, 246, 0.1);
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    .glass-effect {
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    @media (max-width: 768px) {
+      .desktop-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .mobile-scroll {
+        overflow-x: auto;
+      }
+
+      .mobile-text-small {
+        font-size: 12px !important;
+      }
+
+      .mobile-padding {
+        padding: 20px !important;
+      }
+
+      .mobile-hide {
+        display: none !important;
+      }
+      
+      body {
+        font-size: 14px;
+      }
+      
+      .glass-effect {
+        padding: 20px !important;
+        margin-bottom: 20px !important;
+      }
+      
+      main {
+        padding: 20px 16px !important;
+      }
+      
+      h1 {
+        font-size: 22px !important;
+      }
+      
+      h2 {
+        font-size: 18px !important;
+      }
+      
+      h3 {
+        font-size: 16px !important;
+      }
+      
+      input {
+        font-size: 16px !important;
+      }
+      
+      button {
+        font-size: 14px !important;
+        padding: 12px 16px !important;
+      }
+    }
+  </style>
+</head>
+<body class="h-full w-full m-0 p-0 overflow-auto">
+  <div class="min-h-full w-full" style="background: #f1f5f9;">
+    <main style="max-width: 1600px; margin: 0 auto; padding: 32px 24px;">
+      <!-- Header -->
+      <div class="glass-effect fade-in" style="padding: 28px 36px; border-radius: 20px; border: 2px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1); margin-bottom: 28px;">
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #3b82f6, #10b981); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(59, 130, 246, 0.25);">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white" opacity="0.9"/>
+              <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h1 style="font-family: 'Poppins', system-ui, sans-serif; font-size: 36px; color: #0f172a; font-weight: 800; margin: 0; line-height: 1.2;">
+              Trade Exchange
+            </h1>
+            <p style="font-family: 'Poppins', system-ui, sans-serif; font-size: 15px; color: #0f172a; opacity: 0.6; margin: 6px 0 0 0; font-weight: 500;">
+              HEXA/USDT
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Balances -->
+      <div class="fade-in desktop-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px;">
+        <div class="mobile-padding" style="background: #ffffff; padding: 28px; border-radius: 16px; border: 2px solid #3b82f6; box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 20px; right: 20px; font-size: 48px; opacity: 0.1;">₿</div>
+          <div style="font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; color: #0f172a; opacity: 0.6; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+            HEXA Balance
+          </div>
+          <div class="stat-value" style="font-family: 'Poppins', system-ui, sans-serif; font-size: 32px; color: #3b82f6; font-weight: 800; position: relative; z-index: 1;">
+            5.5000
+          </div>
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(59, 130, 246, 0.2);">
+            <div style="font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; color: #0f172a; opacity: 0.5;">
+              ≈ 0.06 USDT
+            </div>
+          </div>
+        </div>
+
+        <div class="mobile-padding" style="background: #ffffff; padding: 28px; border-radius: 16px; border: 2px solid #10b981; box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 20px; right: 20px; font-size: 48px; opacity: 0.1;">💵</div>
+          <div style="font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; color: #0f172a; opacity: 0.6; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+            USDT Balance
+          </div>
+          <div class="stat-value" style="font-family: 'Poppins', system-ui, sans-serif; font-size: 32px; color: #10b981; font-weight: 800; position: relative; z-index: 1;">
+            50,000.00
+          </div>
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(16, 185, 129, 0.2);">
+            <div style="font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; color: #0f172a; opacity: 0.5;">
+              ≈ 5,050,505.05 HEXA
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="desktop-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px;">
+        
+        <!-- Order Book -->
+        <div class="fade-in mobile-padding" style="background: #ffffff; padding: 28px; border-radius: 20px; border: 2px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);">
+          <h2 style="font-family: 'Poppins', system-ui, sans-serif; font-size: 24px; color: #0f172a; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 28px;">📊</span>
+            Order Book
+          </h2>
+
+          <!-- Sell Orders -->
+          <div style="margin-bottom: 32px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #ef4444;">
+              <span style="font-size: 20px;">📉</span>
+              <h3 style="font-family: 'Poppins', system-ui, sans-serif; font-size: 18px; color: #ef4444; font-weight: 700; margin: 0;">
+                Sell Orders (5)
+              </h3>
+            </div>
+
+            <div style="margin-bottom: 12px; padding: 12px 16px; background: rgba(239, 68, 68, 0.05); border-radius: 10px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; color: #0f172a; opacity: 0.6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                <div>Price (USDT)</div>
+                <div>Amount (HEXA)</div>
+                <div>Total (USDT)</div>
+              </div>
+            </div>
+
+            <div style="max-height: 300px; overflow-y: auto;">
+              <!-- Sell Order 1 -->
+              <div class="order-row sell-order" style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.05);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div class="stat-value" style="color: #ef4444; font-weight: 700;">0.01</div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">600.0000</div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">6.12</div>
+                </div>
+              </div>
+              <!-- Sell Order 2 -->
+              <div class="order-row sell-order" style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.05);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div class="stat-value" style="color: #ef4444; font-weight: 700;">0.01</div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">800.0000</div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">8.24</div>
+                </div>
+              </div>
+              <!-- Sell Order 3 -->
+              <div class="order-row sell-order" style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.05);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div class="stat-value" style="color: #ef4444; font-weight: 700;">0.01</div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">950.0000</div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">9.88</div>
+                </div>
+              </div>
+              <!-- Sell Order 4 -->
+              <div class="order-row sell-order" style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.05);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div class="stat-value" style="color: #ef4444; font-weight: 700;">0.01</div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">1,100.0000</div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">11.55</div>
+                </div>
+              </div>
+              <!-- Sell Order 5 -->
+              <div class="order-row sell-order" style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.05);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div class="stat-value" style="color: #ef4444; font-weight: 700;">0.01</div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">1,300.0000</div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">13.78</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buy Orders -->
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #10b981;">
+              <span style="font-size: 20px;">📈</span>
+              <h3 style="font-family: 'Poppins', system-ui, sans-serif; font-size: 18px; color: #10b981; font-weight: 700; margin: 0;">
+                Buy Orders (5)
+              </h3>
+            </div>
+
+            <div style="margin-bottom: 12px; padding: 12px 16px; background: rgba(16, 185, 129, 0.05); border-radius: 10px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; color: #0f172a; opacity: 0.6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                <div>Price (USDT)</div>
+                <div>Amount (HEXA)</div>
+                <div>Total (USDT)</div>
+              </div>
+            </div>
+
+            <div style="max-height: 300px; overflow-y: auto;">
+              <!-- Buy Order 1 -->
+              <div class="order-row buy-order" style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div class="stat-value" style="color: #10b981; font-weight: 700;">0.01</div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">500.0000</div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">4.90</div>
+                </div>
+              </div>
+              <!-- Buy Order 2 -->
+              <div class="order-row buy-order" style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div class="stat-value" style="color: #10b981; font-weight: 700;">0.01</div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">750.0000</div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">7.28</div>
+                </div>
+              </div>
+              <!-- Buy Order 3 -->
+              <div class="order-row buy-order" style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div class="stat-value" style="color: #10b981; font-weight: 700;">0.01</div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">1,000.0000</div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">9.60</div>
+                </div>
+              </div>
+              <!-- Buy Order 4 -->
+              <div class="order-row buy-order" style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div class="stat-value" style="color: #10b981; font-weight: 700;">0.01</div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">1,250.0000</div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">11.88</div>
+                </div>
+              </div>
+              <!-- Buy Order 5 -->
+              <div class="order-row buy-order" style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div class="stat-value" style="color: #10b981; font-weight: 700;">0.01</div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">1,500.0000</div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">14.10</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trade Panel -->
+        <div class="fade-in mobile-padding" style="background: #ffffff; padding: 28px; border-radius: 20px; border: 2px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);">
+          <h2 style="font-family: 'Poppins', system-ui, sans-serif; font-size: 24px; color: #0f172a; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 28px;">💹</span>
+            Trade Panel
+          </h2>
+
+          <!-- Buy Form -->
+          <div style="margin-bottom: 28px; padding: 24px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02)); border-radius: 16px; border: 2px solid #10b981;">
+            <h3 style="font-family: 'Poppins', system-ui, sans-serif; font-size: 20px; color: #10b981; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 24px;">📈</span>
+              Buy HEXA
+            </h3>
+
+            <div>
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px; color: #0f172a; font-weight: 600; margin-bottom: 8px;">
+                  Price (USDT) - Market Price
+                </label>
+                <div style="width: 100%; padding: 14px 16px; border: 2px solid rgba(16, 185, 129, 0.3); border-radius: 10px; font-family: 'Poppins', system-ui, sans-serif; font-size: 15px; font-weight: 700; background: rgba(16, 185, 129, 0.05); color: #10b981;">
+                  0.0100
+                </div>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px; color: #0f172a; font-weight: 600; margin-bottom: 8px;">
+                  Amount (HEXA)
+                </label>
+                <div style="position: relative;">
+                  <input 
+                    type="number" 
+                    step="0.0001"
+                    placeholder="Enter amount"
+                    style="width: 100%; padding: 14px 80px 14px 16px; border: 2px solid rgba(16, 185, 129, 0.3); border-radius: 10px; font-family: 'Poppins', system-ui, sans-serif; font-size: 15px; font-weight: 600; outline: none; background: #ffffff; color: #0f172a;"
+                  />
+                  <button 
+                    style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: #10b981; color: white; padding: 8px 16px; border-radius: 6px; font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; text-transform: uppercase;"
+                    onmouseover="this.style.background='#059669'"
+                    onmouseout="this.style.background='#10b981'"
+                  >
+                    MAX
+                  </button>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 20px; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                <div style="font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; color: #0f172a; opacity: 0.7; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Total (USDT)
+                </div>
+                <div class="stat-value" style="font-family: 'Poppins', system-ui, sans-serif; font-size: 22px; color: #10b981; font-weight: 800;">
+                  0.0000
+                </div>
+              </div>
+
+              <button 
+                class="trade-button"
+                style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 16px; border-radius: 12px; font-family: 'Poppins', system-ui, sans-serif; font-size: 17px; font-weight: 800; border: none; cursor: pointer; box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px;"
+              >
+                <span style="font-size: 20px;">🛒</span>
+                <span>Place Buy Order</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sell Form -->
+          <div style="padding: 24px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(239, 68, 68, 0.02)); border-radius: 16px; border: 2px solid #ef4444;">
+            <h3 style="font-family: 'Poppins', system-ui, sans-serif; font-size: 20px; color: #ef4444; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 24px;">📉</span>
+              Sell HEXA
+            </h3>
+
+            <div>
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px; color: #0f172a; font-weight: 600; margin-bottom: 8px;">
+                  Price (USDT) - Market Price
+                </label>
+                <div style="width: 100%; padding: 14px 16px; border: 2px solid rgba(239, 68, 68, 0.3); border-radius: 10px; font-family: 'Poppins', system-ui, sans-serif; font-size: 15px; font-weight: 700; background: rgba(239, 68, 68, 0.05); color: #ef4444;">
+                  0.0100
+                </div>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px; color: #0f172a; font-weight: 600; margin-bottom: 8px;">
+                  Amount (HEXA)
+                </label>
+                <div style="position: relative;">
+                  <input 
+                    type="number" 
+                    step="0.0001"
+                    placeholder="Enter amount"
+                    style="width: 100%; padding: 14px 80px 14px 16px; border: 2px solid rgba(239, 68, 68, 0.3); border-radius: 10px; font-family: 'Poppins', system-ui, sans-serif; font-size: 15px; font-weight: 600; outline: none; background: #ffffff; color: #0f172a;"
+                  />
+                  <button 
+                    style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: #ef4444; color: white; padding: 8px 16px; border-radius: 6px; font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; text-transform: uppercase;"
+                    onmouseover="this.style.background='#dc2626'"
+                    onmouseout="this.style.background='#ef4444'"
+                  >
+                    MAX
+                  </button>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 20px; padding: 16px; background: rgba(239, 68, 68, 0.1); border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                <div style="font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; color: #0f172a; opacity: 0.7; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Total (USDT)
+                </div>
+                <div class="stat-value" style="font-family: 'Poppins', system-ui, sans-serif; font-size: 22px; color: #ef4444; font-weight: 800;">
+                  0.0000
+                </div>
+              </div>
+
+              <button 
+                class="trade-button"
+                style="width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 16px; border-radius: 12px; font-family: 'Poppins', system-ui, sans-serif; font-size: 17px; font-weight: 800; border: none; cursor: pointer; box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px;"
+              >
+                <span style="font-size: 20px;">💰</span>
+                <span>Place Sell Order</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Open Orders -->
+      <div class="fade-in mobile-padding" style="background: #ffffff; padding: 28px; border-radius: 20px; border: 2px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08); margin-bottom: 28px;">
+        <h2 style="font-family: 'Poppins', system-ui, sans-serif; font-size: 24px; color: #0f172a; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 28px;">📋</span>
+          My Open Orders
+          <span style="font-family: 'Poppins', system-ui, sans-serif; font-size: 14px; color: #0f172a; opacity: 0.5; font-weight: 600; margin-left: auto;">
+            3 Active
+          </span>
+        </h2>
+
+        <div class="mobile-scroll" style="overflow-x: auto;">
+          <div style="min-width: 700px;">
+            <div style="margin-bottom: 12px; padding: 12px 16px; background: rgba(59, 130, 246, 0.05); border-radius: 10px;">
+              <div style="display: grid; grid-template-columns: 0.8fr 1.2fr 1.2fr 1.2fr 1fr 1fr; gap: 12px; font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; color: #0f172a; opacity: 0.6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                <div>Type</div>
+                <div>Price</div>
+                <div>Amount</div>
+                <div>Total</div>
+                <div>Time</div>
+                <div></div>
+              </div>
+            </div>
+
+            <div style="max-height: 400px; overflow-y: auto;">
+              <!-- Order 1 -->
+              <div style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05); border-left: 3px solid #10b981;">
+                <div style="display: grid; grid-template-columns: 0.8fr 1.2fr 1.2fr 1.2fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div>
+                    <span style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                      buy
+                    </span>
+                  </div>
+                  <div class="stat-value" style="color: #10b981; font-weight: 700;">
+                    0.01
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">
+                    300.0000 HEXA
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">
+                    2.85 USDT
+                  </div>
+                  <div style="color: #0f172a; opacity: 0.5; font-size: 12px; font-weight: 500;">
+                    10:30 AM
+                  </div>
+                  <div>
+                    <button
+                      style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 8px 16px; border-radius: 8px; font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; text-transform: uppercase; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;"
+                      onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)'"
+                      onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                    >
+                      <span>❌</span>
+                      <span>Cancel</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- Order 2 -->
+              <div style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.05); border-left: 3px solid #ef4444;">
+                <div style="display: grid; grid-template-columns: 0.8fr 1.2fr 1.2fr 1.2fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div>
+                    <span style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                      sell
+                    </span>
+                  </div>
+                  <div class="stat-value" style="color: #ef4444; font-weight: 700;">
+                    0.01
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">
+                    200.0000 HEXA
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">
+                    2.10 USDT
+                  </div>
+                  <div style="color: #0f172a; opacity: 0.5; font-size: 12px; font-weight: 500;">
+                    10:15 AM
+                  </div>
+                  <div>
+                    <button
+                      style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 8px 16px; border-radius: 8px; font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; text-transform: uppercase; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;"
+                      onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)'"
+                      onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                    >
+                      <span>❌</span>
+                      <span>Cancel</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- Order 3 -->
+              <div style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05); border-left: 3px solid #10b981;">
+                <div style="display: grid; grid-template-columns: 0.8fr 1.2fr 1.2fr 1.2fr 1fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div>
+                    <span style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                      buy
+                    </span>
+                  </div>
+                  <div class="stat-value" style="color: #10b981; font-weight: 700;">
+                    0.01
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">
+                    450.0000 HEXA
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">
+                    4.23 USDT
+                  </div>
+                  <div style="color: #0f172a; opacity: 0.5; font-size: 12px; font-weight: 500;">
+                    9:45 AM
+                  </div>
+                  <div>
+                    <button
+                      style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 8px 16px; border-radius: 8px; font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; text-transform: uppercase; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;"
+                      onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)'"
+                      onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                    >
+                      <span>❌</span>
+                      <span>Cancel</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Trade History -->
+      <div class="fade-in mobile-padding" style="background: #ffffff; padding: 28px; border-radius: 20px; border: 2px solid #3b82f6; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08); margin-bottom: 28px;">
+        <h2 style="font-family: 'Poppins', system-ui, sans-serif; font-size: 24px; color: #0f172a; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 28px;">🕒</span>
+          My Trade History
+          <span style="font-family: 'Poppins', system-ui, sans-serif; font-size: 14px; color: #0f172a; opacity: 0.5; font-weight: 600; margin-left: auto;">
+            3 Trades
+          </span>
+        </h2>
+
+        <div class="mobile-scroll" style="overflow-x: auto;">
+          <div style="min-width: 600px;">
+            <div style="margin-bottom: 12px; padding: 12px 16px; background: rgba(59, 130, 246, 0.05); border-radius: 10px;">
+              <div style="display: grid; grid-template-columns: 0.8fr 1.2fr 1.2fr 1.2fr 1fr; gap: 12px; font-family: 'Poppins', system-ui, sans-serif; font-size: 12px; color: #0f172a; opacity: 0.6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                <div>Type</div>
+                <div>Price</div>
+                <div>Amount</div>
+                <div>Total</div>
+                <div>Time</div>
+              </div>
+            </div>
+
+            <div style="max-height: 400px; overflow-y: auto;">
+              <!-- Trade 1 -->
+              <div style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05); border-left: 3px solid #10b981;">
+                <div style="display: grid; grid-template-columns: 0.8fr 1.2fr 1.2fr 1.2fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div>
+                    <span style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                      buy
+                    </span>
+                  </div>
+                  <div class="stat-value" style="color: #10b981; font-weight: 700;">
+                    0.01
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">
+                    250.0000 HEXA
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">
+                    2.48 USDT
+                  </div>
+                  <div style="color: #0f172a; opacity: 0.5; font-size: 12px; font-weight: 500;">
+                    9:30 AM
+                  </div>
+                </div>
+              </div>
+              <!-- Trade 2 -->
+              <div style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.2); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.05); border-left: 3px solid #ef4444;">
+                <div style="display: grid; grid-template-columns: 0.8fr 1.2fr 1.2fr 1.2fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div>
+                    <span style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                      sell
+                    </span>
+                  </div>
+                  <div class="stat-value" style="color: #ef4444; font-weight: 700;">
+                    0.01
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">
+                    150.0000 HEXA
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">
+                    1.52 USDT
+                  </div>
+                  <div style="color: #0f172a; opacity: 0.5; font-size: 12px; font-weight: 500;">
+                    8:45 AM
+                  </div>
+                </div>
+              </div>
+              <!-- Trade 3 -->
+              <div style="padding: 14px 16px; margin-bottom: 8px; background: #ffffff; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05); border-left: 3px solid #10b981;">
+                <div style="display: grid; grid-template-columns: 0.8fr 1.2fr 1.2fr 1.2fr 1fr; gap: 12px; align-items: center; font-family: 'Poppins', system-ui, sans-serif; font-size: 14px;">
+                  <div>
+                    <span style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                      buy
+                    </span>
+                  </div>
+                  <div class="stat-value" style="color: #10b981; font-weight: 700;">
+                    0.01
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; font-weight: 600;">
+                    500.0000 HEXA
+                  </div>
+                  <div class="stat-value" style="color: #0f172a; opacity: 0.7; font-weight: 500;">
+                    4.90 USDT
+                  </div>
+                  <div style="color: #0f172a; opacity: 0.5; font-size: 12px; font-weight: 500;">
+                    7:30 AM
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

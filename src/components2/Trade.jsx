@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 
 export default function Trade({ setCreateActive }) {
 
-    const { Package, myNFTs, packages, downlines, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
+    const { Package, myNFTs, packages, User, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
 
         , levelIncome,
         referralIncome,
@@ -25,7 +25,9 @@ export default function Trade({ setCreateActive }) {
 
     const [nfts, setNFTs] = useState()
     const [toggle, setToggle] = useState(false)
-    const [userTradingLimitTime, setUserTradingLimitTime] = useState(0)
+    const [showMessage, setShowMessage] = useState(false)
+    const [Trades, setTrades] = useState([])
+    // const [userTradingLimitTime, setUserTradingLimitTime] = useState(0)
     const helperContract = new web3.eth.Contract(helperAbi, helperAddress)
     const fetcherContract = new web3.eth.Contract(fetcherAbi, fetcherAddress)
     const saveContract = new testweb3.eth.Contract(bulkAddAbi, bulkContractAdd);
@@ -36,51 +38,128 @@ export default function Trade({ setCreateActive }) {
         let intervalId;
 
         const fetchNFTs = async () => {
+
             const _nfts = await fetcherContract.methods.getNFTs().call();
+            const _burnt = await fetcherContract.methods.getNFTUsed().call()
 
             const idThreshold = await saveContract.methods.arrayToStart().call();
-            const unitsTotake = await saveContract.methods.unitsToEnter().call();
+            const unitsTotake = await saveContract.methods.getUnitArray().call();
+            const populationSize = await saveContract.methods.populationSize().call();
 
-            // Array with NFTs having id <= 2500
-            const firstArray = _nfts.filter(nft => Number(nft.id) == unitsTotake);
+            // Normalize once
+            const unitsSet = new Set(unitsTotake.map(String));
 
-            // Array with NFTs having id > 2500
-            const secondArray = _nfts.filter(nft => Number(nft.id) > idThreshold).sort(
+            // NFTs with id > threshold
+            const firstArrayy = _nfts.filter(nft => Number(nft.id) > Number(idThreshold));
+
+            // NFTs whose id exists in unitsTotake
+            const secondArray = _nfts
+                .filter(nft => unitsTotake.includes(String(nft.id)))
+                ;
+
+            const mergedSorted = [...firstArrayy, ...secondArray].sort(
                 (a, b) => Number(a.purchasedTime) - Number(b.purchasedTime)
-            );
+            ).slice(0, populationSize);
 
-            const firstSlice = firstArray.filter(nft => Number(nft.id) == unitsTotake)     //.slice(0, unitsTotake);
-            const secondSlice = secondArray.slice(0, 14); // 15 items
+            const mergedSortedpricewise = [...firstArrayy, ...secondArray].sort(
+                (a, b) => Number(b.price) - Number(a.price)
+            )
 
-            console.log("_nfts", _nfts, idThreshold);
-            console.log("First array:", firstArray);
-            console.log("Second array:", secondSlice);
-
-
-            const mergedSorted = [...firstSlice, ...secondSlice].sort(
-                (a, b) => Number(a.purchasedTime) - Number(b.purchasedTime)
-            ).slice(0, 10);
+            const now = new Date().getTime() / 1000
 
 
+            const accountNFTs = _burnt.filter(nft => nft._owner.toLowerCase() === address.toLowerCase())
+            const accountNFTslast24Hrs = accountNFTs.filter(nft => now - Number(nft.purchasedTime) <= 60 * 60 * 24)
+
+            if (accountNFTslast24Hrs.length === 0) {
+                setShowMessage(true)
+            }
 
 
-            console.log("nft call", mergedSorted);
+
+
+
 
             // Save to state
             const randomIndex = Math.floor(Math.random() * mergedSorted.length);
             const randomNFT = mergedSorted[randomIndex];
 
-            // Save as array of length 1
-            setNFTs([randomNFT]);
+            // console.log("All events:", mergedSortedpricewise[0],randomNFT,"account",accountNFTs, "last 24 hrs",accountNFTslast24Hrs, "now",now,
+            //     "last nft purchase time",accountNFTs[6].purchasedTime, "diff", now-Number(accountNFTs[6].purchasedTime)
+            // );
+
+
+
+            const nftToTake = (accountNFTslast24Hrs.length > 0 || Package.id == "0") ? randomNFT : mergedSortedpricewise[0]
+            setNFTs([_nfts[0]]);
         };
 
         fetchNFTs();
-        intervalId = setInterval(fetchNFTs, 10000);
+        intervalId = setInterval(fetchNFTs, 30000);
 
         return () => clearInterval(intervalId);
     }, [toggle]);
 
     //.
+
+    // useEffect(() => {
+
+
+    //     if (address) {
+
+    //         const bringTransaction = async () => {
+    //             const latestBlock = await web3.eth.getBlockNumber();
+    //             const fromBlock = latestBlock - 86500;
+    //             const step = 5000; // or smaller if node still complains
+    //             let allEvents = [];
+
+    //             for (let i = fromBlock; i <= latestBlock; i += step) {
+    //                 const toBlock = Math.min(i + step - 1, latestBlock);
+
+    //                 try {
+    //                     const events = await helperContract.getPastEvents("Trades",
+
+    //                         {
+
+    //                             fromBlock: i,
+    //                             toBlock: toBlock,
+    //                         });
+    //                     allEvents = allEvents.concat(events);
+    //                     setTrades(allEvents)
+    //                     // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
+    //                 } catch (error) {
+    //                     console.warn(`Error fetching from ${i} to ${toBlock}`, error);
+    //                 }
+    //             }
+
+
+    //             const allPurchases = allEvents.filter(event => event.returnValues._type == "1" && event.returnValues._user.toLowerCase() === address.toLowerCase());
+    //             const purchaseOf75 = allPurchases.filter(event => Number(formatEther(event.returnValues.amount)) > 25)
+
+
+
+    //             if (purchaseOf75.length == 0) {
+    //                 setShowMessage(true)
+    //             }
+
+    //             // Save as array of length 1
+
+
+
+
+
+    //         };
+
+
+
+
+    //         bringTransaction();
+
+
+
+    //     }
+
+    // }, [])
 
 
     useEffect(() => {
@@ -100,10 +179,14 @@ export default function Trade({ setCreateActive }) {
             if (CreateList.length === 0) {
 
                 lastCreateTime = Package.packageUpgraded//await helperContract.methods.userJoiningTime(address).call();
+                console.log("package upgraded ", lastCreateTime,);
             } else {
                 let lastCreate = CreateList[CreateList.length - 1];
                 lastCreateTime = await helperContract.methods.idPurchasedtime(lastCreate.id).call();
+                console.log("past purchase ", lastCreateTime, lastCreate.id);
             }
+
+
 
 
 
@@ -136,27 +219,29 @@ export default function Trade({ setCreateActive }) {
             }
 
 
-            if (timeDiff >= requiredDiff && Package.id != "0") {
-                setCreateActive(true);
-                navigate("/create");
-                toast.success("Please create an NFT before proceeding.");
-                return
-            }
+
+
+            // if (timeDiff >= requiredDiff && Package.id != "0") {
+            //     setCreateActive(true);
+            //     navigate("/create");
+            //     toast.success("Please create an NFT before proceeding.");
+            //     return
+            // }
 
 
 
 
 
-            try {
-                // 1️⃣ User limit time
-                const _userTradingLimitTime =
-                    await helperContract.methods.userTradingLimitTime(address).call();
-                setUserTradingLimitTime(_userTradingLimitTime);
+            // try {
+            //     // 1️⃣ User limit time
+            //     const _userTradingLimitTime =
+            //         await helperContract.methods.userTradingLimitTime(address).call();
+            //     setUserTradingLimitTime(_userTradingLimitTime);
 
 
-            } catch (error) {
-                console.error("Error in abc()", error);
-            }
+            // } catch (error) {
+            //     console.error("Error in abc()", error);
+            // }
         };
 
         abc();
@@ -168,7 +253,7 @@ export default function Trade({ setCreateActive }) {
 
     const isLoading = !nfts || !Package
 
-
+    console.log("object", User);
 
     if (isLoading) {
         // show a waiting/loading screen
@@ -183,13 +268,13 @@ export default function Trade({ setCreateActive }) {
     const now = new Date().getTime() / 1000
 
     const revisedLimitUtilized =
-        now - Number(userTradingLimitTime) > 60 * 60 * 24 ? 0 : limitUtilized
+        now - Number(User.userTradingLimitTime) > 60 * 60 * 24 ? 0 : User.userLimitUtilized;
 
-    const duration = Number(userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(userTradingLimitTime) + 60 * 60 * 24 - now : 0
+    const duration = Number(User.userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(User.userTradingLimitTime) + 60 * 60 * 24 - now : 0
 
     const randomeNFTs = nfts
-        ? [...nfts].sort((a, b) => a.purchasedTime - b.purchasedTime)
-        : [];//nfts && shuffleArray(nfts)
+    // ? [...nfts].sort((a, b) => a.purchasedTime - b.purchasedTime)
+    // : [];//nfts && shuffleArray(nfts)
 
 
 
@@ -208,6 +293,14 @@ export default function Trade({ setCreateActive }) {
                                 to={"/history"}
                             >Transaction History</Link> </button>
                     </div> */}
+
+                    {showMessage && <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">NFT Marketplace</h2>
+                        <p class="text-gray-600">Discover and trade premium digital assets</p>
+                        <p id="trading-message" class="text-orange-600 font-medium bg-orange-50 px-4 py-2 rounded-lg inline-block border border-orange-200">
+                            Please purchase a visible NFT to begin your trading journey.
+                        </p>
+                    </div>}
                     <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-2xl p-6 mb-8">
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
@@ -219,7 +312,8 @@ export default function Trade({ setCreateActive }) {
                                     Wallet Balance
                                 </div>
                                 <div class="text-2xl font-bold text-green-600" id="trade-wallet-balance">
-                                    ${formatWithCommas(walletBalance)}
+                                    {formatWithCommas(walletBalance)}
+                                    <p style={{ fontSize: "12px" }}> Hexas</p>
                                 </div>
                             </div>
                             <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
@@ -231,7 +325,8 @@ export default function Trade({ setCreateActive }) {
                                     Trading Limit
                                 </div>
                                 <div class="text-2xl font-bold text-blue-600" id="trade-limit-total">
-                                    ${formatWithCommas(formatEther(Package.limit))}
+                                    {Package.limit}
+                                    <p style={{ fontSize: "12px" }}> No. of Trades</p>
                                 </div>
                             </div>
                             <div class="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200">
@@ -243,7 +338,9 @@ export default function Trade({ setCreateActive }) {
                                     Limit Used
                                 </div>
                                 <div class="text-2xl font-bold text-orange-600" id="trade-limit-used">
-                                    ${formatWithCommas(revisedLimitUtilized)}
+                                    {revisedLimitUtilized}
+                                    <p style={{ fontSize: "12px" }}> No. of Trades</p>
+
                                 </div>
                             </div>
                             <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
@@ -255,7 +352,9 @@ export default function Trade({ setCreateActive }) {
                                     Remaining Limit
                                 </div>
                                 <div class="text-2xl font-bold text-purple-600" id="trade-limit-remaining">
-                                    ${formatWithCommas(Number(formatEther(Package.limit)) - Number(revisedLimitUtilized))}
+                                    {Package.limit - revisedLimitUtilized}
+                                    <p style={{ fontSize: "12px" }}> No. of Trades</p>
+
                                 </div>
                             </div>
                         </div>
@@ -265,9 +364,9 @@ export default function Trade({ setCreateActive }) {
                             <div class="w-full bg-gray-200 rounded-full h-3">
                                 <div id="trade-progress-bar" class="bg-gradient-to-r from-orange-500 to-red-500 h-3 rounded-full transition-all duration-300"
 
-                                    style={{ width: `${Number(revisedLimitUtilized) / Number(formatEther(Package.limit)) * 100}%` }}></div>
+                                    style={{ width: `${Number(revisedLimitUtilized) / Number(Package.limit) * 100}%` }}></div>
                             </div>
-                            <div class="flex justify-between text-xs text-gray-500 mt-1"><span>${revisedLimitUtilized}</span> <span id="trade-limit-display">${formatWithCommas(formatEther(Package.limit))}</span>
+                            <div class="flex justify-between text-xs text-gray-500 mt-1"><span>No. of Trades {revisedLimitUtilized}</span> <span id="trade-limit-display">No. of Trades {Package.limit}</span>
                             </div>
                         </div>
                     </div>

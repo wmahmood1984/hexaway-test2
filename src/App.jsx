@@ -20,6 +20,8 @@ import Teamtree from './components2/Teamtree'
 import Bulk from './components2/Bulk'
 import NoteMarquee from './components2/Note'
 import MyForm from './components2/Admin'
+import Lists from './components2/Lists'
+import User from './components2/p2p Trade/User'
 
 export default function App() {
 
@@ -80,6 +82,8 @@ export default function App() {
                 <Route path="/teamview" element={<Teamtree />} />
                 <Route path="/bulk" element={<Bulk />} />
                 <Route path="/admin" element={<MyForm />} />
+                                <Route path="/p2p" element={<User />} />
+                                <Route path="/lists" element={<Lists />} />
             </Routes>
 
 

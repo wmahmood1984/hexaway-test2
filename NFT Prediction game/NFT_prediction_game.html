@@ -1,0 +1,2112 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NFT Prediction Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    .nft-card {
+      transition: all 0.3s ease;
+    }
+    
+    .nft-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 50px rgba(139, 92, 246, 0.5);
+    }
+
+    .prediction-btn {
+      transition: all 0.2s ease;
+    }
+
+    .prediction-btn:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes popupSlide {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+    }
+
+    /* New animations for right-side popup */
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body class="h-full w-full m-0 p-0">
+  <div id="app" class="h-full w-full overflow-auto"></div>
+  
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      game_title: "NFT Prediction Game",
+      win_multiplier_text: "Win 2x Your Hexa!",
+      background_color: "#f8fafc",
+      surface_color: "#ffffff",
+      text_color: "#0f172a",
+      primary_color: "#8b5cf6",
+      secondary_color: "#06b6d4",
+      font_family: "Inter",
+      font_size: 16
+    };
+
+    // Sample NFT collection
+    const nftCollection = [
+      { id: 1, name: "Cosmic Ape #001", image: "🦍", rarity: "HEXA", value: 5, price: 53.5 },
+      { id: 2, name: "Cyber Punk #042", image: "🤖", rarity: "HEXA", value: 3, price: 75.04 },
+      { id: 3, name: "Dragon Soul #123", image: "🐲", rarity: "HEXA", value: 4, price: 57.24 },
+      { id: 4, name: "Moon Cat #777", image: "🐱", rarity: "HEXA", value: 3, price: 61.24 },
+      { id: 5, name: "Phoenix Fire #999", image: "🔥", rarity: "HEXA", value: 5, price: 65.24 },
+      { id: 6, name: "Ocean Wave #456", image: "🌊", rarity: "HEXA", value: 2, price: 53.5 },
+      { id: 7, name: "Galaxy Star #888", image: "⭐", rarity: "HEXA", value: 4, price: 53.5 },
+      { id: 8, name: "Thunder Bolt #333", image: "⚡", rarity: "HEXA", value: 3, price: 53.5 },
+    ];
+
+    // Mock data storage (replaces SDK data storage)
+    let mockUserData = {
+      id: "user_wallet",
+      wallet_balance: 100,
+      total_wagered: 0,
+      total_won: 0,
+      prediction_history: "0:W:5:🦍,2:L:2:🤖,1:W:3:🐲,0:L:1:🐱,1:W:4:🔥",
+      transfer_history: "Cosmic Ape #001:5:🦍:Legendary:1500:2024-01-15T10:30:00.000Z,Cyber Punk #042:3:🤖:Rare:750:2024-01-14T15:45:00.000Z,Dragon Soul #123:4:🐲:Epic:1200:2024-01-13T08:20:00.000Z",
+      hexa_transfer_history: "5:IN:NFT Transfer (Cosmic Ape):2024-01-15T10:30:00.000Z,2.5:OUT:Game Wager:2024-01-15T11:00:00.000Z,5:IN:Game Win:2024-01-15T11:01:00.000Z,3:IN:NFT Transfer (Cyber Punk):2024-01-14T15:45:00.000Z,1:OUT:Game Wager:2024-01-14T16:00:00.000Z",
+      last_updated: new Date().toISOString()
+    };
+
+    // Game state variables
+    let currentConfig = { ...defaultConfig };
+    let isLoading = false;
+    let currentPage = 'game';
+    let selectedNFTs = [];
+    let liveTokenPrice = 300.00;
+    let showTransferHistory = false;
+    let showHexaTransferHistory = false;
+    let selectedSlots = 3;
+    let selectedTime = 60;
+    let countdownInterval = null;
+    let remainingTime = 60;
+    let biddingLocked = false;
+    let audioContext = null;
+    let gameInProgress = false;
+    let currentWagerAmount = 0;
+    let winningNFT = null;
+    let gameWon = false;
+    let activeOrders = [];
+    let selectedSlotIndex = null;
+
+    // Start main countdown timer
+    function startMainCountdown() {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+
+      remainingTime = selectedTime;
+      updateMainCountdownDisplay();
+
+      countdownInterval = setInterval(() => {
+        remainingTime--;
+        
+        if (remainingTime <= 0) {
+          clearInterval(countdownInterval);
+          remainingTime = selectedTime;
+          biddingLocked = false;
+          updateMainCountdownDisplay();
+          return;
+        }
+
+        // Lock betting in last 10 seconds
+        if (remainingTime <= 10 && !biddingLocked) {
+          biddingLocked = true;
+          showMessage("⏰ Betting locked for this round!", "error");
+          disableBettingControls();
+        }
+
+        // Unlock betting when new round starts
+        if (remainingTime > 10 && biddingLocked) {
+          biddingLocked = false;
+          enableBettingControls();
+        }
+
+        updateMainCountdownDisplay();
+
+        // Play beep in last 3 seconds
+        if (remainingTime <= 3 && remainingTime > 0) {
+          playBeep();
+        }
+      }, 1000);
+    }
+
+    // Update main countdown display
+    function updateMainCountdownDisplay() {
+      const mainCountdownTime = document.getElementById('mainCountdownTime');
+      const countdownWarning = document.getElementById('countdownWarning');
+      
+      if (mainCountdownTime) {
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        mainCountdownTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Change color in last 10 seconds
+        if (remainingTime <= 10) {
+          mainCountdownTime.style.color = '#ef4444';
+          if (countdownWarning) {
+            countdownWarning.style.display = 'block';
+          }
+        } else {
+          mainCountdownTime.style.color = currentConfig.secondary_color;
+          if (countdownWarning) {
+            countdownWarning.style.display = 'none';
+          }
+        }
+      }
+    }
+
+    // Disable betting controls
+    function disableBettingControls() {
+      const slotButtons = document.querySelectorAll('.slot-btn');
+      const timeButtons = document.querySelectorAll('.time-btn');
+      const selectButtons = document.querySelectorAll('.select-slot-btn');
+      const wagerInput = document.getElementById('wagerInput');
+      const increaseBtn = document.getElementById('increaseWagerBtn');
+      const decreaseBtn = document.getElementById('decreaseWagerBtn');
+      const confirmBtn = document.getElementById('confirmPredictionBtn');
+      
+      slotButtons.forEach(btn => btn.disabled = true);
+      timeButtons.forEach(btn => btn.disabled = true);
+      selectButtons.forEach(btn => btn.disabled = true);
+      if (wagerInput) wagerInput.disabled = true;
+      if (increaseBtn) increaseBtn.disabled = true;
+      if (decreaseBtn) decreaseBtn.disabled = true;
+      if (confirmBtn) confirmBtn.disabled = true;
+    }
+
+    // Enable betting controls
+    function enableBettingControls() {
+      if (mockUserData.wallet_balance === 0) return;
+      
+      const slotButtons = document.querySelectorAll('.slot-btn');
+      const timeButtons = document.querySelectorAll('.time-btn');
+      const selectButtons = document.querySelectorAll('.select-slot-btn');
+      const wagerInput = document.getElementById('wagerInput');
+      const increaseBtn = document.getElementById('increaseWagerBtn');
+      const decreaseBtn = document.getElementById('decreaseWagerBtn');
+      const confirmBtn = document.getElementById('confirmPredictionBtn');
+      
+      slotButtons.forEach(btn => btn.disabled = false);
+      timeButtons.forEach(btn => btn.disabled = false);
+      selectButtons.forEach(btn => btn.disabled = false);
+      if (wagerInput) wagerInput.disabled = false;
+      if (increaseBtn) increaseBtn.disabled = false;
+      if (decreaseBtn) decreaseBtn.disabled = false;
+      if (confirmBtn && selectedSlotIndex !== null) confirmBtn.disabled = false;
+    }
+
+    // Initialize Web Audio API for beep sound
+    function initAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    // Play beep sound
+    function playBeep() {
+      if (!audioContext) {
+        initAudio();
+      }
+      
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    }
+
+    // Format numbers with commas
+    function formatNumber(num) {
+      return Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Render prediction history
+    function renderPredictionHistory(historyString) {
+      if (!historyString) return '';
+      
+      const entries = historyString.split(',').filter(e => e.trim());
+      if (entries.length === 0) return `
+        <div style="text-align: center; padding: 32px; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.6;">
+          No predictions yet. Start playing to see your history!
+        </div>
+      `;
+
+      return `
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          ${entries.reverse().map((entry, index) => {
+            const parts = entry.split(':');
+            const choice = parts[0];
+            const result = parts[1];
+            const amount = parts[2] || '1';
+            const nftImage = parts[3] || '🎨';
+            
+            const isWin = result === 'W';
+            const bgColor = isWin ? '#10b98120' : '#ef444420';
+            const textColor = isWin ? '#10b981' : '#ef4444';
+            const icon = isWin ? '🎉' : '❌';
+            
+            return `
+              <div style="background: ${bgColor}; padding: 12px 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid ${textColor};">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: ${currentConfig.font_size * 3}px;">${nftImage}</span>
+                  <div>
+                    <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; font-weight: 700;">
+                      Prediction #${entries.length - index}
+                    </div>
+                    <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.75}px; color: ${currentConfig.text_color}; opacity: 0.7;">
+                      ${amount} USDT
+                    </div>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${textColor}; font-weight: 900;">
+                    ${isWin ? 'WON' : 'LOST'}
+                  </div>
+                  <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${textColor}; font-weight: 700;">
+                    ${isWin ? '+' : '-'}${amount} USDT
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Calculate HEXA tokens from USDT
+    function calculateHexaTokens(usdtAmount) {
+      return (usdtAmount * 0.6).toFixed(2);
+    }
+
+    // Update HEXA display
+    function updateHexaDisplay() {
+      const wagerInput = document.getElementById('wagerInput');
+      const hexaAmount = document.getElementById('hexaAmount');
+      
+      if (wagerInput && hexaAmount) {
+        const usdtValue = parseFloat(wagerInput.value) || 1;
+        hexaAmount.textContent = calculateHexaTokens(usdtValue);
+      }
+    }
+
+    // NEW: Show small right-side result popup
+    function showResultPopup(won, nft, wagerAmount, winAmount) {
+      const rarityColors = {
+        'Legendary': '#fbbf24',
+        'Epic': '#a855f7',
+        'Rare': '#3b82f6',
+        'Common': '#6b7280'
+      };
+      const rarityColor = rarityColors[nft.rarity] || '#6b7280';
+      const bgColor = won ? '#10b981' : '#ef4444';
+      const icon = won ? '🎉' : '❌';
+
+      // Remove any existing popup
+      const existingPopup = document.getElementById('smallResultPopup');
+      if (existingPopup) {
+        existingPopup.remove();
+      }
+
+      // Create the small popup
+      const popup = document.createElement('div');
+      popup.id = 'smallResultPopup';
+      popup.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 280px;
+        background: ${currentConfig.surface_color};
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        border: 2px solid ${bgColor};
+        z-index: 10000;
+        animation: slideInRight 0.3s ease;
+        font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif;
+        font-size: ${currentConfig.font_size * 0.75}px;
+      `;
+
+      popup.innerHTML = `
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          <!-- Result Icon -->
+          <div style="flex-shrink: 0; font-size: 24px; color: ${bgColor};">
+            ${icon}
+          </div>
+          
+          <!-- Content -->
+          <div style="flex: 1; min-width: 0;">
+            <!-- Result Text -->
+            <div style="margin-bottom: 6px;">
+              <div style="font-weight: 900; font-size: ${currentConfig.font_size * 0.875}px; color: ${bgColor}; margin-bottom: 2px;">
+                ${won ? 'YOU WON!' : 'YOU LOST!'}
+              </div>
+              <div style="font-weight: 700; color: ${currentConfig.text_color}; font-size: ${currentConfig.font_size * 0.6875}px; margin-bottom: 2px;">
+                ${nft.name}
+              </div>
+              <div style="color: ${rarityColor}; font-weight: 700; font-size: ${currentConfig.font_size * 0.625}px; background: ${rarityColor}20; padding: 2px 6px; border-radius: 4px; display: inline-block;">
+                ${nft.rarity}
+              </div>
+            </div>
+            
+            <!-- NFT Image -->
+            <div style="font-size: 32px; text-align: center; margin: 6px 0;">
+              ${nft.image}
+            </div>
+            
+            <!-- Amounts -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px;">
+              <div style="background: ${currentConfig.background_color}; padding: 6px; border-radius: 6px; text-align: center;">
+                <div style="font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.7; margin-bottom: 2px;">
+                  Wagered
+                </div>
+                <div style="font-weight: 900; font-size: ${currentConfig.font_size * 0.75}px; color: ${currentConfig.text_color};">
+                  ${wagerAmount} USDT
+                </div>
+              </div>
+              <div style="background: ${currentConfig.background_color}; padding: 6px; border-radius: 6px; text-align: center;">
+                <div style="font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.7; margin-bottom: 2px;">
+                  ${won ? 'Won' : 'Lost'}
+                </div>
+                <div style="font-weight: 900; font-size: ${currentConfig.font_size * 0.875}px; color: ${bgColor};">
+                  ${won ? '+' : '-'}${won ? winAmount : wagerAmount} USDT
+                </div>
+              </div>
+            </div>
+            
+            <!-- Close Button -->
+            <button 
+              id="closePopupBtn"
+              style="width: 100%; background: ${currentConfig.primary_color}; color: white; border: none; padding: 6px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: ${currentConfig.font_size * 0.75}px; margin-top: 8px; transition: transform 0.2s;"
+              onmouseover="this.style.transform='scale(1.02)'"
+              onmouseout="this.style.transform='scale(1)'"
+            >
+              Continue Playing
+            </button>
+          </div>
+          
+          <!-- Close X -->
+          <button 
+            id="closePopupX"
+            style="flex-shrink: 0; background: none; border: none; color: ${currentConfig.text_color}; opacity: 0.5; cursor: pointer; font-size: ${currentConfig.font_size * 0.875}px; padding: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"
+            onmouseover="this.style.opacity='1'"
+            onmouseout="this.style.opacity='0.5'"
+          >
+            ×
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(popup);
+
+      // Auto-remove after 5 seconds
+      const autoRemoveTimeout = setTimeout(() => {
+        removePopup();
+      }, 5000);
+
+      // Close button handler
+      const closePopupBtn = document.getElementById('closePopupBtn');
+      const closePopupX = document.getElementById('closePopupX');
+      
+      function removePopup() {
+        popup.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => {
+          if (popup.parentNode) {
+            popup.remove();
+          }
+        }, 300);
+      }
+
+      closePopupBtn.onclick = removePopup;
+      closePopupX.onclick = removePopup;
+
+      // Clear timeout and remove popup when clicked
+      popup.addEventListener('click', function(e) {
+        if (e.target === popup || e.target === closePopupBtn || e.target === closePopupX) {
+          clearTimeout(autoRemoveTimeout);
+        }
+      });
+
+      // Reset game state when popup is closed
+      const originalRemovePopup = removePopup;
+      popup.removePopup = function() {
+        originalRemovePopup();
+        resetGameState();
+      };
+    }
+
+    // Reset game state to start fresh
+    function resetGameState() {
+      selectedSlots = 3;
+      selectedTime = 60;
+      selectedSlotIndex = null;
+      currentWagerAmount = 0;
+      winningNFT = null;
+      gameWon = false;
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+      renderPage();
+    }
+
+    // Display NFT Slots
+    function displayNFTSlots(numSlots) {
+      const container = document.getElementById('nftSlotsContainer');
+      const grid = document.getElementById('nftSlotsGrid');
+      
+      if (!container || !grid) return;
+
+      container.style.display = 'block';
+      grid.innerHTML = '';
+
+      // Create slot placeholders with NFTs and select buttons
+      for (let i = 0; i < numSlots; i++) {
+        const slotWrapper = document.createElement('div');
+        slotWrapper.style.cssText = `
+          width: 100%;
+          box-sizing: border-box;
+          overflow: hidden;
+        `;
+
+        const randomNFT = nftCollection[Math.floor(Math.random() * nftCollection.length)];
+        
+        // Determine border color based on slot position
+        let borderColor = currentConfig.primary_color + '40';
+        let buttonColor = currentConfig.primary_color;
+        if (numSlots === 3) {
+          if (i === 0) { borderColor = '#ef4444'; buttonColor = '#ef4444'; }
+          else if (i === 1) { borderColor = '#10b981'; buttonColor = '#10b981'; }
+          else if (i === 2) { borderColor = '#a855f7'; buttonColor = '#a855f7'; }
+        } else if (numSlots === 6) {
+          if (i === 0) { borderColor = '#f97316'; buttonColor = '#f97316'; }
+          else if (i === 1) { borderColor = '#eab308'; buttonColor = '#eab308'; }
+          else if (i === 2) { borderColor = '#92400e'; buttonColor = '#92400e'; }
+          else if (i === 3) { borderColor = '#a855f7'; buttonColor = '#a855f7'; }
+          else if (i === 4) { borderColor = '#ec4899'; buttonColor = '#ec4899'; }
+          else if (i === 5) { borderColor = '#6366f1'; buttonColor = '#6366f1'; }
+        } else if (numSlots === 9) {
+          if (i === 0) { borderColor = '#ef4444'; buttonColor = '#ef4444'; }
+          else if (i === 1) { borderColor = '#10b981'; buttonColor = '#10b981'; }
+          else if (i === 2) { borderColor = '#a855f7'; buttonColor = '#a855f7'; }
+          else if (i === 3) { borderColor = '#6b7280'; buttonColor = '#6b7280'; }
+          else if (i === 4) { borderColor = '#eab308'; buttonColor = '#eab308'; }
+          else if (i === 5) { borderColor = '#3b82f6'; buttonColor = '#3b82f6'; }
+          else if (i === 6) { borderColor = '#ec4899'; buttonColor = '#ec4899'; }
+          else if (i === 7) { borderColor = '#000000'; buttonColor = '#000000'; }
+          else if (i === 8) { borderColor = '#f97316'; buttonColor = '#f97316'; }
+        }
+
+        const rarityColors = {
+          'Legendary': '#fbbf24',
+          'Epic': '#a855f7',
+          'Rare': '#3b82f6',
+          'Common': '#6b7280'
+        };
+        const rarityColor = rarityColors[randomNFT.rarity] || '#6b7280';
+        
+        slotWrapper.innerHTML = `
+          <div class="nft-slot" id="nft-slot-${i}" data-slot-index="${i}" data-nft-id="${randomNFT.id}" style="
+            background: ${currentConfig.background_color};
+            border: 5px solid ${borderColor};
+            border-radius: 8px;
+            padding: 6px;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
+            overflow: hidden;
+            width: 100%;
+          ">
+            <div style="width: 100%; overflow: hidden;">
+              <div style="font-size: 28px; margin-bottom: 3px;">${randomNFT.image}</div>
+              <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.5625}px; color: ${currentConfig.text_color}; font-weight: 700; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">
+                ${randomNFT.name}
+              </div>
+              <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.4375}px; color: ${rarityColor}; font-weight: 700;">
+                ${randomNFT.rarity}
+              </div>
+            </div>
+            <button 
+              class="select-slot-btn" 
+              data-slot-index="${i}"
+              style="
+                width: 100%;
+                background: ${buttonColor};
+                color: white;
+                border: none;
+                padding: 5px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif;
+                font-size: ${currentConfig.font_size * 0.5625}px;
+                font-weight: 700;
+                margin-top: 4px;
+                transition: all 0.2s;
+                box-sizing: border-box;
+              "
+              ${biddingLocked ? 'disabled' : ''}
+            >
+              ✓ Select
+            </button>
+          </div>
+        `;
+        
+        grid.appendChild(slotWrapper);
+      }
+
+      // Add click handlers for select buttons
+      const selectButtons = document.querySelectorAll('.select-slot-btn');
+      selectButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (!gameInProgress) {
+            const slotIndex = parseInt(this.getAttribute('data-slot-index'));
+            selectSlot(slotIndex);
+          }
+        });
+      });
+    }
+
+    // Select a specific slot
+    function selectSlot(slotIndex) {
+      // If clicking the same slot, deselect it
+      if (selectedSlotIndex === slotIndex) {
+        selectedSlotIndex = null;
+        const allButtons = document.querySelectorAll('.select-slot-btn');
+        const allSlots = document.querySelectorAll('.nft-slot');
+        allButtons.forEach((btn, index) => {
+          if (index === slotIndex) {
+            btn.textContent = '✓ Select';
+            // Get the original border color
+            const slot = allSlots[index];
+            if (slot) {
+              const borderColor = slot.style.borderColor;
+              // Extract hex color from rgb or use the border color
+              btn.style.background = getButtonColorFromSlot(index, selectedSlots);
+            }
+          }
+        });
+        
+        // Hide confirm button
+        const confirmBtn = document.getElementById('confirmPredictionBtn');
+        if (confirmBtn) {
+          confirmBtn.style.display = 'none';
+        }
+        
+        showMessage(`NFT Slot deselected`, "info");
+        return;
+      }
+      
+      selectedSlotIndex = slotIndex;
+      
+      // Update all slot buttons
+      const allButtons = document.querySelectorAll('.select-slot-btn');
+      const allSlots = document.querySelectorAll('.nft-slot');
+      
+      allButtons.forEach((btn, index) => {
+        if (index === slotIndex) {
+          btn.textContent = '✗ Deselect';
+          btn.style.background = currentConfig.secondary_color;
+        } else {
+          btn.textContent = '✓ Select';
+          btn.style.background = getButtonColorFromSlot(index, selectedSlots);
+        }
+      });
+
+      // Show confirm button
+      const confirmBtn = document.getElementById('confirmPredictionBtn');
+      if (confirmBtn) {
+        confirmBtn.style.display = 'block';
+      }
+
+      showMessage(`NFT Slot ${slotIndex + 1} selected!`, "success");
+    }
+
+    // Helper function to get button color based on slot position
+    function getButtonColorFromSlot(index, numSlots) {
+      if (numSlots === 3) {
+        if (index === 0) return '#ef4444';
+        else if (index === 1) return '#10b981';
+        else if (index === 2) return '#a855f7';
+      } else if (numSlots === 6) {
+        if (index === 0) return '#f97316';
+        else if (index === 1) return '#eab308';
+        else if (index === 2) return '#a855f7';
+        else if (index === 3) return '#92400e';
+        else if (index === 4) return '#ec4899';
+        else if (index === 5) return '#6366f1';
+      } else if (numSlots === 9) {
+        if (index === 0) return '#ef4444';
+        else if (index === 1) return '#10b981';
+        else if (index === 2) return '#a855f7';
+        else if (index === 3) return '#000000';
+        else if (index === 4) return '#eab308';
+        else if (index === 5) return '#3b82f6';
+        else if (index === 6) return '#ec4899';
+        else if (index === 7) return '#6b7280';
+        else if (index === 8) return '#f97316';
+      }
+      return currentConfig.primary_color;
+    }
+
+    // Start Prediction Game (triggered by confirm button)
+    async function startPredictionGame() {
+      if (biddingLocked) {
+        showMessage("⏰ Betting is locked! Wait for next round.", "error");
+        return;
+      }
+
+      if (!selectedSlots) {
+        showMessage("Please select number of slots first!", "error");
+        return;
+      }
+
+      if (!selectedSlotIndex && selectedSlotIndex !== 0) {
+        showMessage("Please select an NFT slot first!", "error");
+        return;
+      }
+
+      if (!selectedTime) {
+        showMessage("Please select time duration first!", "error");
+        return;
+      }
+      
+      const wagerInput = document.getElementById('wagerInput');
+      const wagerValue = wagerInput ? parseFloat(wagerInput.value) : 1;
+      const wagerAmount = isNaN(wagerValue) || wagerValue < 0.1 ? 1 : wagerValue;
+
+      if (wagerAmount <= 0) {
+        showMessage("Please enter a valid wager amount", "error");
+        return;
+      }
+
+      if (mockUserData.wallet_balance === 0) {
+        showNoNFTsPopup();
+        return;
+      }
+      
+      if (mockUserData.wallet_balance < wagerAmount) {
+        showMessage("Insufficient balance!", "error");
+        return;
+      }
+
+      // Get the selected NFT image
+      const selectedSlot = document.getElementById(`nft-slot-${selectedSlotIndex}`);
+      const nftId = selectedSlot ? parseInt(selectedSlot.getAttribute('data-nft-id')) : 1;
+      const selectedNFT = nftCollection.find(nft => nft.id === nftId) || nftCollection[0];
+
+      // Store the slot index before creating order
+      const currentSlotIndex = selectedSlotIndex;
+
+      // Create order and get order ID
+      const orderId = showLiveOrder(currentSlotIndex, wagerAmount, selectedTime, selectedNFT.image);
+
+      // Deduct wager from balance immediately
+      const hexaSpentEntry = `${wagerAmount}:OUT:Game Wager:${new Date().toISOString()}`;
+      mockUserData = {
+        ...mockUserData,
+        wallet_balance: mockUserData.wallet_balance - wagerAmount,
+        total_wagered: mockUserData.total_wagered + wagerAmount,
+        hexa_transfer_history: mockUserData.hexa_transfer_history
+          ? `${mockUserData.hexa_transfer_history},${hexaSpentEntry}`
+          : hexaSpentEntry,
+        last_updated: new Date().toISOString()
+      };
+
+      // Reset selection
+      selectedSlotIndex = null;
+      const confirmBtn = document.getElementById('confirmPredictionBtn');
+      if (confirmBtn) {
+        confirmBtn.style.display = 'none';
+      }
+
+      // Reset all select buttons
+      const allButtons = document.querySelectorAll('.select-slot-btn');
+      allButtons.forEach(btn => {
+        btn.textContent = '✓ Select';
+        btn.style.background = currentConfig.primary_color;
+      });
+
+      showMessage("Order placed! 🎲", "success");
+
+      // Process game in background
+      processGameInBackground(orderId, currentSlotIndex, wagerAmount, selectedNFT);
+    }
+
+    // Process game result in background
+    async function processGameInBackground(orderId, slotIndex, wagerAmount, nft) {
+      // Store the slot index in the order
+      const orderIndex = activeOrders.findIndex(o => o.id === orderId);
+      if (orderIndex !== -1) {
+        activeOrders[orderIndex].slotIndex = slotIndex;
+      }
+
+      // Wait for the time to complete
+      const order = activeOrders.find(o => o.id === orderId);
+      if (!order) return;
+
+      await new Promise(resolve => {
+        const checkInterval = setInterval(() => {
+          const currentOrder = activeOrders.find(o => o.id === orderId);
+          if (!currentOrder || currentOrder.remainingTime <= 0) {
+            clearInterval(checkInterval);
+            resolve();
+          }
+        }, 100);
+      });
+
+      // Determine win/loss (50% chance)
+      const won = Math.random() > 0.5;
+
+      // Update order with result
+      updateLiveOrderResult(orderId, won, wagerAmount);
+
+      // Update user data
+      const winAmount = won ? wagerAmount * 2 : 0;
+
+      const finalSlotIndex = activeOrders.find(o => o.id === orderId)?.slotIndex ?? 0;
+
+      const hexaWinEntry = won ? `${winAmount}:IN:Game Win:${new Date().toISOString()}` : '';
+
+      mockUserData = {
+        ...mockUserData,
+        wallet_balance: mockUserData.wallet_balance + winAmount,
+        total_won: mockUserData.total_won + (won ? winAmount : 0),
+        prediction_history: mockUserData.prediction_history 
+          ? `${mockUserData.prediction_history},${finalSlotIndex}:${won ? 'W' : 'L'}:${wagerAmount}:${nft.image}` 
+          : `${finalSlotIndex}:${won ? 'W' : 'L'}:${wagerAmount}:${nft.image}`,
+        hexa_transfer_history: won 
+          ? (mockUserData.hexa_transfer_history 
+              ? `${mockUserData.hexa_transfer_history},${hexaWinEntry}` 
+              : hexaWinEntry)
+          : mockUserData.hexa_transfer_history,
+        last_updated: new Date().toISOString()
+      };
+
+      // Show small result popup after a short delay
+      setTimeout(() => {
+        showResultPopup(won, nft, wagerAmount, winAmount);
+      }, 500);
+
+      // Refresh the page to update UI
+      renderPage();
+    }
+
+    // Show live order details
+    function showLiveOrder(slotIndex, wagerAmount, time, nftImage) {
+      const orderId = Date.now();
+      const order = {
+        id: orderId,
+        slotIndex: slotIndex,
+        wagerAmount: wagerAmount,
+        time: time,
+        nftImage: nftImage,
+        startTime: Date.now(),
+        status: 'in_progress',
+        remainingTime: time
+      };
+
+      activeOrders.push(order);
+      updateLiveOrdersDisplay();
+
+      // Start countdown for this specific order
+      const orderInterval = setInterval(() => {
+        const orderIndex = activeOrders.findIndex(o => o.id === orderId);
+        if (orderIndex === -1) {
+          clearInterval(orderInterval);
+          return;
+        }
+
+        const elapsed = Math.floor((Date.now() - order.startTime) / 1000);
+        order.remainingTime = Math.max(0, time - elapsed);
+
+        if (order.remainingTime <= 0) {
+          clearInterval(orderInterval);
+        }
+
+        updateLiveOrdersDisplay();
+      }, 1000);
+
+      return orderId;
+    }
+
+    // Update live orders display
+    function updateLiveOrdersDisplay() {
+      const liveOrderSection = document.getElementById('liveOrdersSection');
+      const liveOrderContent = document.getElementById('liveOrderContent');
+      
+      if (!liveOrderSection || !liveOrderContent) return;
+
+      if (activeOrders.length === 0) {
+        liveOrderSection.style.display = 'none';
+        return;
+      }
+
+      liveOrderSection.style.display = 'block';
+
+      liveOrderContent.innerHTML = activeOrders.map(order => {
+        const statusColor = order.status === 'in_progress' ? '#f59e0b' : order.status === 'won' ? '#10b981' : '#ef4444';
+        const statusText = order.status === 'in_progress' ? '⏳ In Progress' : order.status === 'won' ? '✅ Won' : '❌ Lost';
+
+        return `
+          <div style="background: ${currentConfig.background_color}; padding: 16px; border-radius: 12px; border: 2px solid ${currentConfig.primary_color}; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <div style="font-size: 48px; flex-shrink: 0;">${order.nftImage}</div>
+              <div style="flex: 1; min-width: 0;">
+                <div>
+                  <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.75}px; color: ${currentConfig.text_color}; opacity: 0.7;">Wager</div>
+                  <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.25}px; color: ${currentConfig.text_color}; font-weight: 900;">${order.wagerAmount} USDT</div>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 2px solid ${currentConfig.primary_color}40;">
+              <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.7; font-weight: 700;">Duration:</div>
+              <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${currentConfig.text_color}; font-weight: 900;">${Math.floor(order.time / 60)} min</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px;">
+              <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.7; font-weight: 700;">Status:</div>
+              <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${statusColor}; font-weight: 900;">${statusText}</div>
+            </div>
+            ${order.result ? `
+              <div style="background: ${order.status === 'won' ? '#10b98120' : '#ef444420'}; padding: 12px; border-radius: 8px; border-left: 4px solid ${order.status === 'won' ? '#10b981' : '#ef4444'}; margin-top: 12px;">
+                <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; font-weight: 700; text-align: center; margin-bottom: 8px;">
+                  ${order.status === 'won' ? '🎉 Congratulations!' : '💔 Better luck next time!'}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.8;">Profit/Loss:</span>
+                  <span style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.25}px; color: ${order.status === 'won' ? '#10b981' : '#ef4444'}; font-weight: 900;">
+                    ${order.status === 'won' ? '+' : '-'}${order.wagerAmount} USDT
+                  </span>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Update live order with result
+    function updateLiveOrderResult(orderId, won, wagerAmount) {
+      const orderIndex = activeOrders.findIndex(o => o.id === orderId);
+      if (orderIndex === -1) return;
+
+      activeOrders[orderIndex].status = won ? 'won' : 'lost';
+      activeOrders[orderIndex].result = true;
+      updateLiveOrdersDisplay();
+
+      // Remove order immediately and refresh to show in history
+      setTimeout(() => {
+        const idx = activeOrders.findIndex(o => o.id === orderId);
+        if (idx !== -1) {
+          activeOrders.splice(idx, 1);
+          updateLiveOrdersDisplay();
+          // Refresh the page to update prediction history
+          renderPage();
+        }
+      }, 2000);
+    }
+
+    // Simulate live token price updates
+    function updateTokenPrice() {
+      // Fluctuate between $295 and $305
+      const change = (Math.random() - 0.5) * 2;
+      liveTokenPrice = Math.max(295, Math.min(305, liveTokenPrice + change));
+      
+      const priceElement = document.getElementById('tokenPriceDisplay');
+      if (priceElement) {
+        priceElement.textContent = `$${liveTokenPrice.toFixed(2)}`;
+      }
+
+      const balanceElement = document.getElementById('walletBalanceDisplay');
+      if (balanceElement) {
+        balanceElement.textContent = `${formatNumber(mockUserData.wallet_balance * liveTokenPrice)}H`;
+      }
+    }
+
+    // Update price every 3 seconds
+    setInterval(updateTokenPrice, 3000);
+
+    // Get user data (now uses mock data)
+    function getOrCreateUserData() {
+      return mockUserData;
+    }
+
+    // Transfer NFT function (now updates mock data)
+    async function transferSingleNFT(nft) {
+      isLoading = true;
+      renderPage();
+      
+      // Show processing message
+      showMessage("⏳ Processing NFT transfer...", "info");
+
+      const transferEntry = `${nft.name}:${nft.value}:${nft.image}:${nft.rarity}:${nft.price}:${new Date().toISOString()}`;
+      const hexaEntry = `${nft.value}:IN:NFT Transfer (${nft.name}):${new Date().toISOString()}`;
+      
+      mockUserData = {
+        ...mockUserData,
+        wallet_balance: mockUserData.wallet_balance + nft.value,
+        transfer_history: mockUserData.transfer_history 
+          ? `${mockUserData.transfer_history},${transferEntry}` 
+          : transferEntry,
+        hexa_transfer_history: mockUserData.hexa_transfer_history
+          ? `${mockUserData.hexa_transfer_history},${hexaEntry}`
+          : hexaEntry,
+        last_updated: new Date().toISOString()
+      };
+
+      // Simulate processing delay
+      setTimeout(() => {
+        isLoading = false;
+        currentPage = 'game';
+        showMessage(`Successfully transferred ${nft.name} to your wallet! (+💎 ${nft.value})`, "success");
+        renderPage();
+      }, 1000);
+    }
+
+    // Toggle NFT selection
+    function toggleNFTSelection(nft) {
+      showNFTTransferConfirmation(nft);
+    }
+
+    // Show insufficient balance popup
+    function showNoNFTsPopup() {
+      // Create overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'noNFTsOverlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 20px;
+      `;
+
+      const popup = document.createElement('div');
+      popup.style.cssText = `
+        background: ${currentConfig.surface_color};
+        border-radius: 24px;
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        border: 3px solid ${currentConfig.primary_color};
+        animation: popupSlide 0.3s ease;
+        text-align: center;
+      `;
+
+      popup.innerHTML = `
+        <div style="font-size: 80px; margin-bottom: 24px;">💸</div>
+        <h2 style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 2}px; color: ${currentConfig.text_color}; font-weight: 900; margin-bottom: 16px;">
+          Insufficient Balance
+        </h2>
+        <p style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.125}px; color: ${currentConfig.text_color}; opacity: 0.8; margin-bottom: 32px;">
+          Transfer some NFTs from your collection to start playing!
+        </p>
+
+        <div style="display: flex; gap: 12px;">
+          <button id="goToCollectionBtn" style="flex: 1; background: linear-gradient(135deg, ${currentConfig.primary_color}, #7c3aed); color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.125}px; font-weight: 700; box-shadow: 0 4px 20px ${currentConfig.primary_color}60;">
+            🎨 Go to Collection
+          </button>
+          <button id="closePopupBtn" style="flex: 1; background: transparent; color: ${currentConfig.text_color}; border: 2px solid ${currentConfig.text_color}40; padding: 16px; border-radius: 12px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.125}px; font-weight: 700;">
+            ✕ Cancel
+          </button>
+        </div>
+      `;
+
+      overlay.appendChild(popup);
+      document.body.appendChild(overlay);
+
+      document.getElementById('goToCollectionBtn').onclick = () => {
+        overlay.remove();
+        currentPage = 'admin';
+        renderPage();
+      };
+
+      document.getElementById('closePopupBtn').onclick = () => {
+        overlay.remove();
+      };
+
+      overlay.onclick = (e) => {
+        if (e.target === overlay) {
+          overlay.remove();
+        }
+      };
+    }
+
+    // Show NFT transfer confirmation
+    function showNFTTransferConfirmation(nft) {
+      const rarityColors = {
+        'Legendary': '#fbbf24',
+        'Epic': '#a855f7',
+        'Rare': '#3b82f6',
+        'Common': '#6b7280'
+      };
+      const rarityColor = rarityColors[nft.rarity] || '#6b7280';
+
+      // Create overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'confirmationOverlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 20px;
+      `;
+
+      const popup = document.createElement('div');
+      popup.style.cssText = `
+        background: ${currentConfig.surface_color};
+        border-radius: 24px;
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        border: 3px solid ${currentConfig.primary_color};
+        animation: popupSlide 0.3s ease;
+      `;
+
+      popup.innerHTML = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <div style="font-size: 80px; margin-bottom: 16px;">${nft.image}</div>
+          <h2 style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.75}px; color: ${currentConfig.text_color}; font-weight: 900; margin-bottom: 8px;">
+            Transfer NFT?
+          </h2>
+          <p style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.125}px; color: ${currentConfig.text_color}; opacity: 0.9; margin-bottom: 4px; font-weight: 700;">
+            ${nft.name}
+          </p>
+          <p style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${rarityColor}; font-weight: 700;">
+            ${nft.rarity}
+          </p>
+        </div>
+
+        <div style="background: ${currentConfig.background_color}; padding: 20px; border-radius: 16px; margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${currentConfig.text_color}; opacity: 0.7;">Market Value:</span>
+            <span style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.25}px; color: ${currentConfig.text_color}; font-weight: 900;">$${nft.price}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${currentConfig.text_color}; opacity: 0.7;">Game Value:</span>
+            <span style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.5}px; color: ${currentConfig.secondary_color}; font-weight: 900;">💎 ${nft.value}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button id="confirmBtn" style="flex: 1; background: linear-gradient(135deg, ${currentConfig.primary_color}, #7c3aed); color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.125}px; font-weight: 700; box-shadow: 0 4px 20px ${currentConfig.primary_color}60;">
+            ✓ Confirm Transfer
+          </button>
+          <button id="cancelBtn" style="flex: 1; background: transparent; color: ${currentConfig.text_color}; border: 2px solid ${currentConfig.text_color}40; padding: 16px; border-radius: 12px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.125}px; font-weight: 700;">
+            ✕ Cancel
+          </button>
+        </div>
+      `;
+
+      overlay.appendChild(popup);
+      document.body.appendChild(overlay);
+
+      document.getElementById('confirmBtn').onclick = async () => {
+        overlay.remove();
+        await transferSingleNFT(nft);
+      };
+
+      document.getElementById('cancelBtn').onclick = () => {
+        overlay.remove();
+      };
+
+      overlay.onclick = (e) => {
+        if (e.target === overlay) {
+          overlay.remove();
+        }
+      };
+    }
+
+    // Show message notification
+    function showMessage(text, type) {
+      const messageDiv = document.createElement('div');
+      const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
+      messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${bgColor};
+        color: white;
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-weight: bold;
+        z-index: 9999;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        animation: slideDown 0.3s ease;
+      `;
+      messageDiv.textContent = text;
+      document.body.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 3000);
+    }
+
+    // Render Hexa transfer history
+    function renderHexaTransferHistory(hexaHistoryString) {
+      if (!hexaHistoryString) return `
+        <div style="text-align: center; padding: 32px; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.6;">
+          No HEXA transfers yet. Play games to see your token transfer history!
+        </div>
+      `;
+
+      const entries = hexaHistoryString.split(',').filter(e => e.trim());
+      if (entries.length === 0) return `
+        <div style="text-align: center; padding: 32px; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.6;">
+          No HEXA transfers yet. Play games to see your token transfer history!
+        </div>
+      `;
+
+      return `
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          ${entries.reverse().map((entry, index) => {
+            const parts = entry.split(':');
+            const amount = parts[0];
+            const type = parts[1]; // 'IN' or 'OUT'
+            const reason = parts[2] || 'Game Activity';
+            const timestamp = parts[3] ? new Date(parts[3]).toLocaleString() : 'Unknown';
+            
+            const isIncoming = type === 'IN';
+            const bgColor = isIncoming ? '#10b98120' : '#ef444420';
+            const textColor = isIncoming ? '#10b981' : '#ef4444';
+            const icon = isIncoming ? '📥' : '📤';
+            
+            return `
+              <div style="background: ${bgColor}; padding: 16px; border-radius: 12px; border-left: 4px solid ${textColor};">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: ${currentConfig.font_size * 2}px;">${icon}</span>
+                    <div>
+                      <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${currentConfig.text_color}; font-weight: 900;">
+                        ${isIncoming ? 'Received' : 'Spent'}
+                      </div>
+                      <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.75}px; color: ${currentConfig.text_color}; opacity: 0.7;">
+                        ${reason}
+                      </div>
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.5}px; color: ${textColor}; font-weight: 900;">
+                      ${isIncoming ? '+' : '-'}${amount} 💎
+                    </div>
+                  </div>
+                </div>
+                <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.6; text-align: right;">
+                  ${timestamp}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Render transfer history
+    function renderTransferHistory(historyString) {
+      if (!historyString) return `
+        <div style="text-align: center; padding: 32px; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.6;">
+          No transfers yet. Transfer some NFTs to see your history!
+        </div>
+      `;
+
+      const entries = historyString.split(',').filter(e => e.trim());
+      if (entries.length === 0) return `
+        <div style="text-align: center; padding: 32px; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.6;">
+          No transfers yet. Transfer some NFTs to see your history!
+        </div>
+      `;
+
+      return `
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          ${entries.reverse().map((entry, index) => {
+            const parts = entry.split(':');
+            const nftName = parts[0];
+            const value = parts[1];
+            const image = parts[2] || '🎨';
+            const rarity = parts[3] || 'Common';
+            const price = parts[4] || '0';
+            const timestamp = parts[5] ? new Date(parts[5]).toLocaleString() : 'Unknown';
+            
+            const rarityColors = {
+              'Legendary': '#fbbf24',
+              'Epic': '#a855f7',
+              'Rare': '#3b82f6',
+              'Common': '#6b7280'
+            };
+            const rarityColor = rarityColors[rarity] || '#6b7280';
+            
+            return `
+              <div style="background: ${currentConfig.surface_color}; padding: 16px; border-radius: 12px; border: 2px solid ${rarityColor}40; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
+                  <div style="font-size: 64px; flex-shrink: 0;">${image}</div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.125}px; color: ${currentConfig.text_color}; font-weight: 900; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                      ${nftName}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                      <span style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.75}px; color: ${rarityColor}; font-weight: 700; background: ${rarityColor}20; padding: 4px 10px; border-radius: 6px;">
+                        ✨ ${rarity}
+                      </span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                      <div style="background: ${currentConfig.background_color}; padding: 8px; border-radius: 8px;">
+                        <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.6; margin-bottom: 2px;">Token ID</div>
+                        <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; font-weight: 900;">#${nftName.match(/#(\d+)/)?.[1] || '001'}</div>
+                      </div>
+                      <div style="background: ${currentConfig.background_color}; padding: 8px; border-radius: 8px;">
+                        <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.6; margin-bottom: 2px;">Price</div>
+                        <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.primary_color}; font-weight: 900;">$${price}</div>
+                      </div>
+                      <div style="background: ${currentConfig.background_color}; padding: 8px; border-radius: 8px;">
+                        <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.6; margin-bottom: 2px;">Value</div>
+                        <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.secondary_color}; font-weight: 900;">+💎 ${value}</div>
+                      </div>
+                      <div style="background: ${currentConfig.background_color}; padding: 8px; border-radius: 8px;">
+                        <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.6; margin-bottom: 2px;">Date</div>
+                        <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; font-weight: 700;">${new Date(timestamp).toLocaleDateString()}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Render admin page
+    function renderAdminPage() {
+      const selectedCount = selectedNFTs.length;
+      const selectedValue = selectedNFTs.reduce((sum, nft) => sum + nft.value, 0);
+
+      return `
+        <div class="min-h-full w-full p-4 md:p-8" style="background: linear-gradient(135deg, ${currentConfig.background_color}, #e0e7ff);">
+          <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="mb-8">
+              <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; gap: 12px;">
+                <div style="width: 100%; text-align: center;">
+                  <h1 style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 2}px; color: ${currentConfig.text_color}; font-weight: 900; margin-bottom: 8px; text-shadow: 0 4px 20px ${currentConfig.primary_color};">
+                    ${showTransferHistory ? '📜 Transfer History' : '🎨 NFT Collection'}
+                  </h1>
+                  <p style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.8;">
+                    ${showTransferHistory ? 'View all your NFT transfers' : 'Select NFTs to transfer to your gaming wallet'}
+                  </p>
+                </div>
+                <div style="display: flex; gap: 8px; width: 100%; max-width: 400px;">
+                  <button 
+                    id="backToGameBtnTop"
+                    style="flex: 1; background: ${currentConfig.surface_color}; color: ${currentConfig.text_color}; border: 2px solid ${currentConfig.primary_color}; padding: 12px 16px; border-radius: 12px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
+                  >
+                    ← Back
+                  </button>
+                  <button 
+                    id="toggleHistoryBtn"
+                    style="flex: 1; background: linear-gradient(135deg, ${currentConfig.secondary_color}, #0891b2); color: white; border: none; padding: 12px 16px; border-radius: 12px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; box-shadow: 0 4px 12px ${currentConfig.secondary_color}60;"
+                  >
+                    ${showTransferHistory ? '🎨 Collection' : '📜 History'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            ${showTransferHistory ? `
+              <!-- Transfer History Section -->
+              <div style="background: ${currentConfig.surface_color}; padding: 24px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4);">
+                ${renderTransferHistory(mockUserData.transfer_history)}
+              </div>
+            ` : `
+              <!-- NFT Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr)); gap: 12px; padding-bottom: 40px;">
+              ${nftCollection.map(nft => {
+                const rarityColors = {
+                  'Legendary': '#fbbf24',
+                  'Epic': '#a855f7',
+                  'Rare': '#3b82f6',
+                  'Common': '#6b7280'
+                };
+                const rarityColor = rarityColors[nft.rarity] || '#6b7280';
+
+                return `
+                  <div class="nft-card" style="background: ${currentConfig.surface_color}; border-radius: 16px; padding: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.3); border: 4px solid ${rarityColor + '60'}; cursor: pointer;" onclick="window.toggleNFTSelection(${JSON.stringify(nft).replace(/"/g, '&quot;')})">
+                    
+                    <!-- NFT Image -->
+                    <div style="font-size: 48px; text-align: center; margin-bottom: 8px; background: linear-gradient(135deg, ${currentConfig.background_color}, ${rarityColor}30); border-radius: 12px; padding: 12px;">
+                      ${nft.image}
+                    </div>
+
+                    <!-- NFT Info -->
+                    <div style="margin-bottom: 8px;">
+                      <h3 style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.75}px; color: ${currentConfig.text_color}; font-weight: 900; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        ${nft.name}
+                      </h3>
+                      
+                      <div style="margin-bottom: 8px;">
+                        <span style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${rarityColor}; font-weight: 700; background: ${rarityColor}20; padding: 2px 8px; border-radius: 6px; display: inline-block; margin-bottom: 4px;">
+                          ✨ ${nft.rarity}
+                        </span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                          <span style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; font-weight: 900;">
+                            $${nft.price}
+                          </span>
+                          <span style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.75}px; color: ${currentConfig.secondary_color}; font-weight: 900;">
+                            💎${nft.value}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Transfer Button -->
+                    <button 
+                      style="width: 100%; background: linear-gradient(135deg, ${currentConfig.primary_color}, #7c3aed); color: white; border: none; padding: 8px; border-radius: 8px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 12px ${currentConfig.primary_color}40;"
+                    >
+                      🔄 Transfer
+                    </button>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+            `}
+
+          </div>
+        </div>
+      `;
+    }
+
+    // Render game page
+    function renderGamePage() {
+      // If showing Hexa transfer history
+      if (showHexaTransferHistory) {
+        return `
+          <div class="min-h-full w-full p-4 md:p-8" style="background: linear-gradient(135deg, ${currentConfig.background_color}, #ddd6fe);">
+            <div class="max-w-6xl mx-auto">
+              <!-- Header -->
+              <div class="mb-8">
+                <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; gap: 12px;">
+                  <div style="width: 100%; text-align: center;">
+                    <h1 style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 2}px; color: ${currentConfig.text_color}; font-weight: 900; margin-bottom: 8px; text-shadow: 0 4px 20px ${currentConfig.primary_color};">
+                      💎 HEXA Transfer History
+                    </h1>
+                    <p style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.8;">
+                      Track all your HEXA token movements
+                    </p>
+                  </div>
+                  <button 
+                    id="backToGameFromHexaBtn"
+                    style="background: ${currentConfig.surface_color}; color: ${currentConfig.text_color}; border: 2px solid ${currentConfig.primary_color}; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 300px;"
+                  >
+                    ← Back to Game
+                  </button>
+                </div>
+              </div>
+
+              <!-- HEXA Transfer History Section -->
+              <div style="background: ${currentConfig.surface_color}; padding: 24px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4);">
+                ${renderHexaTransferHistory(mockUserData.hexa_transfer_history)}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="min-h-full w-full p-4 md:p-8" style="background: linear-gradient(135deg, ${currentConfig.background_color}, #ddd6fe);">
+          <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="mb-8">
+              <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; gap: 12px;">
+                <div style="width: 100%; text-align: center;">
+                  <h1 style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.75}px; color: ${currentConfig.text_color}; font-weight: 900; margin-bottom: 8px; text-shadow: 0 4px 20px ${currentConfig.primary_color};">
+                    ${currentConfig.game_title}
+                  </h1>
+                  <p style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.secondary_color}; font-weight: 700;">
+                    ${currentConfig.win_multiplier_text}
+                  </p>
+                </div>
+                <div style="display: flex; gap: 8px; width: 100%; max-width: 400px;">
+                  <button 
+                    id="transferPageBtnTop"
+                    style="flex: 1; background: linear-gradient(135deg, ${currentConfig.primary_color}, #7c3aed); color: white; border: none; padding: 12px 16px; border-radius: 12px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; box-shadow: 0 6px 20px ${currentConfig.primary_color}60;"
+                  >
+                    🎨 Transfer NFTs
+                  </button>
+                  <button 
+                    id="hexaTransferBtnTop"
+                    style="flex: 1; background: linear-gradient(135deg, ${currentConfig.secondary_color}, #0891b2); color: white; border: none; padding: 12px 16px; border-radius: 12px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; box-shadow: 0 6px 20px ${currentConfig.secondary_color}60;"
+                  >
+                    💎 H(Transfer)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Wallet Balance Card -->
+            <div style="background: linear-gradient(135deg, ${currentConfig.surface_color}, ${currentConfig.primary_color}30); padding: 16px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); border: 3px solid ${currentConfig.primary_color};">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                
+                <div style="min-width: 0;">
+                  <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.7; margin-bottom: 4px; font-weight: 600;">
+                    💼 Balance
+                  </div>
+                  <div id="walletBalanceDisplay" style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${currentConfig.text_color}; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    ${formatNumber(mockUserData.wallet_balance * liveTokenPrice)}H
+                  </div>
+                </div>
+
+                <div style="min-width: 0;">
+                  <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.7; margin-bottom: 4px; font-weight: 600;">
+                    📊 Price
+                  </div>
+                  <div id="tokenPriceDisplay" style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${currentConfig.primary_color}; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    $${liveTokenPrice.toFixed(2)}
+                  </div>
+                </div>
+
+                <div style="min-width: 0;">
+                  <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.7; margin-bottom: 4px; font-weight: 600;">
+                    💸 Spent
+                  </div>
+                  <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${currentConfig.secondary_color}; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    ${formatNumber(mockUserData.total_wagered * 300)}H
+                  </div>
+                </div>
+
+                <div style="min-width: 0;">
+                  <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.625}px; color: ${currentConfig.text_color}; opacity: 0.7; margin-bottom: 4px; font-weight: 600;">
+                    🏆 Won
+                  </div>
+                  <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: #10b981; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    ${formatNumber(mockUserData.total_won * 300)}H
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Prediction Game -->
+            <div style="background: ${currentConfig.surface_color}; padding: 20px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4);">
+              
+              <h2 style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.25}px; color: ${currentConfig.text_color}; font-weight: 900; text-align: center; margin-bottom: 20px;">
+                🎲 Make Your Prediction
+              </h2>
+
+              <!-- Slots Selection -->
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; font-weight: 700; margin-bottom: 8px;">
+                  🎰 Select Slots
+                </label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                  <button 
+                    id="slot3Btn"
+                    class="slot-btn"
+                    data-slots="3"
+                    style="padding: 12px 8px; border-radius: 10px; border: 2px solid ${currentConfig.primary_color}40; background: ${currentConfig.background_color}; color: ${currentConfig.text_color}; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; transition: all 0.2s;"
+                    ${isLoading || mockUserData.wallet_balance === 0 ? 'disabled' : ''}
+                  >
+                    3 Slots
+                  </button>
+                  <button 
+                    id="slot6Btn"
+                    class="slot-btn"
+                    data-slots="6"
+                    style="padding: 12px 8px; border-radius: 10px; border: 2px solid ${currentConfig.primary_color}40; background: ${currentConfig.background_color}; color: ${currentConfig.text_color}; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; transition: all 0.2s;"
+                    ${isLoading || mockUserData.wallet_balance === 0 ? 'disabled' : ''}
+                  >
+                    6 Slots
+                  </button>
+                  <button 
+                    id="slot9Btn"
+                    class="slot-btn"
+                    data-slots="9"
+                    style="padding: 12px 8px; border-radius: 10px; border: 2px solid ${currentConfig.primary_color}40; background: ${currentConfig.background_color}; color: ${currentConfig.text_color}; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; transition: all 0.2s;"
+                    ${isLoading || mockUserData.wallet_balance === 0 ? 'disabled' : ''}
+                  >
+                    9 Slots
+                  </button>
+                </div>
+              </div>
+
+              <!-- Time Selection -->
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; font-weight: 700; margin-bottom: 8px;">
+                  ⏱️ Select Time
+                </label>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                  <button 
+                    id="time60Btn"
+                    class="time-btn"
+                    data-time="60"
+                    style="padding: 10px; border-radius: 10px; border: 2px solid ${currentConfig.secondary_color}40; background: ${currentConfig.background_color}; color: ${currentConfig.text_color}; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; transition: all 0.2s;"
+                    ${isLoading || mockUserData.wallet_balance === 0 ? 'disabled' : ''}
+                  >
+                    1 min
+                  </button>
+                  <button 
+                    id="time180Btn"
+                    class="time-btn"
+                    data-time="180"
+                    style="padding: 10px; border-radius: 10px; border: 2px solid ${currentConfig.secondary_color}40; background: ${currentConfig.background_color}; color: ${currentConfig.text_color}; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; transition: all 0.2s;"
+                    ${isLoading || mockUserData.wallet_balance === 0 ? 'disabled' : ''}
+                  >
+                    3 min
+                  </button>
+                  <button 
+                    id="time300Btn"
+                    class="time-btn"
+                    data-time="300"
+                    style="padding: 10px; border-radius: 10px; border: 2px solid ${currentConfig.secondary_color}40; background: ${currentConfig.background_color}; color: ${currentConfig.text_color}; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; transition: all 0.2s;"
+                    ${isLoading || mockUserData.wallet_balance === 0 ? 'disabled' : ''}
+                  >
+                    5 min
+                  </button>
+                  <button 
+                    id="time600Btn"
+                    class="time-btn"
+                    data-time="600"
+                    style="padding: 10px; border-radius: 10px; border: 2px solid ${currentConfig.secondary_color}40; background: ${currentConfig.background_color}; color: ${currentConfig.text_color}; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; font-weight: 700; transition: all 0.2s;"
+                    ${isLoading || mockUserData.wallet_balance === 0 ? 'disabled' : ''}
+                  >
+                    10 min
+                  </button>
+                </div>
+              </div>
+
+              <!-- Main Countdown Display - Moved before wager -->
+              <div id="mainCountdownDisplay" style="display: block; margin-bottom: 16px; background: linear-gradient(135deg, ${currentConfig.secondary_color}20, ${currentConfig.primary_color}20); padding: 20px; border-radius: 12px; border: 2px solid ${currentConfig.secondary_color}; text-align: center;">
+                <div style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.8; margin-bottom: 8px; font-weight: 600;">
+                  ⏰ Round Countdown
+                </div>
+                <div id="mainCountdownTime" style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 2.5}px; color: ${currentConfig.secondary_color}; font-weight: 900; text-shadow: 0 2px 10px ${currentConfig.secondary_color}40;">
+                  1:00
+                </div>
+                <div id="countdownWarning" style="display: none; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.75}px; color: #ef4444; font-weight: 700; margin-top: 8px; animation: pulse 1s ease-in-out infinite;">
+                  ⚠️ Betting closes soon!
+                </div>
+              </div>
+
+              <!-- Wager Input -->
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; font-weight: 700; margin-bottom: 12px;">
+                  💰 Wager Amount (USDT)
+                </label>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <button 
+                    id="decreaseWagerBtn"
+                    style="background: ${currentConfig.primary_color}; color: white; border: none; padding: 0; border-radius: 10px; cursor: pointer; font-size: ${currentConfig.font_size * 1.25}px; font-weight: 900; width: 44px; height: 52px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px ${currentConfig.primary_color}60; flex-shrink: 0;"
+                    ${isLoading || mockUserData.wallet_balance === 0 ? 'disabled' : ''}
+                  >▼</button>
+                  
+                  <input 
+                    type="number" 
+                    id="wagerInput" 
+                    min="0.05" 
+                    max="${mockUserData.wallet_balance}"
+                    value="0.1"
+                    step="0.1"
+                    placeholder="Enter amount"
+                    style="flex: 1; padding: 10px; border-radius: 10px; border: 2px solid ${currentConfig.primary_color}; background: ${currentConfig.background_color}; color: ${currentConfig.text_color}; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; font-weight: 900; height: 52px; text-align: center; min-width: 0;"
+                    ${isLoading || mockUserData.wallet_balance === 0 ? 'disabled' : ''}
+                  />
+                  
+                  <button 
+                    id="increaseWagerBtn"
+                    style="background: ${currentConfig.primary_color}; color: white; border: none; padding: 0; border-radius: 10px; cursor: pointer; font-size: ${currentConfig.font_size * 1.25}px; font-weight: 900; width: 44px; height: 52px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px ${currentConfig.primary_color}60; flex-shrink: 0;"
+                    ${isLoading || mockUserData.wallet_balance === 0 ? 'disabled' : ''}
+                  >▲</button>
+                </div>
+                
+                <!-- HEXA Token Display -->
+                <div id="hexaTokenDisplay" style="margin-top: 12px; text-align: center; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.secondary_color}; font-weight: 700;">
+                  💎 Spend: <span id="hexaAmount">0.6</span> HEXA
+                </div>
+              </div>
+
+              <!-- NFT Slots Display -->
+              <div id="nftSlotsContainer" style="margin-bottom: 16px; display: block; width: 100%; box-sizing: border-box; overflow: hidden;">
+                <h3 style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${currentConfig.text_color}; font-weight: 700; margin-bottom: 12px; text-align: center;">
+                  🎰 Select Your NFT
+                </h3>
+                <div id="nftSlotsGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; box-sizing: border-box; max-width: 100%;">
+                  <!-- Slots will be dynamically inserted here -->
+                </div>
+              </div>
+
+              <!-- Confirm Button -->
+              <button 
+                id="confirmPredictionBtn"
+                style="display: none; width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.125}px; font-weight: 900; box-shadow: 0 6px 20px #10b98160; margin-bottom: 16px;"
+                ${isLoading || mockUserData.wallet_balance === 0 || gameInProgress ? 'disabled' : ''}
+              >
+                🎯 Confirm & Start Game
+              </button>
+
+              ${isLoading ? `
+                <div class="loading" style="text-align: center; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1}px; color: ${currentConfig.primary_color}; font-weight: 700;">
+                  ⏳ Processing prediction...
+                </div>
+              ` : ''}
+
+            </div>
+
+            <!-- Live Orders Section -->
+            <div id="liveOrdersSection" style="background: ${currentConfig.surface_color}; padding: 20px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin-top: 24px; display: none;">
+              <h2 style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.25}px; color: ${currentConfig.text_color}; font-weight: 900; text-align: center; margin-bottom: 16px;">
+                📊 Live Order
+              </h2>
+              <div id="liveOrderContent" style="background: ${currentConfig.background_color}; padding: 16px; border-radius: 12px; border: 2px solid ${currentConfig.primary_color};">
+                <!-- Live order details will be inserted here -->
+              </div>
+            </div>
+
+            <!-- Prediction History Section -->
+            <div style="background: ${currentConfig.surface_color}; padding: 20px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin-top: 24px;">
+              <h2 style="font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 1.25}px; color: ${currentConfig.text_color}; font-weight: 900; text-align: center; margin-bottom: 16px;">
+                📜 Prediction History
+              </h2>
+              <div id="predictionHistoryContent">
+                ${mockUserData.prediction_history ? renderPredictionHistory(mockUserData.prediction_history) : `
+                  <div style="text-align: center; padding: 32px; font-family: ${currentConfig.font_family}, system-ui, -apple-system, sans-serif; font-size: ${currentConfig.font_size * 0.875}px; color: ${currentConfig.text_color}; opacity: 0.6;">
+                    No predictions yet. Start playing to see your history!
+                  </div>
+                `}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    // Main render function
+    function renderPage() {
+      const app = document.getElementById('app');
+
+      if (currentPage === 'admin') {
+        app.innerHTML = renderAdminPage();
+
+        // Event listeners for admin page
+        const backToGameBtnTop = document.getElementById('backToGameBtnTop');
+        const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
+        
+        if (backToGameBtnTop) {
+          backToGameBtnTop.onclick = () => {
+            if (showTransferHistory) {
+              showTransferHistory = false;
+              renderPage();
+            } else {
+              currentPage = 'game';
+              renderPage();
+            }
+          };
+        }
+
+        if (toggleHistoryBtn) {
+          toggleHistoryBtn.onclick = () => {
+            showTransferHistory = !showTransferHistory;
+            renderPage();
+          };
+        }
+
+        // Make toggleNFTSelection globally accessible
+        window.toggleNFTSelection = toggleNFTSelection;
+
+      } else {
+        app.innerHTML = renderGamePage();
+
+        // Event listeners for game page
+        const wagerInput = document.getElementById('wagerInput');
+        const increaseWagerBtn = document.getElementById('increaseWagerBtn');
+        const decreaseWagerBtn = document.getElementById('decreaseWagerBtn');
+        const transferPageBtnTop = document.getElementById('transferPageBtnTop');
+        const hexaTransferBtnTop = document.getElementById('hexaTransferBtnTop');
+        const backToGameFromHexaBtn = document.getElementById('backToGameFromHexaBtn');
+        const confirmPredictionBtn = document.getElementById('confirmPredictionBtn');
+
+        // Slot buttons
+        const slot3Btn = document.getElementById('slot3Btn');
+        const slot6Btn = document.getElementById('slot6Btn');
+        const slot9Btn = document.getElementById('slot9Btn');
+        const slotButtons = [slot3Btn, slot6Btn, slot9Btn];
+
+        // Time buttons
+        const time60Btn = document.getElementById('time60Btn');
+        const time180Btn = document.getElementById('time180Btn');
+        const time300Btn = document.getElementById('time300Btn');
+        const time600Btn = document.getElementById('time600Btn');
+        const timeButtons = [time60Btn, time180Btn, time300Btn, time600Btn];
+
+        // Set default selections visually
+        if (slot3Btn) {
+          slot3Btn.style.background = currentConfig.primary_color;
+          slot3Btn.style.color = 'white';
+          slot3Btn.style.borderColor = currentConfig.primary_color;
+        }
+
+        if (time60Btn) {
+          time60Btn.style.background = currentConfig.secondary_color;
+          time60Btn.style.color = 'white';
+          time60Btn.style.borderColor = currentConfig.secondary_color;
+        }
+
+        // Display default 3 slots on page load
+        displayNFTSlots(3);
+
+        // Confirm button handler
+        if (confirmPredictionBtn) {
+          confirmPredictionBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            await startPredictionGame();
+          });
+        }
+
+        // Slot selection handlers
+        if (slot3Btn) {
+          slot3Btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (mockUserData.wallet_balance <= 0) {
+              showNoNFTsPopup();
+              return;
+            }
+            selectedSlots = 3;
+            selectedSlotIndex = null;
+            slotButtons.forEach(b => {
+              if (b) {
+                if (b === slot3Btn) {
+                  b.style.background = currentConfig.primary_color;
+                  b.style.color = 'white';
+                  b.style.borderColor = currentConfig.primary_color;
+                } else {
+                  b.style.background = currentConfig.background_color;
+                  b.style.color = currentConfig.text_color;
+                  b.style.borderColor = currentConfig.primary_color + '40';
+                }
+              }
+            });
+            
+            const confirmBtn = document.getElementById('confirmPredictionBtn');
+            if (confirmBtn) {
+              confirmBtn.style.display = 'none';
+            }
+            
+            displayNFTSlots(3);
+          });
+        }
+
+        if (slot6Btn) {
+          slot6Btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (mockUserData.wallet_balance <= 0) {
+              showNoNFTsPopup();
+              return;
+            }
+            selectedSlots = 6;
+            selectedSlotIndex = null;
+            slotButtons.forEach(b => {
+              if (b) {
+                if (b === slot6Btn) {
+                  b.style.background = currentConfig.primary_color;
+                  b.style.color = 'white';
+                  b.style.borderColor = currentConfig.primary_color;
+                } else {
+                  b.style.background = currentConfig.background_color;
+                  b.style.color = currentConfig.text_color;
+                  b.style.borderColor = currentConfig.primary_color + '40';
+                }
+              }
+            });
+            
+            const confirmBtn = document.getElementById('confirmPredictionBtn');
+            if (confirmBtn) {
+              confirmBtn.style.display = 'none';
+            }
+            
+            displayNFTSlots(6);
+          });
+        }
+
+        if (slot9Btn) {
+          slot9Btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (mockUserData.wallet_balance <= 0) {
+              showNoNFTsPopup();
+              return;
+            }
+            selectedSlots = 9;
+            selectedSlotIndex = null;
+            slotButtons.forEach(b => {
+              if (b) {
+                if (b === slot9Btn) {
+                  b.style.background = currentConfig.primary_color;
+                  b.style.color = 'white';
+                  b.style.borderColor = currentConfig.primary_color;
+                } else {
+                  b.style.background = currentConfig.background_color;
+                  b.style.color = currentConfig.text_color;
+                  b.style.borderColor = currentConfig.primary_color + '40';
+                }
+              }
+            });
+            
+            const confirmBtn = document.getElementById('confirmPredictionBtn');
+            if (confirmBtn) {
+              confirmBtn.style.display = 'none';
+            }
+            
+            displayNFTSlots(9);
+          });
+        }
+
+        // Time selection handlers
+        if (time60Btn) {
+          time60Btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (mockUserData.wallet_balance <= 0) {
+              showNoNFTsPopup();
+              return;
+            }
+            selectedTime = 60;
+            startMainCountdown();
+            timeButtons.forEach(b => {
+              if (b) {
+                if (b === time60Btn) {
+                  b.style.background = currentConfig.secondary_color;
+                  b.style.color = 'white';
+                  b.style.borderColor = currentConfig.secondary_color;
+                } else {
+                  b.style.background = currentConfig.background_color;
+                  b.style.color = currentConfig.text_color;
+                  b.style.borderColor = currentConfig.secondary_color + '40';
+                }
+              }
+            });
+          });
+        }
+
+        if (time180Btn) {
+          time180Btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (mockUserData.wallet_balance <= 0) {
+              showNoNFTsPopup();
+              return;
+            }
+            selectedTime = 180;
+            startMainCountdown();
+            timeButtons.forEach(b => {
+              if (b) {
+                if (b === time180Btn) {
+                  b.style.background = currentConfig.secondary_color;
+                  b.style.color = 'white';
+                  b.style.borderColor = currentConfig.secondary_color;
+                } else {
+                  b.style.background = currentConfig.background_color;
+                  b.style.color = currentConfig.text_color;
+                  b.style.borderColor = currentConfig.secondary_color + '40';
+                }
+              }
+            });
+          });
+        }
+
+        if (time300Btn) {
+          time300Btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (mockUserData.wallet_balance <= 0) {
+              showNoNFTsPopup();
+              return;
+            }
+            selectedTime = 300;
+            startMainCountdown();
+            timeButtons.forEach(b => {
+              if (b) {
+                if (b === time300Btn) {
+                  b.style.background = currentConfig.secondary_color;
+                  b.style.color = 'white';
+                  b.style.borderColor = currentConfig.secondary_color;
+                } else {
+                  b.style.background = currentConfig.background_color;
+                  b.style.color = currentConfig.text_color;
+                  b.style.borderColor = currentConfig.secondary_color + '40';
+                }
+              }
+            });
+          });
+        }
+
+        if (time600Btn) {
+          time600Btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (mockUserData.wallet_balance <= 0) {
+              showNoNFTsPopup();
+              return;
+            }
+            selectedTime = 600;
+            startMainCountdown();
+            timeButtons.forEach(b => {
+              if (b) {
+                if (b === time600Btn) {
+                  b.style.background = currentConfig.secondary_color;
+                  b.style.color = 'white';
+                  b.style.borderColor = currentConfig.secondary_color;
+                } else {
+                  b.style.background = currentConfig.background_color;
+                  b.style.color = currentConfig.text_color;
+                  b.style.borderColor = currentConfig.secondary_color + '40';
+                }
+              }
+            });
+          });
+        }
+
+        // Wager input change handler
+        if (wagerInput) {
+          wagerInput.addEventListener('input', updateHexaDisplay);
+          updateHexaDisplay();
+        }
+
+        if (increaseWagerBtn && wagerInput) {
+          increaseWagerBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (mockUserData.wallet_balance <= 0) {
+              showNoNFTsPopup();
+              return;
+            }
+            const currentValue = parseFloat(wagerInput.value) || 1;
+            const newValue = Math.round((currentValue + 0.1) * 10) / 10;
+            wagerInput.value = Math.min(newValue, mockUserData.wallet_balance);
+            updateHexaDisplay();
+          });
+        }
+
+        if (decreaseWagerBtn && wagerInput) {
+          decreaseWagerBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (mockUserData.wallet_balance <= 0) {
+              showNoNFTsPopup();
+              return;
+            }
+            const currentValue = parseFloat(wagerInput.value) || 1;
+            const newValue = Math.round((currentValue - 0.1) * 10) / 10;
+            wagerInput.value = Math.max(newValue, 0.1);
+            updateHexaDisplay();
+          });
+        }
+
+        if (transferPageBtnTop) {
+          transferPageBtnTop.onclick = () => {
+            currentPage = 'admin';
+            renderPage();
+          };
+        }
+
+        if (hexaTransferBtnTop) {
+          hexaTransferBtnTop.onclick = () => {
+            showHexaTransferHistory = true;
+            renderPage();
+          };
+        }
+
+        if (backToGameFromHexaBtn) {
+          backToGameFromHexaBtn.onclick = () => {
+            showHexaTransferHistory = false;
+            renderPage();
+          };
+        }
+      }
+    }
+
+    // Initialize the game
+    window.onload = function() {
+      renderPage();
+      startMainCountdown();
+      updateTokenPrice();
+    };
+
+    // Expose necessary functions to global scope for HTML onclick handlers
+    window.toggleNFTSelection = toggleNFTSelection;
+  </script>
+</body>
+</html>

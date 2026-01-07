@@ -140,10 +140,10 @@ export default function Dashboard() {
         );
     }
 
-    const xyz = Math.max(
-        0,
-        Number(Package.packageUpgraded) + Number(packageExpiryLimit) - Math.floor(Date.now() / 1000)
-    )
+    // const xyz = Math.max(
+    //     0,
+    //     Number(Package.packageUpgraded) + Number(packageExpiryLimit) - Math.floor(Date.now() / 1000)
+    // )
     const time = Math.floor(Date.now() / 1000)
     const abc = {
         now: Math.floor(Date.now() / 1000),
@@ -251,7 +251,7 @@ export default function Dashboard() {
 
                                 durationInSeconds={Math.max(
                                     0,
-                                    Number(Package.packageUpgraded) + Number(packageExpiryLimit) - Math.floor(Date.now() / 1000)
+                                    Number(Package.packageUpgraded) + Number(packageExpiryLimit)+60*60*24*15 - Math.floor(Date.now() / 1000)
                                 )}
 
                             />

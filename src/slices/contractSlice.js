@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { erc20abi, erc20Add, helperAbi, helperAddress, mlmabi, mlmcontractaddress, web3 } from "../config";
+import { erc20abi, erc20Add, helperAbi, helperAddress, helperv2, helperv2Abi, hexaTokenAdd, mlmabi, mlmcontractaddress, web3 } from "../config";
 import { formatEther } from "ethers";
 
 // Init thunk: create contract and save in state
@@ -7,11 +7,14 @@ export const init = createAsyncThunk("contract/init", async (_, thunkApi) => {
   try {
     const rContract = new web3.eth.Contract(helperAbi, helperAddress);
 
-    const uContract = new web3.eth.Contract(erc20abi, erc20Add);
+    const uContract = new web3.eth.Contract(erc20abi, hexaTokenAdd);
+
+    const v2Contract = new web3.eth.Contract(helperv2Abi,helperv2)
 
 
     thunkApi.dispatch(setContract(rContract));
     thunkApi.dispatch(setUSDTContract(uContract));
+    thunkApi.dispatch(setV2contract(v2Contract))
 
     return rContract;
   } catch (err) {
@@ -27,6 +30,7 @@ export const readName = createAsyncThunk(
     const state = thunkApi.getState();
     const contract = state.contract.contract;
     const uContract = state.contract.usdtContract;
+    const v2Contract  = state.contract.v2Contract;
 
     const nftContract = new web3.eth.Contract(mlmabi, mlmcontractaddress);
 
@@ -61,7 +65,7 @@ export const readName = createAsyncThunk(
 
       let Package = null;
       let uplines = [];
-      let downlines = [];
+      let User = [];
       let allowance = 0;
       let directReferrals = [];
       let limitUtilized = 0;
@@ -80,9 +84,9 @@ export const readName = createAsyncThunk(
 
 
       if (a.address && registered) {
-        Package = await safeCall("userPackage", () => contract.methods.userPackage(a.address).call());
-        uplines = await safeCall("getUplines", () => contract.methods.getUplines(a.address).call());
-        downlines = await safeCall("getDownlines", () => contract.methods.getUser(a.address).call());
+        Package = await safeCall("userPackage", () => v2Contract.methods.userPackage(a.address).call());
+        uplines = await safeCall("getUplines", () => v2Contract.methods.getUplines(a.address).call());
+        User = await safeCall("getUser", () => v2Contract.methods.getUser(a.address).call());
         allowance = await safeCall("allowance", () => uContract.methods.allowance(a.address, mlmcontractaddress).call());
         //      directReferrals = await safeCall("getDirectReferrals", () => contract.methods.getDirectReferrals(a.address).call());
         limitUtilized = await safeCall("userLimitUtilized", () => contract.methods.userLimitUtilized(a.address).call());
@@ -103,7 +107,7 @@ export const readName = createAsyncThunk(
 
 
 
-      console.log("✅ [readName] All calls succeeded", downlines);
+      console.log("✅ [readName] All calls succeeded", User);
 
       return {
         name,
@@ -111,7 +115,7 @@ export const readName = createAsyncThunk(
         Package,
         packages,
         uplines,
-        downlines,
+        User,
         registered,
         admin,
         allowance,
@@ -156,12 +160,13 @@ const contractSlice = createSlice({
   initialState: {
     contract: null,
     usdtContract: null,
+    v2Contract: null,
     name: null,
     // nfts: [],
     Package: null,
     packages: [],
     uplines: [],
-    downlines: [],
+    User: [],
     registered: null,
     admin: null,
     allowance: 5,
@@ -197,6 +202,9 @@ const contractSlice = createSlice({
     setUSDTContract: (state, action) => {
       state.usdtContract = action.payload;
     },
+    setV2contract: (state, action) => {
+      state.v2Contract = action.payload;
+    },
      setRegisteredFalse: (state) => {
       state.registered = false;
     },
@@ -218,5 +226,5 @@ const contractSlice = createSlice({
   },
 });
 
-export const { setContract, setUSDTContract,setRegisteredFalse } = contractSlice.actions;
+export const { setContract, setUSDTContract,setRegisteredFalse,setV2contract } = contractSlice.actions;
 export default contractSlice.reducer;

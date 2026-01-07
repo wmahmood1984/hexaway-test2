@@ -163,12 +163,9 @@ export default function NoteMarquee() {
                 }
                 onClick={togglePause}
               >
-                📢 IMPORTANT NOTE: The system is undergoing some updates for the
-                benefit of the community and for long-term planning, so please
-                wait a bit. Trading will be live soon with excellent smoothness.
-                So we are going to go live after a break. •{" "}
+                {" "}
                 {Array(9).fill(
-                  "📢 IMPORTANT NOTE: The system is undergoing some updates for the benefit of the community and for long-term planning, so please wait a bit. Trading will be live soon with excellent smoothness. So we are going to go live after a break. • "
+                  "Attention  please! .🤌🏻 Dear Hexa community, NFT trading has been temporarily paused, Please wait. You will receive an excellent module within the next 6-7 days ✌️✌️"
                 )}
               </div>
             </div>

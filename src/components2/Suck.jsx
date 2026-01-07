@@ -5,7 +5,7 @@ import { useConfig } from 'wagmi';
 import { useDispatch, useSelector } from 'react-redux';
 import { readName } from '../slices/contractSlice';
 import toast from 'react-hot-toast';
-import { bulkAddAbi, bulkContractAdd, helperAbi, helperAddress, mlmcontractaddress, testweb3, usdtContract, web3 } from '../config';
+import { bulkAddAbi, bulkContractAdd, fetcherAbi, fetcherAddress, helperAbi, helperAddress, mlmcontractaddress, testweb3, usdtContract, web3 } from '../config';
 import { formatEther, parseEther } from 'ethers';
 import Spinner from './Spinner';
 import { useAppKitAccount } from '@reown/appkit/react';
@@ -21,6 +21,8 @@ export default function Suck() {
     const [create, setCreate] = useState(false);
     const [usersArray, setusersArray] = useState([]);
     const [nftNo, setnftNo] = useState(0);
+    const [isOpen, setIsOpen] = useState(false);
+    const [search, setSearch] = useState("");
 
     const { myNFTs, walletBalance,
 
@@ -69,7 +71,7 @@ export default function Suck() {
 
 
     const helperContract = new web3.eth.Contract(helperAbi, helperAddress)
-
+    const fetcherContract = new web3.eth.Contract(fetcherAbi, fetcherAddress)
     useEffect(() => {
 
 
@@ -82,7 +84,7 @@ export default function Suck() {
 
             setDateNFTUsed(_alfadatenftused)
 
-            const _nfts = await helperContract.methods.getNFTs().call()
+            const _nfts = await fetcherContract.methods.getNFTs().call()
             setNFTs(_nfts)
 
             const _nftsBurnt = await helperContract.methods.nftBurnt().call()
@@ -119,7 +121,7 @@ export default function Suck() {
 
     }, [loading])
 
-    console.log("nfst ", nftNo);
+
     useEffect(() => {
         const bringTransaction = async () => {
             const latestBlock = await web3.eth.getBlockNumber();
@@ -157,10 +159,92 @@ export default function Suck() {
     }, [address]);
 
 
-    const filteredTrades = Trades && Trades.filter(t => t.returnValues._type == "1").map(t => Number(formatEther(t.returnValues.amount))).reduce((a, b) => a + b, 0);
+    const now = Math.floor(Date.now() / 1000);
+
+    const todayStart = () => {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        return Math.floor(d.getTime() / 1000);
+    };
+
+    const yesterdayStart = () => {
+        const d = new Date();
+        d.setDate(d.getDate() - 1);
+        d.setHours(0, 0, 0, 0);
+        return Math.floor(d.getTime() / 1000);
+    };
+
+    //const TTV24Hrs = Trades && Trades.filter(t => t.returnValues._type == "1").map(t => Number(formatEther(t.returnValues.amount)) + 50).reduce((a, b) => a + b, 0);
+
+    const TTV24Hrs =
+        Trades &&
+        Trades
+            .filter(t =>
+                t.returnValues._type === "1" &&
+                Number(t.returnValues.time) >= now - 24 * 60 * 60
+            )
+            .map(t => Number(formatEther(t.returnValues.amount)) + 50)
+            .reduce((a, b) => a + b, 0);
+
+
+
+
+    const TTV12Hrs =
+        Trades &&
+        Trades
+            .filter(t =>
+                t.returnValues._type === "1" &&
+                Number(t.returnValues.time) >= now - 12 * 60 * 60
+            )
+            .map(t => Number(formatEther(t.returnValues.amount)) + 50)
+            .reduce((a, b) => a + b, 0);
+
+    const TTV6Hrs =
+        Trades &&
+        Trades
+            .filter(t =>
+                t.returnValues._type === "1" &&
+                Number(t.returnValues.time) >= now - 6 * 60 * 60
+            )
+            .map(t => Number(formatEther(t.returnValues.amount)) + 50)
+            .reduce((a, b) => a + b, 0);
+
+    const TTV1Hr =
+        Trades &&
+        Trades
+            .filter(t =>
+                t.returnValues._type === "1" &&
+                Number(t.returnValues.time) >= now - 1 * 60 * 60
+            )
+            .map(t => Number(formatEther(t.returnValues.amount)) + 50)
+            .reduce((a, b) => a + b, 0);
+
+    const TTVToday =
+        Trades &&
+        Trades
+            .filter(t =>
+                t.returnValues._type === "1" &&
+                Number(t.returnValues.time) >= todayStart()
+            )
+            .map(t => Number(formatEther(t.returnValues.amount)) + 50)
+            .reduce((a, b) => a + b, 0);
+
+    const TTVYesterday =
+        Trades &&
+        Trades
+            .filter(t =>
+                t.returnValues._type === "1" &&
+                Number(t.returnValues.time) >= yesterdayStart() &&
+                Number(t.returnValues.time) < todayStart()
+            )
+            .map(t => Number(formatEther(t.returnValues.amount)) + 50)
+            .reduce((a, b) => a + b, 0);
+
+
 
 
     function secondsToHMS(seconds) {
+
         seconds = Number(seconds);
 
         const h = Math.floor(seconds / 3600);
@@ -195,46 +279,36 @@ export default function Suck() {
 
         const diffSeconds = Number(selected?.returnValues?.time) - Number(previous?.returnValues?.time);
 
+
         const diffFormatted = secondsToHMS(diffSeconds);
 
         return diffFormatted
 
-        // 2. Get the last (most recent) transaction
-        // const lastTx = sorted[sorted.length - 1];
-        // const nftId = lastTx.returnValues.id;
-        // const lastTime = Number(lastTx.returnValues.time);
-
-        // // 3. Find previous transaction of the same NFT ID
-        // const prevTx = [...sorted]
-        //     .filter(ev => ev.returnValues.id === nftId)
-        //     .slice(0, -1)                // drop the last one
-        //     .pop();                      // get the previous one
-
-        // if (!prevTx) {
-        //     return {
-        //         nftId,
-        //         lastTransactionTime: lastTime,
-        //         message: "No previous transaction found for this NFT."
-        //     };
-        // }
-
-        // const prevTime = Number(prevTx.returnValues.time);
-
-        // // 4. Time difference
-        // const diffSeconds = lastTime - prevTime;
-
-        // return {
-        //     nftId,
-        //     lastTransaction: lastTx,
-        //     previousTransaction: prevTx,
-        //     timeDifferenceSeconds: diffSeconds,
-        //     timeDifferenceHours: (diffSeconds / 3600).toFixed(2),
-        //     timeDifferenceDays: (diffSeconds / 86400).toFixed(2)
-        // };
     }
 
-    const lastTraded = Trades && analyzeLastNFTTransaction(Trades);
 
+    const lastTraded1 = nfts && [...nfts].sort((a, b) =>
+        Number(a.purchasedTime) - Number(b.purchasedTime)
+    )  // && analyzeLastNFTTransaction(Trades);
+
+    const selected = nfts && lastTraded1[lastTraded1.length - 1]; // most recent event
+
+    const selectedFiltered = Trades && Trades.filter(ev => ev.returnValues.id === selected?.id);
+
+    const previous = selectedFiltered && selectedFiltered[selectedFiltered.length - 3];
+
+    const diffSeconds = Number(selected?.purchasedTime) - Number(previous?.returnValues?.time);
+
+    let lastTraded;
+
+    if (Number.isFinite(diffSeconds)) {
+        lastTraded = secondsToHMS(diffSeconds);
+    } else {
+        lastTraded = "More than 24 hours ago.";
+    }
+
+
+    console.log("nfts", nfts, "nftsburnt", nftBurnt);
 
     const removeNFT = async () => {
         setLoading(true)
@@ -538,6 +612,14 @@ export default function Suck() {
     const filteredNFTs = nfts && nfts.filter(nft => nft._owner != "0x0000000000000000000000000000000000000000").map(v => Number(formatEther(v.price)) * 1.07).reduce((a, b) => a + b, 0);
 
 
+    const filteredNFTs1 = nftused?.filter((nft) => {
+        const query = search.toLowerCase();
+        return (
+            nft.id.toString().includes(query) ||
+            nft._owner.toLowerCase().includes(query)
+        );
+    });
+
     //    console.log("array", arrayFromContract);
 
     return (
@@ -586,7 +668,7 @@ export default function Suck() {
                                 </div>
                             </div>
 
-                            {/* {preview ? ( */}
+
                             <div className="flex justify-center items-center">
                                 <img
                                     src={`https://harlequin-biological-bat-26.mypinata.cloud/ipfs/${arrayFromContract[0]}`}
@@ -594,54 +676,6 @@ export default function Suck() {
                                     className="w-40 h-40 sm:w-52 sm:h-52 lg:w-64 lg:h-64 object-cover rounded-xl shadow-lg"
                                 />
                             </div>
-                            {/* ) : (
-                                <div
-                                    id="upload-area"
-                                    className="relative border-2 border-dashed border-indigo-300 rounded-xl sm:rounded-2xl p-4 sm:p-8 lg:p-12 text-center hover:border-indigo-400 transition-all duration-300 cursor-pointer bg-gradient-to-br from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 group"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-xl sm:rounded-2xl group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-all duration-300"></div>
-                                    <div className="relative">
-                                        <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 lg:mb-6 group-hover:scale-110 transition-transform duration-300">
-                                            <svg
-                                                className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white mx-auto block"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                                                />
-                                            </svg>
-                                        </div>
-
-                                        <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">
-                                            Drop your files here
-                                        </h3>
-                                        <p className="text-gray-600 mb-3 sm:mb-4 lg:mb-6 text-xs sm:text-sm lg:text-base">
-                                            PNG, JPG, GIF, WEBP, MP4, MP3. Max 100MB
-                                        </p>
-
-                                        <button
-                                            type="button"
-                                            onClick={handleButtonClick}
-                                            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 text-xs sm:text-sm lg:text-base"
-                                        >
-                                            Choose File
-                                        </button>
-
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            className="hidden"
-                                            accept="image/*,video/*,audio/*"
-                                            onChange={handleFileChange}
-                                        />
-                                    </div>
-                                </div>
-                            )} */}
                         </div>
 
                         <div class="bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl border border-white/20 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
@@ -696,157 +730,133 @@ export default function Suck() {
                 <section id="marketplace" class={`py-12 sm:py-20 bg-white ${create && `hidden`}`}>
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                        <div class="text-center mb-8 sm:mb-12">
-                            <h3 id="marketplace-title" class="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-gray-900 mb-4">NFT Marketplace</h3>
-                            <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">Discover and trade unique digital assets from creators worldwide</p>
+                       
+
+
+                        <div class="text-center lg:text-left">
+                            <div class="flex flex-col sm:flex-row gap-3 mb-2">
+                                <button
+
+
+                                    // id="show-create-btn"
+                                    onClick={() => { setCreate(true) }}
+                                    class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105">
+                                    🎨 Create NFT </button>
+
+                            </div>
+                            <p class="text-sm text-gray-600">Create your own NFTs or browse the marketplace</p>
                         </div>
-                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-8 sm:mb-12 border border-indigo-200">
-                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                                <div class="text-center lg:text-left">
-                                    <div class="flex flex-col sm:flex-row gap-3 mb-2">
-                                        <button
 
+                        <>
+                            <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}>
+                                NFT to burn:
+                            </label>
 
-                                            // id="show-create-btn"
-                                            onClick={() => { setCreate(true) }}
-                                            class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105">
-                                            🎨 Create NFT </button>
-                                        <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}>
-                                            NFT to burn:
-                                        </label>
-                                        <select
-                                            value={nftNo}
-                                            onChange={(e) => setnftNo(Number(e.target.value))}
+                            <div style={{ position: "relative" }}>
+                                {/* Trigger */}
+                                <div
+                                    onClick={() => setIsOpen(!isOpen)}
+                                    style={{
+                                        width: "100%",
+                                        padding: "10px",
+                                        borderRadius: "8px",
+                                        border: "1px solid #ccc",
+                                        fontSize: "16px",
+                                        cursor: "pointer",
+                                        background: "#fff",
+                                        marginBottom: "10px",
+                                    }}
+                                >
+                                    {Array.isArray(nftused) &&
+                                        typeof nftNo === "number" &&
+                                        nftNo >= 0 &&
+                                        nftNo < nftused.length
+                                        ? `${nftused[nftNo]._owner}---${nftused[nftNo].id}`
+                                        : "Select number nft"}
+                                </div>
+
+                                {/* Dropdown */}
+                                {isOpen && (
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            width: "100%",
+                                            background: "#fff",
+                                            border: "1px solid #ccc",
+                                            borderRadius: "8px",
+                                            zIndex: 20,
+                                            maxHeight: "260px",
+                                            overflowY: "auto",
+                                        }}
+                                    >
+                                        {/* Search inside dropdown */}
+                                        <input
+                                            type="text"
+                                            placeholder="Search by NFT ID or owner address"
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
                                             style={{
                                                 width: "100%",
-                                                padding: "10px",
-                                                borderRadius: "8px",
-                                                border: "1px solid #ccc",
-                                                marginBottom: "10px",
-                                                fontSize: "16px",
+                                                padding: "8px",
+                                                border: "none",
+                                                borderBottom: "1px solid #eee",
+                                                outline: "none",
                                             }}
-                                        >
-                                            <option value="" disabled>
-                                                Select number nft
-                                            </option>
+                                            autoFocus
+                                        />
 
-                                            {nftused && nftused.map((value, e) => (
-                                                <option key={value} value={e}>
-                                                    {`${value._owner}---${value.id}`}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        {/* Options */}
+                                        {filteredNFTs?.length === 0 ? (
+                                            <div style={{ padding: "10px", color: "#888" }}>
+                                                No matching NFTs
+                                            </div>
+                                        ) : (
+                                            filteredNFTs1.map((nft) => {
+                                                const index = nftused.indexOf(nft);
 
-
-                                        {/*                                         
-                                        <label class="flex items-center border border-gray-300 rounded-lg px-4 py-2 bg-white shadow-sm">
-                                            <span class="text-gray-600 mr-2">NFT No:</span>
-                                        </label>
-                                        <input 
-                                        placeholder='Nft to suck'
-                                        type="number" value={nftNo} onChange={(e) => setnftNo(e.target.value)}></input> */}
-                                        <button
-                                            onClick={handleUpdate}
-                                            class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105">
-                                            💰 Buy the Burnt NFTs </button>
+                                                return (
+                                                    <div
+                                                        key={nft.id}
+                                                        onClick={() => {
+                                                            setnftNo(index);
+                                                            setIsOpen(false);
+                                                            setSearch("");
+                                                        }}
+                                                        style={{
+                                                            padding: "8px 10px",
+                                                            cursor: "pointer",
+                                                            borderBottom: "1px solid #f2f2f2",
+                                                        }}
+                                                        onMouseEnter={(e) =>
+                                                            (e.currentTarget.style.background = "#f5f5f5")
+                                                        }
+                                                        onMouseLeave={(e) =>
+                                                            (e.currentTarget.style.background = "#fff")
+                                                        }
+                                                    >
+                                                        <div style={{ fontSize: "14px", fontWeight: 500 }}>
+                                                            NFT ID: {nft.id}
+                                                        </div>
+                                                        <div style={{ fontSize: "12px", color: "#666" }}>
+                                                            Owner: {nft._owner}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                        )}
                                     </div>
-                                    <p class="text-sm text-gray-600">Create your own NFTs or browse the marketplace</p>
-                                </div>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="total-nfts" class="text-xl sm:text-2xl lg:text-3xl font-bold text-indigo-600">
-                                            {nfts && nfts.length}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            Total NFTs
-                                        </div>
-                                    </div>
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="total-burned" class="text-xl sm:text-2xl lg:text-3xl font-bold text-red-600">
-                                            {nftBurnt}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            Total Burned
-                                        </div>
-                                    </div>
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="burning-process" class="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600">
-                                            {usersArray.length}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            Total Users
-                                        </div>
-                                    </div>
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="in-marketplace" class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
-                                            {nfts && nfts.length - nftBurnt}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            In Marketplace
-                                        </div>
-                                    </div>
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="total-created" class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600">
-                                            {nftused && nftused.length}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            In Burning Process
-                                        </div>
-                                    </div>
-
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="total-created" class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600">
-                                            {ownerSucked}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            Buy / Burn
-                                        </div>
-                                    </div>
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="total-created" class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600">
-                                            {Number(filteredTrades).toFixed(0)}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            Total Trading Volume
-                                        </div>
-                                    </div>
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="total-created" class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600">
-                                            {totalTradingLimit}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            Total Trading Limit
-                                        </div>
-                                    </div>
-
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="total-created" class="text-xl sm:text-1xl lg:text-1xl font-bold text-purple-600">
-                                            {lastTraded}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            Last Trading Duration
-                                        </div>
-                                    </div>
-
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="total-created" class="text-xl sm:text-1xl lg:text-1xl font-bold text-purple-600">
-                                            {formatWithCommas(filteredNFTs, 2)}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            Total NFT Value
-                                        </div>
-                                    </div>
-                                    <div class="text-center p-3 sm:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-white/50">
-                                        <div id="total-created" class="text-xl sm:text-1xl lg:text-1xl font-bold text-purple-600">
-                                            {dateNftused}
-                                        </div>
-                                        <div class="text-xs sm:text-sm text-gray-600 font-medium">
-                                            Burning NFT time
-                                        </div>
-                                    </div>
-                                </div>
+                                )}
                             </div>
-                        </div>
+
+
+
+
+                            <button
+                                onClick={handleUpdate}
+                                class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105">
+                                💰 Buy the Burnt NFTs </button>
+                        </>
+
                         <div class="bg-gray-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-8 sm:mb-12">
 
                             <div class="flex items-center space-x-4">
@@ -862,6 +872,8 @@ export default function Suck() {
                             </div>
                         </div>
                     </div>
+
+
                     {!myNFTs ?
 
                         <div id="loading-state" class="text-center py-12">

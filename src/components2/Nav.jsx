@@ -4,7 +4,7 @@ import { useAppKitAccount, useDisconnect } from '@reown/appkit/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { formatAddress } from '../utils/contractExecutor';
 import { init, readName, setRegisteredFalse } from '../slices/contractSlice';
-import { bulkAdd, mlmabi, mlmcontractaddress, web3 } from '../config';
+import { admin, bulkAdd, mlmabi, mlmcontractaddress, web3 } from '../config';
 
 export default function Nav({ setCreateActive, createActive }) {
   const { disconnect } = useDisconnect();
@@ -13,13 +13,34 @@ export default function Nav({ setCreateActive, createActive }) {
 
   const {
     registered,
-    NFTMayBeCreated, admin, status
+    NFTMayBeCreated, status
   } = useSelector((state) => state.contract);
 
   const { address, isConnected } = useAppKitAccount();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [adminRep, setAdminrep] = useState(false);
+
+  const [logoClicks, setLogoClicks] = useState(0);
+  const [showAdminPage, setShowAdminPage] = useState(false);
+
+  const handleLogoClick = () => {
+    setLogoClicks(prev => {
+      const next = prev + 1;
+
+      if (next === 5) {
+        // open hidden page
+        if (address === admin) {
+          setShowAdminPage(true)
+        } else if (address === adminRep) {
+          navigate("/suck")
+        }
+        return 0; // reset after trigger
+      }
+
+      return next;
+    });
+  };
 
 
   const mlmContract = new web3.eth.Contract(mlmabi, mlmcontractaddress)
@@ -76,7 +97,7 @@ export default function Nav({ setCreateActive, createActive }) {
   };
 
 
-
+  //console.log("admin",showAdminPage,address===admin,address,admin);
 
 
   return (
@@ -85,7 +106,7 @@ export default function Nav({ setCreateActive, createActive }) {
         <div className="flex justify-between items-center h-14 sm:h-16">
           {/* Logo + Brand */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-3">
+            <button onClick={handleLogoClick} className="flex items-center space-x-3">
               <img
                 src="/HEXA.png"
                 alt="Hexaway Logo"
@@ -97,17 +118,17 @@ export default function Nav({ setCreateActive, createActive }) {
               >
                 HEXAWAY
               </h1>
-            </Link>
+            </button>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {registered && (
               <>
-                {address == adminRep && 
-                
-                
-                                  <>
+                {showAdminPage &&
+
+
+                  <>
                     <Link
                       to="/suck"
                       onClick={() => setMobileOpen(false)}
@@ -116,6 +137,12 @@ export default function Nav({ setCreateActive, createActive }) {
                       Suck
                     </Link>
 
+
+
+                  </>}
+                {showAdminPage &&
+                  <>
+
                     <Link
                       to="/admin"
                       onClick={() => setMobileOpen(false)}
@@ -123,15 +150,23 @@ export default function Nav({ setCreateActive, createActive }) {
                     >
                       Admin form
                     </Link>
-
-                  </>}
-                {address == bulkAdd && <Link to="/bulk" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Bulk Upload</Link>}
+                    <Link
+                      to="/lists"
+                      onClick={() => setMobileOpen(false)}
+                      className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                    >
+                      Lists
+                    </Link>
+                    <Link to="/bulk" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Bulk Upload</Link>
+                  </>
+                }
                 <Link to="/dashboard" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Dashboard</Link>
                 <Link to="/trade" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Trade</Link>
                 {NFTMayBeCreated && (
                   <Link to="/create" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Create</Link>
                 )}
                 <Link to="/asset" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Assets</Link>
+                <Link to="/p2p" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">P 2 P</Link>
                 <Link to="/tree" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Team Tree</Link>
                 <Link to="/teamview" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Team View</Link>
 
@@ -187,7 +222,7 @@ export default function Nav({ setCreateActive, createActive }) {
           <div className="px-4 py-3 space-y-1">
             {registered && (
               <>
-                {address == adminRep &&
+                {showAdminPage &&
                   <>
                     <Link
                       to="/suck"
@@ -197,6 +232,16 @@ export default function Nav({ setCreateActive, createActive }) {
                       Suck
                     </Link>
 
+
+
+                  </>
+
+
+
+                }
+
+                {showAdminPage &&
+                  <>
                     <Link
                       to="/admin"
                       onClick={() => setMobileOpen(false)}
@@ -205,20 +250,25 @@ export default function Nav({ setCreateActive, createActive }) {
                       Admin form
                     </Link>
 
+                    <Link
+                      to="/lists"
+                      onClick={() => setMobileOpen(false)}
+                      className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                    >
+                      Lists
+                    </Link>
+
+                    <Link
+                      to="/bulk"
+                      onClick={() => setMobileOpen(false)}
+                      className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                    >
+                      Bulk Upload
+                    </Link>
                   </>
 
 
 
-                }
-
-                {address == bulkAdd &&
-                  <Link
-                    to="/bulk"
-                    onClick={() => setMobileOpen(false)}
-                    className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
-                  >
-                    Bulk Upload
-                  </Link>
 
                 }
 
@@ -250,6 +300,13 @@ export default function Nav({ setCreateActive, createActive }) {
                   className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                 >
                   Assets
+                </Link>
+                <Link
+                  to="/p2p"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                >
+                  P2P
                 </Link>
 
                 <Link
