@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom';
 export default function Dashboard() {
 
     const config = useConfig()
-    const { Package, myNFTs, packages, downlines, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
+    const { Package, myNFTs, packages, User, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
 
         , walletBalance, tradingReferralBonus, packageReferralBonus, tradingLevelBonus, packageLevelBonus, selfTradingProfit, nftPurchaseTime, incomeBlockTime,
         status, error, totalIncome, timeLimit, packageExpiryLimit, nftQueIndex
@@ -122,10 +122,11 @@ export default function Dashboard() {
     const now = new Date().getTime()
 
 
-    const isLoading = !Package || !downlines || !packages;
+    const isLoading = !Package || !User || !packages;
 
     const levelBlockSeconds = Number(incomeBlockTime) + 60 * 60 * 48 - now / 1000 < 0 ? 0 : Number(incomeBlockTime) + 60 * 60 *48- now / 1000
 
+    
     // console.log("dashoard", packageKeys[Package.id].name);
 
 
@@ -153,7 +154,7 @@ export default function Dashboard() {
         remaining: Number(Package.purchaseTime) + Number(Package.time) - Math.floor(Date.now() / 1000)
     }
 
-    console.log("dashboard",Package.packageUpgraded,packageExpiryLimit,60*60*24*30,time);
+
 
     return (
         <div>
@@ -211,7 +212,7 @@ export default function Dashboard() {
                                             Referred by
                                         </div>
                                         <div class="text-xs sm:text-sm text-gray-600 mt-1">
-                                            {formatAddress(downlines?.referrer)}
+                                            {formatAddress(User?.referrer)}
                                         </div>
                                     </div>
                                     <div class="text-center p-3 sm:p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
@@ -395,7 +396,7 @@ export default function Dashboard() {
                             <HexawayPackages
                                 packages={packages}
                                 Package={Package}
-                                downlines={downlines}
+                                downlines={User}
                                 handleUpdate={handleUpdate}
                                 loading={loading}
 
