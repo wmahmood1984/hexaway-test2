@@ -29,6 +29,8 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     IERC20 public HEXA;
     uint public price;
 
+    event Trades(address user, uint originalAmount, uint tradeAmount, uint time, bool _type);
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -75,6 +77,9 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                     HEXA.transferFrom(sale.user, buy.user, settleAmount),
                     "HEXA transfer failed"
                 );
+
+                emit Trades(buy.user,buy.amount,settleAmount,block.timestamp,false);
+                emit Trades(sale.user,sale.amount,settleAmount,block.timestamp,true);
 
                 // Update filled amounts
                 buy.amountFilled += settleAmount;

@@ -1,260 +1,108 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
-import { formatWithCommas } from '../utils/contractExecutor';
-import { formatEther } from 'ethers';
-import { bulkAddAbi, bulkContractAdd, fetcherAbi, fetcherAddress, helperAbi, helperAddress, testweb3, web3 } from '../config';
+import { useDispatch, useSelector } from 'react-redux';
+import { executeContract, formatWithCommas, secondsToDMY } from '../utils/contractExecutor';
+import { formatEther, parseEther } from 'ethers';
+import { bulkAddAbi, bulkContractAdd, fetcherAbi, fetcherAddress, fetcherHelperv2, fetcherV2Abi, helperAbi, helperAddress, helperContractV2, helperv2, HexaContract, testweb3, web3 } from '../config';
 import { NFT } from './NFT';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppKitAccount } from '@reown/appkit/react';
 import TradingLimitTimer from './Timer4';
 import toast from 'react-hot-toast';
+import { useConfig } from 'wagmi';
+import { readName } from '../slices/contractSlice';
 
 export default function Trade({ setCreateActive }) {
 
-    const { Package, myNFTs, packages, User, registered, admin, allowance, NFTQueBalance, limitUtilized, NFTque
-
-        , levelIncome,
-        referralIncome,
-        tradingIncome, walletBalance, userTradingTime, timeLimit,
+    const { Package, User,  walletBalance, userTradingTime, timeLimit,
         status, error
     } = useSelector((state) => state.contract);
     const { address } = useAppKitAccount();
 
+    const config = useConfig()
+    const dispatch = useDispatch()
 
-    const navigate = useNavigate()
 
-    const [nfts, setNFTs] = useState()
-    const [toggle, setToggle] = useState(false)
+    const [tickets, setTickets] = useState()
+
     const [showMessage, setShowMessage] = useState(false)
-    const [Trades, setTrades] = useState([])
-    // const [userTradingLimitTime, setUserTradingLimitTime] = useState(0)
+    const [loading,setLoading] = useState(false)
+
     const helperContract = new web3.eth.Contract(helperAbi, helperAddress)
-    const fetcherContract = new web3.eth.Contract(fetcherAbi, fetcherAddress)
+    const fetcherContract = new web3.eth.Contract(fetcherV2Abi, fetcherHelperv2)
     const saveContract = new testweb3.eth.Contract(bulkAddAbi, bulkContractAdd);
 
-    useEffect(() => {
-        if (!fetcherContract) return;
+    useEffect(()=>{
 
-        let intervalId;
+        const abc = async ()=>{
+            const _tickets = await fetcherContract.methods.getTicketsByUser(address).call()
+            setTickets(_tickets)
+        }
 
-        const fetchNFTs = async () => {
+        abc()
+    },[address,loading])
 
-            const _nfts = await fetcherContract.methods.getNFTs().call();
-            const _burnt = await fetcherContract.methods.getNFTUsed().call()
-
-            const idThreshold = await saveContract.methods.arrayToStart().call();
-            const unitsTotake = await saveContract.methods.getUnitArray().call();
-            const populationSize = await saveContract.methods.populationSize().call();
-
-            // Normalize once
-            const unitsSet = new Set(unitsTotake.map(String));
-
-            // NFTs with id > threshold
-            const firstArrayy = _nfts.filter(nft => Number(nft.id) > Number(idThreshold));
-
-            // NFTs whose id exists in unitsTotake
-            const secondArray = _nfts
-                .filter(nft => unitsTotake.includes(String(nft.id)))
-                ;
-
-            const mergedSorted = [...firstArrayy, ...secondArray].sort(
-                (a, b) => Number(a.purchasedTime) - Number(b.purchasedTime)
-            ).slice(0, populationSize);
-
-            const mergedSortedpricewise = [...firstArrayy, ...secondArray].sort(
-                (a, b) => Number(b.price) - Number(a.price)
-            )
-
-            const now = new Date().getTime() / 1000
+   
 
 
-            const accountNFTs = _burnt.filter(nft => nft._owner.toLowerCase() === address.toLowerCase())
-            const accountNFTslast24Hrs = accountNFTs.filter(nft => now - Number(nft.purchasedTime) <= 60 * 60 * 24)
-
-            if (accountNFTslast24Hrs.length === 0) {
-                setShowMessage(true)
+        const handleTrade2 = async (id=0) => {
+    
+            await executeContract({
+                config,
+                functionName: "trade",
+                args: [id],
+                onSuccess: (txHash, receipt) => {
+                    console.log("🎉 Tx Hash:", txHash);
+                    console.log("🚀 Tx Receipt:", receipt);
+                    dispatch(readName({ address: receipt.from }));
+                    toast.success("Trade made Successfully")
+                    setLoading(false)
+                },
+                contract: helperContractV2,
+                onError: (err) => {
+                    setLoading(false)
+    
+                    toast.error("This Trade is not available")
+                },
+            });
+        }
+    
+    
+    
+    
+    
+        const handleTrade = async (id) => {
+    
+    
+            try {
+                setLoading(true);
+      
+    
+    
+                await executeContract({
+                    config,
+                    functionName: "approve",
+                    args: [helperv2, parseEther("6000")],
+                    contract: HexaContract,
+                    onSuccess: () => handleTrade2(),
+                    onError: () => {
+                        setLoading(false);
+                        toast.error("Approval failed");
+                    }
+                });
+    
+            } catch (err) {
+                setLoading(false);
+                toast.error("Unexpected error occurred");
+                console.error(err);
             }
-
-
-
-
-
-
-            // Save to state
-            const randomIndex = Math.floor(Math.random() * mergedSorted.length);
-            const randomNFT = mergedSorted[randomIndex];
-
-            // console.log("All events:", mergedSortedpricewise[0],randomNFT,"account",accountNFTs, "last 24 hrs",accountNFTslast24Hrs, "now",now,
-            //     "last nft purchase time",accountNFTs[6].purchasedTime, "diff", now-Number(accountNFTs[6].purchasedTime)
-            // );
-
-
-
-            const nftToTake = (accountNFTslast24Hrs.length > 0 || Package.id == "0") ? randomNFT : mergedSortedpricewise[0]
-            setNFTs([_nfts[0]]);
         };
 
-        fetchNFTs();
-        intervalId = setInterval(fetchNFTs, 30000);
 
-        return () => clearInterval(intervalId);
-    }, [toggle]);
 
-    //.
 
-    // useEffect(() => {
+    const isLoading = !tickets || !Package
 
-
-    //     if (address) {
-
-    //         const bringTransaction = async () => {
-    //             const latestBlock = await web3.eth.getBlockNumber();
-    //             const fromBlock = latestBlock - 86500;
-    //             const step = 5000; // or smaller if node still complains
-    //             let allEvents = [];
-
-    //             for (let i = fromBlock; i <= latestBlock; i += step) {
-    //                 const toBlock = Math.min(i + step - 1, latestBlock);
-
-    //                 try {
-    //                     const events = await helperContract.getPastEvents("Trades",
-
-    //                         {
-
-    //                             fromBlock: i,
-    //                             toBlock: toBlock,
-    //                         });
-    //                     allEvents = allEvents.concat(events);
-    //                     setTrades(allEvents)
-    //                     // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
-    //                 } catch (error) {
-    //                     console.warn(`Error fetching from ${i} to ${toBlock}`, error);
-    //                 }
-    //             }
-
-
-    //             const allPurchases = allEvents.filter(event => event.returnValues._type == "1" && event.returnValues._user.toLowerCase() === address.toLowerCase());
-    //             const purchaseOf75 = allPurchases.filter(event => Number(formatEther(event.returnValues.amount)) > 25)
-
-
-
-    //             if (purchaseOf75.length == 0) {
-    //                 setShowMessage(true)
-    //             }
-
-    //             // Save as array of length 1
-
-
-
-
-
-    //         };
-
-
-
-
-    //         bringTransaction();
-
-
-
-    //     }
-
-    // }, [])
-
-
-    useEffect(() => {
-        if (!address) return;
-
-        const concurrencyLimit = 10;
-
-
-        const abc = async () => {
-
-
-
-            let CreateList = await helperContract.methods.getNFTListed(address).call()
-
-
-            let lastCreateTime
-            if (CreateList.length === 0) {
-
-                lastCreateTime = Package.packageUpgraded//await helperContract.methods.userJoiningTime(address).call();
-                console.log("package upgraded ", lastCreateTime,);
-            } else {
-                let lastCreate = CreateList[CreateList.length - 1];
-                lastCreateTime = await helperContract.methods.idPurchasedtime(lastCreate.id).call();
-                console.log("past purchase ", lastCreateTime, lastCreate.id);
-            }
-
-
-
-
-
-            const currentTime = Math.floor(Date.now() / 1000);
-            const timeDiff = currentTime - lastCreateTime;
-            let requiredDiff;
-
-
-
-
-
-            switch (Package.id) {   // <-- The condition goes here
-                case "1":         // checks if option === 1
-                    requiredDiff = 24 * 24 * 60 * 60; // 7 days in seconds
-                    break;
-                case "2":         // checks if option === 2
-                    requiredDiff = 13 * 24 * 60 * 60; // 7 days in seconds
-                    break;
-                case "3":         // checks if option === 3
-                    requiredDiff = 8 * 24 * 60 * 60; // 7 days in seconds
-                    break;
-                case "4":         // checks if option === 3
-                    requiredDiff = 6 * 24 * 60 * 60; // 7 days in seconds
-                    break;
-                case "5":         // checks if option === 3
-                    requiredDiff = 1 * 24 * 60 * 60; // 7 days in seconds
-                    break;
-                default:        // runs if none of the above match
-                    console.log("Invalid option");
-            }
-
-
-
-
-            // if (timeDiff >= requiredDiff && Package.id != "0") {
-            //     setCreateActive(true);
-            //     navigate("/create");
-            //     toast.success("Please create an NFT before proceeding.");
-            //     return
-            // }
-
-
-
-
-
-            // try {
-            //     // 1️⃣ User limit time
-            //     const _userTradingLimitTime =
-            //         await helperContract.methods.userTradingLimitTime(address).call();
-            //     setUserTradingLimitTime(_userTradingLimitTime);
-
-
-            // } catch (error) {
-            //     console.error("Error in abc()", error);
-            // }
-        };
-
-        abc();
-
-    }, [toggle, address]);
-
-
-
-
-    const isLoading = !nfts || !Package
-
-    console.log("object", User);
-
+ 
     if (isLoading) {
         // show a waiting/loading screen
         return (
@@ -272,9 +120,10 @@ export default function Trade({ setCreateActive }) {
 
     const duration = Number(User.userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(User.userTradingLimitTime) + 60 * 60 * 24 - now : 0
 
-    const randomeNFTs = nfts
-    // ? [...nfts].sort((a, b) => a.purchasedTime - b.purchasedTime)
-    // : [];//nfts && shuffleArray(nfts)
+   const tradingLimitUsage = `${Number(Number(revisedLimitUtilized) / Number(Package.limit) * 100).toFixed(2)}`
+
+    console.log("object", revisedLimitUtilized, Package.limit);
+
 
 
 
@@ -359,7 +208,7 @@ export default function Trade({ setCreateActive }) {
                             </div>
                         </div>
                         <div class="mt-6">
-                            <div class="flex items-center justify-between mb-2"><span class="text-sm font-medium text-gray-700">Trading Limit Usage</span> <span class="text-sm text-gray-600" id="trade-usage-percentage">{`${Number(Number(revisedLimitUtilized) / Number(formatEther(Package.limit)) * 100).toFixed(2)}%`}</span>
+                            <div class="flex items-center justify-between mb-2"><span class="text-sm font-medium text-gray-700">Trading Limit Usage</span> <span class="text-sm text-gray-600" id="trade-usage-percentage">{`${tradingLimitUsage}%`}</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-3">
                                 <div id="trade-progress-bar" class="bg-gradient-to-r from-orange-500 to-red-500 h-3 rounded-full transition-all duration-300"
@@ -371,7 +220,7 @@ export default function Trade({ setCreateActive }) {
                         </div>
                     </div>
                     <TradingLimitTimer durationInSeconds={duration} />
-                    <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+                    {/* <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
                         {randomeNFTs.map((v, e) => {
 
                             return (
@@ -383,197 +232,132 @@ export default function Trade({ setCreateActive }) {
                                     toggle={toggle}
                                     setToggle={setToggle}
                                     revisedLimitUtilized={revisedLimitUtilized} />
-                                //     <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-                                //     <div class="h-48 bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 relative">
-                                //         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                //         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                //             <div class="w-20 h-24 bg-gradient-to-b from-cyan-400 to-purple-500 rounded-full opacity-80"></div>
-                                //             <div class="absolute top-4 left-4 w-2 h-2 bg-cyan-300 rounded-full animate-pulse"></div>
-                                //             <div class="absolute top-6 right-4 w-2 h-2 bg-pink-400 rounded-full animate-pulse"></div>
-                                //             <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-cyan-400"></div>
-                                //         </div>
-                                //     </div>
-                                //     <div class="p-4">
-                                //         <h3 class="font-semibold text-gray-900 mb-2">Cyber Genesis #001</h3>
-                                //         <div class="text-2xl font-bold text-blue-600 mb-3">
-                                //             $53.5
-                                //         </div><button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Buy Now</button>
-                                //     </div>
-                                // </div>
+                               
                             )
 
                         })
 
 
                         }
-                        {/* <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-                            <div class="h-48 bg-gradient-to-br from-orange-400 via-red-500 to-pink-600 relative">
-                                <div class="absolute inset-0">
-                                    <div class="absolute top-8 left-8 w-12 h-12 bg-yellow-300 rounded-full opacity-70 blur-sm"></div>
-                                    <div class="absolute top-16 right-8 w-8 h-16 bg-blue-400 rounded-lg opacity-60 transform rotate-45"></div>
-                                    <div class="absolute bottom-12 left-12 w-10 h-10 bg-green-400 opacity-50 transform rotate-12"></div>
-                                    <div class="absolute top-12 right-16 w-4 h-4 bg-white rounded-full"></div>
+
+                    </div> */}
+
+
+                    <div class="min-h-full w-full">
+                        <main style={{ maxWidth: "1600px", margin: "0 auto", padding: "40px 24px" }}>
+
+                            <button 
+                            onClick={handleTrade}
+                            style={{ 
+                                fontSize:"50px",color:"white",cursor:"pointer",
+                                textAlign: "center",marginLeft:"380px",  marginBottom: "50px", padding: "10px 10px", borderRadius: "24px", background: "linear-gradient(135deg, #6366f1, #10b981)", boxShadow: "0 20px 60px rgba(99, 102, 241, 0.3)", animation: "slideUp 0.5s ease-out" }}>
+                                    Trade Now
+                            </button>
+
+
+                            <div class="header-row" style={{ background: "#ffffff", border: "2px solid rgba(99, 102, 241, 0.5)", borderRadius: "16px", padding: "16px 28px", marginBottom: "16px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
+
+                                <div style={{ flex: "0 0 120px", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Token ID
+                                    </h2>
+                                </div>
+
+
+                                <div style={{ flex: "0 0 140px", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Date
+                                    </h2>
+                                </div>
+
+
+                                <div style={{ flex: "0 0 180px", textAlign: "right", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Amount
+                                    </h2>
+                                </div>
+
+
+                                <div style={{ flex: "0 0 120px", textAlign: "center", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Status
+                                    </h2>
+                                </div>
+
+
+                                <div style={{ flex: "0 0 130px", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Trade
+                                    </h2>
                                 </div>
                             </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2">Abstract Dreams #002</h3>
-                                <div class="text-2xl font-bold text-blue-600 mb-3">
-                                    $47.8
-                                </div><button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Buy Now</button>
-                            </div>
-                        </div>
-                        <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-                            <div class="h-48 bg-gradient-to-b from-indigo-900 via-purple-800 to-pink-900 relative">
-                                <div class="absolute bottom-0 left-0 right-0">
-                                    <svg viewbox="0 0 192 120" class="w-full h-20"><polygon points="0,120 48,72 96,84 144,60 192,78 192,120" fill="#1e1b4b" opacity="0.8" /> <polygon points="0,120 36,90 84,96 132,78 168,90 192,84 192,120" fill="#312e81" opacity="0.6" />
-                                    </svg>
-                                </div>
-                                <div class="absolute top-4 left-6 w-0.5 h-0.5 bg-white rounded-full"></div>
-                                <div class="absolute top-8 right-10 w-0.5 h-0.5 bg-white rounded-full"></div>
-                                <div class="absolute top-6 right-16 w-0.5 h-0.5 bg-white rounded-full"></div>
-                                <div class="absolute top-8 right-8 w-6 h-6 bg-yellow-200 rounded-full opacity-90"></div>
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2">Cosmic Valley #003</h3>
-                                <div class="text-2xl font-bold text-blue-600 mb-3">
-                                    $62.1
-                                </div><button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Buy Now</button>
-                            </div>
-                        </div>
-                        <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-                            <div class="h-48 bg-gradient-to-br from-emerald-400 to-teal-600 relative">
-                                <div class="absolute inset-0 grid grid-cols-6 grid-rows-6 gap-0.5 p-2">
-                                    <div class="bg-white opacity-20 rounded-sm"></div>
-                                    <div class="bg-white opacity-40 rounded-sm"></div>
-                                    <div class="bg-white opacity-60 rounded-sm"></div>
-                                    <div class="bg-white opacity-30 rounded-sm"></div>
-                                    <div class="bg-white opacity-50 rounded-sm"></div>
-                                    <div class="bg-white opacity-70 rounded-sm"></div>
-                                    <div class="bg-white opacity-60 rounded-sm"></div>
-                                    <div class="bg-white opacity-80 rounded-sm"></div>
-                                    <div class="bg-white opacity-30 rounded-sm"></div>
-                                    <div class="bg-white opacity-50 rounded-sm"></div>
-                                    <div class="bg-white opacity-40 rounded-sm"></div>
-                                    <div class="bg-white opacity-60 rounded-sm"></div>
-                                </div>
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2">Pixel Matrix #004</h3>
-                                <div class="text-2xl font-bold text-blue-600 mb-3">
-                                    $38.9
-                                </div><button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Buy Now</button>
-                            </div>
-                        </div>
-                        <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-                            <div class="h-48 bg-gradient-to-b from-amber-200 via-orange-300 to-red-400 relative">
-                                <div class="absolute top-8 left-1/2 transform -translate-x-1/2">
-                                    <div class="w-12 h-16 bg-gradient-to-b from-pink-200 to-orange-200 rounded-full"></div>
-                                    <div class="absolute top-4 left-3 w-1.5 h-1.5 bg-gray-800 rounded-full"></div>
-                                    <div class="absolute top-4 right-3 w-1.5 h-1.5 bg-gray-800 rounded-full"></div>
-                                    <div class="absolute top-6 left-1/2 transform -translate-x-1/2 w-0.5 h-1 bg-orange-300"></div>
-                                    <div class="absolute top-8 left-1/2 transform -translate-x-1/2 w-2 h-0.5 bg-red-400 rounded-full"></div>
-                                </div>
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2">Portrait Series #005</h3>
-                                <div class="text-2xl font-bold text-blue-600 mb-3">
-                                    $71.3
-                                </div><button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Buy Now</button>
-                            </div>
-                        </div>
-                        <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-                            <div class="h-48 bg-gradient-to-br from-slate-800 to-gray-900 relative">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="w-24 h-24 border-4 border-blue-400 rounded-full relative">
-                                        <div class="absolute inset-2 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full"></div>
-                                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-bold text-xs">
-                                            NFT
+
+
+                            <div class="list-container">
+                            {tickets.map((v,e)=>
+                            <div class="token-card token-row" style={{ background: "#ffffff", border: "2px solid rgba(99, 102, 241, 0.3)", borderRadius: "16px", padding: "20px 28px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", animationDelay: "0s", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
+
+                                    <div style={{ flex: "0 0 120px", minWidth: 0 }}>
+                                        <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Token ID</div>
+                                        <div class="token-field-content">
+                                            <code style={{ fontFamily: "'Courier New', monospace", fontSize: "14px", color: "#6366f1", background: "#f8fafc", padding: "6px 12px", borderRadius: "8px", display: "inline-block", fontWeight: 700 }}>
+                                                TKN-{v.id}
+                                            </code>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="absolute top-4 left-4 w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
-                                <div class="absolute top-6 right-6 w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
-                                <div class="absolute bottom-6 left-6 w-1 h-1 bg-cyan-400 rounded-full animate-pulse"></div>
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2">Digital Badge #006</h3>
-                                <div class="text-2xl font-bold text-blue-600 mb-3">
-                                    $29.7
-                                </div><button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Buy Now</button>
-                            </div>
-                        </div>
-                        <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-                            <div class="h-48 bg-gradient-to-br from-violet-600 to-purple-800 relative">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="w-20 h-20 bg-gradient-to-br from-pink-400 to-violet-600 rounded-lg transform rotate-45"></div>
-                                    <div class="absolute w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg transform -rotate-12"></div>
-                                    <div class="absolute w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full"></div>
-                                </div>
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2">Geometric Fusion #007</h3>
-                                <div class="text-2xl font-bold text-blue-600 mb-3">
-                                    $84.2
-                                </div><button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Buy Now</button>
-                            </div>
-                        </div>
-                        <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-                            <div class="h-48 bg-gradient-to-br from-rose-400 to-pink-600 relative">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="w-16 h-20 bg-gradient-to-b from-white to-gray-200 rounded-lg shadow-lg">
-                                        <div class="w-full h-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-t-lg"></div>
-                                        <div class="p-2 text-center">
-                                            <div class="w-8 h-1 bg-gray-400 rounded mx-auto mb-1"></div>
-                                            <div class="w-6 h-1 bg-gray-300 rounded mx-auto mb-1"></div>
-                                            <div class="w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full mx-auto"></div>
+
+
+                                    <div style={{ flex: "0 0 140px", minWidth: 0 }}>
+                                        <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Date</div>
+                                        <div class="token-field-content" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 600 }}>
+                                            {secondsToDMY(v.time)}
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2">Digital Card #008</h3>
-                                <div class="text-2xl font-bold text-blue-600 mb-3">
-                                    $42.6
-                                </div><button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Buy Now</button>
-                            </div>
-                        </div>
-                        <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-                            <div class="h-48 bg-gradient-to-br from-yellow-400 to-amber-600 relative">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="w-20 h-20 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full border-4 border-yellow-600 relative">
-                                        <div class="absolute inset-2 bg-gradient-to-br from-yellow-200 to-yellow-400 rounded-full"></div>
-                                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-yellow-800 font-bold text-xs">
-                                            GOLD
+
+
+                                    <div class="mobile-amount-wrapper" style={{ flex: "0 0 180px", textAlign: "right", minWidth: 0 }}>
+                                        <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Amount</div>
+                                        <div class="token-field-content" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#10b981", fontWeight: 700 }}>
+                                            ${formatEther(v.income)}
                                         </div>
                                     </div>
-                                </div>
-                                <div class="absolute top-4 left-4 w-2 h-2 bg-yellow-200 rounded-full opacity-60"></div>
-                                <div class="absolute bottom-4 right-4 w-2 h-2 bg-yellow-200 rounded-full opacity-60"></div>
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2">Golden Token #009</h3>
-                                <div class="text-2xl font-bold text-blue-600 mb-3">
-                                    $95.4
-                                </div><button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Buy Now</button>
-                            </div>
-                        </div>
-                        <div class="nft-card bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl shadow-lg overflow-hidden">
-                            <div class="h-48 bg-gradient-to-br from-indigo-500 to-purple-700 relative">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="w-16 h-20 bg-gradient-to-b from-indigo-400 to-purple-600 rounded-lg relative">
-                                        <div class="absolute top-2 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-yellow-400 rounded-full"></div>
-                                        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-6 h-2 bg-yellow-500 rounded"></div>
-                                        <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-yellow-600"></div>
+
+
+                                    <div class="mobile-status-wrapper" style={{ flex: "0 0 120px", textAlign: "center", minWidth: 0 }}>
+                                        <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Status</div>
+                                        <div class="token-field-content">
+                                            {v.filled? <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
+                                                <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                    complete
+                                                </span>
+                                            </div>:<div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
+                                                <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                    processing
+                                                </span>
+                                            </div>}
+                                        </div>
+                                    </div>
+
+
+                                    <div style={{ flex: "0 0 130px", minWidth: 0 }}>
+                                        <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Trade</div>
+                                        <button
+                                            disabled={!v.filled}
+                                            class="trade-btn"
+                                            onclick="handleTrade('TKN-001', 'Bitcoin')"
+                                            style={{ width: "100%", background:v.filled? "linear-gradient(135deg, #6366f1, #10b981)":"grey", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", fontFamily: "'Orbitron', sans-serif", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.3px", boxShadow: "0 3px 8px rgba(99, 102, 241, 0.35)" }}
+                                        >
+                                            Trade Now
+                                        </button>
                                     </div>
                                 </div>
+                            )}        
+                                
+
+
+
                             </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2">Victory Trophy #010</h3>
-                                <div class="text-2xl font-bold text-blue-600 mb-3">
-                                    $156.8
-                                </div><button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Buy Now</button>
-                            </div>
-                        </div> */}
+                        </main>
                     </div>
                 </div>
             </div>

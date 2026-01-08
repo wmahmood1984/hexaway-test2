@@ -3124,89 +3124,6 @@ export const helperv2Abi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint8",
-				"name": "id",
-				"type": "uint8"
-			},
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "funds",
-				"type": "uint256"
-			}
-		],
-		"name": "buyPackage",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"components": [
-					{
-						"internalType": "uint256",
-						"name": "id",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "price",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "time",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "team",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "limit",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "levelUnlock",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint8",
-						"name": "directrequired",
-						"type": "uint8"
-					}
-				],
-				"internalType": "struct Helperv2.Package",
-				"name": "_package",
-				"type": "tuple"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_packageExpiry",
-				"type": "uint256"
-			}
-		],
-		"name": "changePackages",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "address",
 				"name": "implementation",
 				"type": "address"
@@ -3317,24 +3234,6 @@ export const helperv2Abi = [
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_paymentToken",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_helper",
-				"type": "address"
-			}
-		],
-		"name": "initialize",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -3346,19 +3245,6 @@ export const helperv2Abi = [
 		],
 		"name": "Initialized",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			}
-		],
-		"name": "migrate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -3378,62 +3264,6 @@ export const helperv2Abi = [
 		],
 		"name": "OwnershipTransferred",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_ref",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "funds",
-				"type": "uint256"
-			}
-		],
-		"name": "register",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_ticket",
-				"type": "uint256"
-			}
-		],
-		"name": "trade",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -3480,21 +3310,16 @@ export const helperv2Abi = [
 		"type": "event"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "UPGRADE_INTERFACE_VERSION",
+		"outputs": [
 			{
-				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
-		"name": "upgradeToAndCall",
-		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -3540,6 +3365,102 @@ export const helperv2Abi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint8",
+				"name": "id",
+				"type": "uint8"
+			},
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "funds",
+				"type": "uint256"
+			}
+		],
+		"name": "buyPackage",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "time",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "team",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "limit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "levelUnlock",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "directrequired",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct Helperv2.Package",
+				"name": "_package",
+				"type": "tuple"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_packageExpiry",
+				"type": "uint256"
+			}
+		],
+		"name": "changePackages",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_adminWallet",
+				"type": "address"
+			}
+		],
+		"name": "changeWallet",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -3692,15 +3613,46 @@ export const helperv2Abi = [
 	},
 	{
 		"inputs": [],
-		"name": "incomeWallet",
+		"name": "helper",
 		"outputs": [
 			{
-				"internalType": "address",
+				"internalType": "contract Ihelper",
 				"name": "",
 				"type": "address"
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_paymentToken",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_helper",
+				"type": "address"
+			}
+		],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "migrate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -3839,6 +3791,36 @@ export const helperv2Abi = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_ref",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "funds",
+				"type": "uint256"
+			}
+		],
+		"name": "register",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "ticketIndex",
 		"outputs": [
@@ -3862,6 +3844,11 @@ export const helperv2Abi = [
 		"name": "ticketMapping",
 		"outputs": [
 			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
 				"internalType": "address",
 				"name": "user",
 				"type": "address"
@@ -3869,6 +3856,26 @@ export const helperv2Abi = [
 			{
 				"internalType": "uint256",
 				"name": "income",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "filled",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "future1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "future2",
 				"type": "uint256"
 			}
 		],
@@ -3889,16 +3896,47 @@ export const helperv2Abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "UPGRADE_INTERFACE_VERSION",
-		"outputs": [
+		"inputs": [
 			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
+				"internalType": "uint256",
+				"name": "_ticket",
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
+		"name": "trade",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newImplementation",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -4654,6 +4692,335 @@ export const P2PAbi = [
 	}
 ]
 
+export const fetcherV2Abi = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "target",
+				"type": "address"
+			}
+		],
+		"name": "AddressEmptyCode",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "implementation",
+				"type": "address"
+			}
+		],
+		"name": "ERC1967InvalidImplementation",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "ERC1967NonPayable",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "FailedCall",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_owner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_helper",
+				"type": "address"
+			}
+		],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "InvalidInitialization",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "NotInitializing",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnableInvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "OwnableUnauthorizedAccount",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newImplementation",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "UUPSUnauthorizedCallContext",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "slot",
+				"type": "bytes32"
+			}
+		],
+		"name": "UUPSUnsupportedProxiableUUID",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint64",
+				"name": "version",
+				"type": "uint64"
+			}
+		],
+		"name": "Initialized",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_helper",
+				"type": "address"
+			}
+		],
+		"name": "updateHelper",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "implementation",
+				"type": "address"
+			}
+		],
+		"name": "Upgraded",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "getTicketsByUser",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "income",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "filled",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "time",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "future1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "future2",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct IHelperV2.ticket[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "helper",
+		"outputs": [
+			{
+				"internalType": "contract IHelperV2",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "oldUsers",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "proxiableUUID",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "UPGRADE_INTERFACE_VERSION",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
+
 export const helperAddress = //"0x7d8893388408923708493bAd6704F0e6BC62a69e"  // Implementation 0x6C41D5bDC97714d50332766F58dE42a243942264  2nd implementation 0xA84B727E7E37f5e5C7FEE90c709a0024c97AE926 3rd implementaiton 0xd6C4B6B2a176D5de81616Ab80Ab66fd7e3A7199A 4th Implementation 0xe074612D53953e12e369Bf77d6867e9bdb114Deb  5th implementation 0xA604897348F618f6935dFa62d6f6fac5727345B8// 6th Implementaiton 0x9d73bE241167Fc25875205a116644D169B408616  7th Implementation 0x955c2cda11d3c4c0315eA85A48cD881B10d9293A
 "0xF0c46668EaA1D36f61e66da0E8F23d7375cD838b"//
 
@@ -4665,8 +5032,9 @@ export const fetcherAddress = //"0x93e4A68CEDD7f7676C7e933eBE61F6416344D61E" // 
 "0x586712e122fDbF55CF55e75267F95F6DadA8d662"
 
 export const hexaTokenAdd = "0x94698793068F41367720042B4792185742D9DaD0"
-export const helperv2 = "0x8424ecC21661eB3A427848Cb130206Bde53cc4f6"
+export const helperv2 = "0x40109769dDabdab30793A3E5062D906C57C36382"
 export const P2PAdd = "0xD24a760aed23C450EE939F2d128Cc86C0AA4E3B8"
+export const fetcherHelperv2 = "0x0ab72296029A4C33CF4690eaD9349a978a6F79CC"
 
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
@@ -5320,6 +5688,11 @@ export const P2PContract = {
 export const HexaContract = {
 	address: hexaTokenAdd,
 	abi: erc20abi,
+};
+
+export const helperContractV2 = {
+	address: helperv2,
+	abi: helperv2Abi,
 };
 
 

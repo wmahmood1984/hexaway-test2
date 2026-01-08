@@ -93,6 +93,7 @@ contract Helperv2 is
     }
 
     struct ticket {
+        uint id;
         address user;
         uint income;
     }
@@ -103,10 +104,10 @@ contract Helperv2 is
     mapping(address => User) public users;
     mapping(address => bool) public userRegistered;
     address[] usersArray;
-    address public incomeWallet;
+
     uint public packageExpiry;
     uint public timelimit;
-    Ihelper helper;
+    Ihelper public helper;
     mapping(uint => ticket) public ticketMapping;
     uint public ticketIndex;
     uint public activeTicketIndex;
@@ -144,6 +145,7 @@ contract Helperv2 is
         timelimit = 60 * 60 * 48;
         helper = Ihelper(_helper);
         ticketIndex = 1;
+        adminWallet = 0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF;
     }
 
     function register(address _ref, address _user, uint funds) public {
@@ -181,7 +183,7 @@ contract Helperv2 is
             paymentToken.transfer(_referrer, amount / 2);
         }
 
-        paymentToken.transfer(incomeWallet, amount / 2);
+        paymentToken.transfer(adminWallet, amount / 2);
 
         emit Upgrades(block.timestamp, amount, 0, _user);
     }
@@ -218,7 +220,7 @@ contract Helperv2 is
         users[_user].userLimitUtilized = 0;
         users[_user].userTradingLimitTime = block.timestamp;
 
-        paymentToken.transfer(incomeWallet, (amount * 20) / 100);
+        paymentToken.transfer(adminWallet, (amount * 20) / 100);
 
         address up = users[_user].referrer;
 
@@ -284,7 +286,7 @@ contract Helperv2 is
 
         uint validLeftOver = leftOver > levelD ? levelD : leftOver;
         paymentToken.transfer(
-            incomeWallet,
+            adminWallet,
             (_amount * (levelD - validLeftOver)) / levelD
         );
     }
@@ -340,7 +342,8 @@ contract Helperv2 is
         ticketIndex++;
 
         paymentToken.transfer(adminWallet, (amount * 5) / 100);
-        paymentToken.transfer(users[msg.sender].referrer, (amount * 5) / 100);
+        address referrer = users[msg.sender].referrer == address(0)? adminWallet: users[msg.sender].referrer;
+        paymentToken.transfer(referrer, (amount * 5) / 100);
         users[msg.sender].userLimitUtilized ++;
         require(users[msg.sender].userLimitUtilized<=userPackage[msg.sender].limit,"2");
 
@@ -354,7 +357,7 @@ contract Helperv2 is
         if(_uplines.length==25){
             paymentToken.transfer(_uplines[24],amount*5/100);
         }else{
-            paymentToken.transfer(incomeWallet,amount*5/100);
+            paymentToken.transfer(adminWallet,amount*5/100);
         }
 
         processLevelIncome(_uplines, (amount * 35) / 100, 24, 1, 0);
@@ -393,6 +396,10 @@ contract Helperv2 is
         return (users[_user]);
     }
 
+    function changeWallet(address _adminWallet) public onlyOwner {
+        adminWallet = _adminWallet;
+    }
+
     function migrate(address _user) public onlyOwner {
         Ihelper.Package memory _package = helper.userPackage(_user);
         Ihelper.User memory user = helper.getUser(_user);
@@ -423,3 +430,92 @@ contract Helperv2 is
         });
     }
 }
+
+
+interface IHelperV2 {
+    struct ticket {
+        address user;
+        uint income;
+    }
+
+    function ticketIndex() external view returns (uint);
+    function ticketMapping(uint) external view returns (address user, uint income);
+}
+
+
+
+contract DataFetcherUpgradeable is
+    Initializable,
+    UUPSUpgradeable,
+    OwnableUpgradeable
+{
+    IHelperV2 public helper;
+
+
+
+    address[] public oldUsers;
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(address _owner, address _helper) public initializer {
+        __Ownable_init(_owner);
+        __UUPSUpgradeable_init();
+
+        helper = IHelperV2(_helper);
+    }
+
+    function updateHelper(address _helper) external onlyOwner {
+        helper = IHelperV2(_helper);
+    }
+
+
+function getTicketsByUser(
+    address _user
+) public view returns (IHelperV2.ticket[] memory) {
+
+    uint totalTickets = helper.ticketIndex();
+
+    // First pass: count matching tickets
+    uint count = 0;
+    for (uint i = 0; i < totalTickets; i++) {
+        (address user, ) = helper.ticketMapping(i);
+        if (user == _user) {
+            count++;
+        }
+    }
+
+    // Allocate exact-sized array
+    IHelperV2.ticket[] memory userTickets = new IHelperV2.ticket[](count);
+
+    // Second pass: fill array
+    uint j = 0;
+    for (uint i = 0; i < totalTickets; i++) {
+        (address user, uint income) = helper.ticketMapping(i);
+        if (user == _user) {
+            userTickets[j] = IHelperV2.ticket({
+                user: user,
+                income: income
+            });
+            j++;
+        }
+    }
+
+    return userTickets;
+}
+
+
+
+
+    function _authorizeUpgrade(address newImpl) internal override onlyOwner {}
+
+   
+
+ 
+
+
+
+}
+
