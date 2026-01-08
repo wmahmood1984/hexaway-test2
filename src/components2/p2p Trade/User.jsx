@@ -25,7 +25,7 @@ export default function User() {
     const [loading, setLoading] = useState(false)
     const [buyOrders, setBuyOrders] = useState()
     const [sellOrders, setSellOrders] = useState()
-    const [Trades,setTrades] = useState()
+    const [Trades, setTrades] = useState()
 
     useEffect(() => {
 
@@ -33,13 +33,13 @@ export default function User() {
             const _usdtBalance = await usdtContract1.methods.balanceOf(address).call()
             setUsdtBalance(_usdtBalance)
 
-            const _buyOrders = await P2PContract1.methods.getOrdersByUser(address,false).call()
-            const _sellOrders = await P2PContract1.methods.getOrdersByUser(address,true).call()
+            const _buyOrders = await P2PContract1.methods.getOrders(false).call()
+            const _sellOrders = await P2PContract1.methods.getOrders(true).call()
 
             setBuyOrders(_buyOrders)
             setSellOrders(_sellOrders)
 
-            
+
 
         }
 
@@ -48,41 +48,41 @@ export default function User() {
 
 
 
-        useEffect(() => {
-            const bringTransaction = async () => {
-                const latestBlock = await web3.eth.getBlockNumber();
-                const fromBlock = latestBlock - 200000;
-                const step = 5000; // or smaller if node still complains
-                let allEvents = [];
-    
-                for (let i = fromBlock; i <= latestBlock; i += step) {
-                    const toBlock = Math.min(i + step - 1, latestBlock);
-    
-                    try {
-                        const events = await P2PContract1.getPastEvents("Trades",
-    
-                            {
-    
-                                fromBlock: i,
-                                toBlock: toBlock,
-                            });
-                        allEvents = allEvents.concat(events);
-                        setTrades(allEvents)
-                        // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
-                    } catch (error) {
-                        console.warn(`Error fetching from ${i} to ${toBlock}`, error);
-                    }
+    useEffect(() => {
+        const bringTransaction = async () => {
+            const latestBlock = await web3.eth.getBlockNumber();
+            const fromBlock = latestBlock - 200000;
+            const step = 5000; // or smaller if node still complains
+            let allEvents = [];
+
+            for (let i = fromBlock; i <= latestBlock; i += step) {
+                const toBlock = Math.min(i + step - 1, latestBlock);
+
+                try {
+                    const events = await P2PContract1.getPastEvents("Trades",
+
+                        {
+
+                            fromBlock: i,
+                            toBlock: toBlock,
+                        });
+                    allEvents = allEvents.concat(events);
+                    setTrades(allEvents)
+                    // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
+                } catch (error) {
+                    console.warn(`Error fetching from ${i} to ${toBlock}`, error);
                 }
-    
-                // console.log("All events:", allEvents);
-            };
-    
-    
-    
-    
-            bringTransaction();
-    
-        }, [address]);
+            }
+
+            // console.log("All events:", allEvents);
+        };
+
+
+
+
+        bringTransaction();
+
+    }, [address]);
 
 
 
@@ -209,12 +209,12 @@ export default function User() {
 
 
 
-    const handleCancel = async (id,type) => {
+    const handleCancel = async (id, type) => {
 
         await executeContract({
             config,
             functionName: "cancelOrder",
-            args: [id,type],
+            args: [id, type],
             onSuccess: (txHash, receipt) => {
                 console.log("🎉 Tx Hash:", txHash);
                 console.log("🚀 Tx Receipt:", receipt);
@@ -234,16 +234,16 @@ export default function User() {
 
 
 
-    const isLoading = !sellOrders || !buyOrders ||!Trades
-
-                    console.log("Trades",Trades);
-
-    const combinedOrders = sellOrders && buyOrders && [...sellOrders,...buyOrders].filter(v=>Number(formatEther(v.amount))>Number(formatEther(v.amountFilled)))
-    const buyOrders1 = buyOrders && buyOrders.filter(v=>Number(formatEther(v.amount))>Number(formatEther(v.amountFilled)))
-    const saleOrders1 = sellOrders && sellOrders.filter(v=>Number(formatEther(v.amount))>Number(formatEther(v.amountFilled)))
-    const myTrades = Trades && Trades.filter(v=>v.returnValues.user.toLowerCase()===address.toLowerCase())
+    const isLoading = !sellOrders || !buyOrders || !Trades
 
 
+
+    const combinedOrders = sellOrders && buyOrders && [...sellOrders, ...buyOrders].filter(v => Number(formatEther(v.amount)) > Number(formatEther(v.amountFilled)) && v.user.toLowerCase() == address.toLowerCase())
+    const buyOrders1 = buyOrders && buyOrders.filter(v => Number(formatEther(v.amount)) > Number(formatEther(v.amountFilled)))
+    const saleOrders1 = sellOrders && sellOrders.filter(v => Number(formatEther(v.amount)) > Number(formatEther(v.amountFilled)))
+    const myTrades = Trades && Trades.filter(v => v.returnValues.user.toLowerCase() === address.toLowerCase())
+
+    console.log("Trades", Trades);
 
 
     if (isLoading) {
@@ -349,8 +349,8 @@ export default function User() {
                                         <div class="order-row sell-order" style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(239, 68, 68, 0.2)", boxShadow: "0 2px 8px rgba(239, 68, 68, 0.05)" }}>
                                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
                                                 <div class="stat-value" style={{ color: "#ef4444", fontWeight: 700 }}>{Number(formatEther(v.price)).toFixed(2)}</div>
-                                                <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>{Number(formatEther(v.amount))-Number(formatEther(v.amountFilled))}</div>
-                                                <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>{Number((Number(formatEther(v.amount))-Number(formatEther(v.amountFilled))) * Number(formatEther(v.price))).toFixed(2)}</div>
+                                                <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>{Number(formatEther(v.amount)) - Number(formatEther(v.amountFilled))}</div>
+                                                <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>{Number((Number(formatEther(v.amount)) - Number(formatEther(v.amountFilled))) * Number(formatEther(v.price))).toFixed(2)}</div>
                                             </div>
                                         </div>
                                     )}
@@ -381,8 +381,8 @@ export default function User() {
                                         <div class="order-row buy-order" style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.05)" }}>
                                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
                                                 <div class="stat-value" style={{ color: "#10b981", fontWeight: 700 }}>{Number(formatEther(v.price)).toFixed(2)}</div>
-                                                <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>{Number(formatEther(v.amount))-Number(formatEther(v.amountFilled))}</div>
-                                                <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>{Number((Number(formatEther(v.amount))-Number(formatEther(v.amountFilled))) * Number(formatEther(v.price))).toFixed(2)}</div>
+                                                <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>{Number(formatEther(v.amount)) - Number(formatEther(v.amountFilled))}</div>
+                                                <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>{Number((Number(formatEther(v.amount)) - Number(formatEther(v.amountFilled))) * Number(formatEther(v.price))).toFixed(2)}</div>
                                             </div>
                                         </div>
                                     )}
@@ -522,6 +522,109 @@ export default function User() {
 
                     <div class="fade-in mobile-padding" style={{ background: "#ffffff", padding: "28px", borderRadius: "20px", border: "2px solid #3b82f6", boxShadow: "0 4px 20px rgba(59, 130, 246, 0.08)", marginBottom: "28px" }}>
                         <h2 style={{ fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "24px", color: "#0f172a", fontWeight: 800, marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
+                            <span style={{ fontSize: "28px" }}>🕒</span>
+                            Current Trades
+                            <span style={{ fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px", color: "#0f172a", opacity: 0.5, fontWeight: 600, marginLeft: "auto" }}>
+
+                            </span>
+                        </h2>
+
+                        <div class="mobile-scroll" style={{ overflowX: "auto" }}>
+                            <div style={{ minWidth: "600px" }}>
+                                <div style={{ marginBottom: "12px", padding: "12px 16px", background: "rgba(59, 130, 246, 0.05)", borderRadius: "10px" }}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1fr", gap: "12px", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "12px", color: "#0f172a", opacity: 0.6, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                        <div>Type</div>
+                                        <div>Price</div>
+                                        <div>Amount</div>
+                                        <div>Total</div>
+                                        <div>Time</div>
+                                    </div>
+                                </div>
+
+                                <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+                                    {Trades.map((v, e) => {
+                                        if (e < 20) {
+                                            return (
+                                                <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.05)", borderLeft: "3px solid #10b981" }}>
+                                                    <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
+                                                        <div>
+                                                            <span style={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
+                                                                {v.returnValues._type ? "Sell" : "Buy"}
+                                                            </span>
+                                                        </div>
+                                                        <div class="stat-value" style={{ color: "#10b981", fontWeight: 700 }}>
+                                                            0.01
+                                                        </div>
+                                                        <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
+                                                            {formatWithCommas(formatEther(v.returnValues.tradeAmount))} HEXA
+                                                        </div>
+                                                        <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>
+                                                            {Number(formatEther(v.returnValues.tradeAmount)) * price} USDT
+                                                        </div>
+                                                        <div style={{ color: "#0f172a", opacity: 0.5, fontSize: "12px", fontWeight: 500 }}>
+                                                            {secondsToDMY(v.returnValues.time)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                    }
+
+
+                                    )
+
+                                    }
+
+
+                                    {/* <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(239, 68, 68, 0.2)", boxShadow: "0 2px 8px rgba(239, 68, 68, 0.05)", borderLeft: "3px solid #ef4444" }}>
+                                        <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
+                                            <div>
+                                                <span style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
+                                                    sell
+                                                </span>
+                                            </div>
+                                            <div class="stat-value" style={{ color: "#ef4444", fontWeight: 700 }}>
+                                                0.01
+                                            </div>
+                                            <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
+                                                150.0000 HEXA
+                                            </div>
+                                            <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>
+                                                1.52 USDT
+                                            </div>
+                                            <div style={{ color: "#0f172a", opacity: 0.5, fontSize: "12px", fontWeight: 500 }}>
+                                                8:45 AM
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.05)", borderLeft: "3px solid #10b981" }}>
+                                        <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
+                                            <div>
+                                                <span style={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
+                                                    buy
+                                                </span>
+                                            </div>
+                                            <div class="stat-value" style={{ color: "#10b981", fontWeight: 700 }}>
+                                                0.01
+                                            </div>
+                                            <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
+                                                500.0000 HEXA
+                                            </div>
+                                            <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>
+                                                4.90 USDT
+                                            </div>
+                                            <div style={{ color: "#0f172a", opacity: 0.5, fontSize: "12px", fontWeight: 500 }}>
+                                                7:30 AM
+                                            </div>
+                                        </div>
+                                    </div> */}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fade-in mobile-padding" style={{ background: "#ffffff", padding: "28px", borderRadius: "20px", border: "2px solid #3b82f6", boxShadow: "0 4px 20px rgba(59, 130, 246, 0.08)", marginBottom: "28px" }}>
+                        <h2 style={{ fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "24px", color: "#0f172a", fontWeight: 800, marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
                             <span style={{ fontSize: "28px" }}>📋</span>
                             My Open Orders
                             <span style={{ fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px", color: "#0f172a", opacity: 0.5, fontWeight: 600, marginLeft: "auto" }}>
@@ -544,46 +647,46 @@ export default function User() {
                                 </div>
 
                                 <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-                                    {combinedOrders.map((v,e)=>
-                                    <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.05)", borderLeft: "3px solid #10b981" }}>
-                                        <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1.2fr 1fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
-                                            <div>
-                                                <span style={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
-                                                    {v._type ? "Sell":"Buy"}
-                                                </span>
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#10b981", fontWeight: 700 }}>
-                                                {Number(formatEther(v.price))}
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
-                                                {formatWithCommas(formatEther(v.amount),2)} HEXA
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
-                                                {formatWithCommas(formatEther(v.amountFilled),2)} HEXA
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>
-                                                {Number(formatEther(v.price) * Number(formatEther(v.amount)))} USDT
-                                            </div>
-                                            <div style={{ color: "#0f172a", opacity: 0.5, fontSize: "12px", fontWeight: 500 }}>
-                                                {secondsToDMY(v.time)}
-                                            </div>
-                                            <div>
-                                                <button
-                                                    onClick={()=>{handleCancel(v.id,v._type)}}
-                                                    style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "white", padding: "8px 16px", borderRadius: "8px", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", transition: "all 0.2s", textTransform: "uppercase", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
-                                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)'"
-                                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
-                                                >
-                                                    <span>❌</span>
-                                                    <span>Cancel</span>
-                                                </button>
+                                    {combinedOrders.map((v, e) =>
+                                        <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.05)", borderLeft: "3px solid #10b981" }}>
+                                            <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1.2fr 1fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
+                                                <div>
+                                                    <span style={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
+                                                        {v._type ? "Sell" : "Buy"}
+                                                    </span>
+                                                </div>
+                                                <div class="stat-value" style={{ color: "#10b981", fontWeight: 700 }}>
+                                                    {Number(formatEther(v.price))}
+                                                </div>
+                                                <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
+                                                    {formatWithCommas(formatEther(v.amount), 2)} HEXA
+                                                </div>
+                                                <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
+                                                    {formatWithCommas(formatEther(v.amountFilled), 2)} HEXA
+                                                </div>
+                                                <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>
+                                                    {Number(formatEther(v.price) * Number(formatEther(v.amount)))} USDT
+                                                </div>
+                                                <div style={{ color: "#0f172a", opacity: 0.5, fontSize: "12px", fontWeight: 500 }}>
+                                                    {secondsToDMY(v.time)}
+                                                </div>
+                                                <div>
+                                                    <button
+                                                        onClick={() => { handleCancel(v.id, v._type) }}
+                                                        style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "white", padding: "8px 16px", borderRadius: "8px", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", transition: "all 0.2s", textTransform: "uppercase", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
+                                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)'"
+                                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                                                    >
+                                                        <span>❌</span>
+                                                        <span>Cancel</span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )
-                                        
-                                        }
- 
+                                    )
+
+                                    }
+
                                 </div>
                             </div>
                         </div>
@@ -611,34 +714,34 @@ export default function User() {
                                 </div>
 
                                 <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-                                   {myTrades.map((v,e)=>
-                                 <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.05)", borderLeft: "3px solid #10b981" }}>
-                                        <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
-                                            <div>
-                                                <span style={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
-                                                    {v.returnValues._type? "Sell":"Buy"}
-                                                </span>
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#10b981", fontWeight: 700 }}>
-                                                0.01
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
-                                                {formatWithCommas(formatEther(v.returnValues.tradeAmount))} HEXA
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>
-                                                {Number(formatEther(v.returnValues.tradeAmount))*price} USDT
-                                            </div>
-                                            <div style={{ color: "#0f172a", opacity: 0.5, fontSize: "12px", fontWeight: 500 }}>
-                                                {secondsToDMY(v.returnValues.time)}
+                                    {myTrades.map((v, e) =>
+                                        <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.05)", borderLeft: "3px solid #10b981" }}>
+                                            <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
+                                                <div>
+                                                    <span style={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
+                                                        {v.returnValues._type ? "Sell" : "Buy"}
+                                                    </span>
+                                                </div>
+                                                <div class="stat-value" style={{ color: "#10b981", fontWeight: 700 }}>
+                                                    0.01
+                                                </div>
+                                                <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
+                                                    {formatWithCommas(formatEther(v.returnValues.tradeAmount))} HEXA
+                                                </div>
+                                                <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>
+                                                    {Number(formatEther(v.returnValues.tradeAmount)) * price} USDT
+                                                </div>
+                                                <div style={{ color: "#0f172a", opacity: 0.5, fontSize: "12px", fontWeight: 500 }}>
+                                                    {secondsToDMY(v.returnValues.time)}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>   
-                                
-                                )
 
-                                   } 
-                                    
-                                   
+                                    )
+
+                                    }
+
+
                                     {/* <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(239, 68, 68, 0.2)", boxShadow: "0 2px 8px rgba(239, 68, 68, 0.05)", borderLeft: "3px solid #ef4444" }}>
                                         <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
                                             <div>
