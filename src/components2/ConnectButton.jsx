@@ -2,7 +2,7 @@ import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { executeContract, extractRevertReason } from "../utils/contractExecutor";
 import { useConfig } from "wagmi";
 import { useEffect, useState } from "react";
-import { erc20abi, erc20Add, helperAbi, helperAddress, mlmcontractaddress, usdtContract, web3 } from "../config";
+import { erc20abi, erc20Add, helperAbi, helperAddress, helperContractV2, helperv2, HexaContract, hexaTokenAdd, mlmcontractaddress, usdtContract, web3 } from "../config";
 import { useDispatch } from "react-redux";
 import { readName } from "../slices/contractSlice";
 import { useNavigate } from "react-router-dom";
@@ -50,6 +50,7 @@ export default function ConnectButton({ referrer }) {
                 navigate("/")
                 setLoading(false)
             },
+            contract:helperContractV2,
             onError: (err) => {
                 let reason = extractRevertReason(err)
                 toast.error("Transaction failed:")
@@ -67,14 +68,14 @@ export default function ConnectButton({ referrer }) {
     const handleRegister = async (e) => {
         e.preventDefault(); // stop form submission
         setLoading(true)
-        const contract = new web3.eth.Contract(erc20abi, erc20Add)
+        const contract = new web3.eth.Contract(erc20abi, hexaTokenAdd)
         const balance = await contract.methods.balanceOf(address).call();
         console.log("object", formatEther(balance), formatEther(packages[0].price), formatEther(balance) < formatEther(packages[0].price));
         const bal = BigInt(balance);            // raw units
         const price = BigInt(packages[0].price);
 
         if (bal < price) {
-            toast.error("Insufficient USDT balance.")
+            toast.error("Insufficient Hexa balance.")
             setLoading(false)
             return
         }
@@ -90,7 +91,7 @@ export default function ConnectButton({ referrer }) {
         await executeContract({
             config,
             functionName: "approve",
-            args: [mlmcontractaddress, packages[0].price],
+            args: [helperv2, packages[0].price],
             onSuccess: () => handleRegister2(),
             onError: (err) => {
                 let reason = extractRevertReason(err)
@@ -100,7 +101,7 @@ export default function ConnectButton({ referrer }) {
 
 
             },
-            contract: usdtContract
+            contract: HexaContract
         });
 
         // handleRegister2()
