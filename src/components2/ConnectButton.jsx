@@ -91,7 +91,7 @@ export default function ConnectButton({ referrer }) {
         await executeContract({
             config,
             functionName: "approve",
-            args: [helperv2, packages[0].price],
+            args: [helperv2, packages[0].price*100],
             onSuccess: () => handleRegister2(),
             onError: (err) => {
                 let reason = extractRevertReason(err)

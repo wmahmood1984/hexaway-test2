@@ -6,7 +6,7 @@ import { executeContract, extractRevertReason, formatAddress, formatWithCommas }
 import { formatEther } from 'ethers';
 import toast from 'react-hot-toast';
 import { init, readName } from '../slices/contractSlice';
-import { erc20abi, erc20Add, helperContractV2, helperv2, HexaContract, mlmcontractaddress, packageKeys, usdtContract, web3 } from '../config';
+import { erc20abi, erc20Add, fetcherHelperv2, fetcherV2Abi, helperContractV2, helperv2, helperv2Abi, HexaContract, mlmcontractaddress, packageKeys, usdtContract, web3 } from '../config';
 import CountdownTimer from './Timer';
 import Spinner from './Spinner';
 import HexawayPackages from './HexawayPackages';
@@ -27,11 +27,23 @@ export default function Dashboard() {
     const [referrer, setReferrer] = useState()
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false);
+        const [tickets, setTickets] = useState()
+    const [activeTicketIndex,setActiveTicketIndex] = useState(0);
+    const fetcherContract = new web3.eth.Contract(fetcherV2Abi, fetcherHelperv2)
+    const helperV2Contract = new web3.eth.Contract(helperv2Abi, helperv2)
 
+    useEffect(()=>{
 
-    useEffect(() => { },
+        const abc = async ()=>{
+            const _tickets = await fetcherContract.methods.getTicketsByUser(address).call()
+            setTickets(_tickets)
 
-        [loading])
+            const _activeTicketIndex = await helperV2Contract.methods.activeTicketIndex().call()
+            setActiveTicketIndex(_activeTicketIndex)
+        }
+
+        abc()
+    },[address,loading])
 
 
 
@@ -72,42 +84,42 @@ export default function Dashboard() {
 
 
     const handleUpdate = async (pkg) => {
-        handleUpdate2(pkg.id,pkg.price)
-        // if (walletBalance < formatEther(pkg.price)) {
-        //     toast.error("Insufficient USDT balance.")
 
+        if (walletBalance < formatEther(pkg.price)) {
+            toast.error("Insufficient USDT balance.")
+
+        } else {
+
+
+        const contract = new web3.eth.Contract(erc20abi, erc20Add)
+        const balance = await contract.methods.balanceOf(address).call();
+        console.log("object", formatEther(balance), formatEther(pkg.price));
+        if (Number(formatEther(balance)) < Number(formatEther(pkg.price)*100)) {
+            toast.error("Insufficient HEXA balance.")
+            setLoading(false)
+            return
+        }
+
+        setLoading(true)
+        // if (allowance >= pkg.price) {
+        //     handleUpdate2(pkg.id)
         // } else {
+        await executeContract({
+            config,
+            functionName: "approve",
+            args: [helperv2, pkg.price*100],
+            onSuccess: () => handleUpdate2(pkg.id,pkg.price),
+            onError: (err) => {
+                let reason = extractRevertReason(err)
+                toast.error("Transaction failed:", reason)
+                setLoading(false)
+            },
+            contract: HexaContract
+        });
+        }
+        }
 
-
-        // const contract = new web3.eth.Contract(erc20abi, erc20Add)
-        // const balance = await contract.methods.balanceOf(address).call();
-        // console.log("object", formatEther(balance), formatEther(pkg.price));
-        // if (Number(formatEther(balance)) < Number(formatEther(pkg.price))) {
-        //     toast.error("Insufficient HEXA balance.")
-        //     setLoading(false)
-        //     return
-        // }
-
-        // setLoading(true)
-        // // if (allowance >= pkg.price) {
-        // //     handleUpdate2(pkg.id)
-        // // } else {
-        // await executeContract({
-        //     config,
-        //     functionName: "approve",
-        //     args: [helperv2, pkg.price],
-        //     onSuccess: () => handleUpdate2(pkg.id,pkg.price),
-        //     onError: (err) => {
-        //         let reason = extractRevertReason(err)
-        //         toast.error("Transaction failed:", reason)
-        //         setLoading(false)
-        //     },
-        //     contract: HexaContract
-        // });
-        //}
-        // }
-
-    };
+    
 
     const normalizedAddr = address && address.toLowerCase();
     const normalizedQue = NFTque
@@ -148,8 +160,10 @@ export default function Dashboard() {
         Number(User.integers[10]) + Number(packageExpiryLimit) - Math.floor(Date.now() / 1000)
     )
 
+    const position = Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.purchasedTime) - Number(b.purchasedTime))[0].id)+1 - (activeTicketIndex+1) == 0? 1 :
+                    Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.purchasedTime) - Number(b.purchasedTime))[0].id)+1 - (activeTicketIndex+1)
 
-        console.log("dashoard", User);
+        console.log("dashoard", position);
 
 
 
@@ -514,7 +528,7 @@ export default function Dashboard() {
                     <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8">
                         <div class="p-4 sm:p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl sm:rounded-2xl border border-purple-200">
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-                                <h3 class="text-base sm:text-lg font-semibold text-purple-800 mb-2 sm:mb-0">🎨 NFTque Status</h3>
+                                <h3 class="text-base sm:text-lg font-semibold text-purple-800 mb-2 sm:mb-0">🎨 Trade Status</h3>
                                 <span
                                     id="nftque-status-badge"
                                     className={`px-3 py-1 rounded-full font-semibold self-start text-sm sm:text-base ${NFTQueStatus === "Not in the Que"
@@ -529,10 +543,10 @@ export default function Dashboard() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div class="text-center p-3 bg-white/50 rounded-lg">
                                     <div class="text-lg sm:text-xl font-bold text-pink-600" id="nftque-earnings">
-                                        ${NFTQueBalance}
+                                        ${formatWithCommas(formatEther(User.integers[9]))}
                                     </div>
                                     <div class="text-xs sm:text-sm text-gray-600">
-                                        NFTque Earnings
+                                        Trade Earnings
                                     </div>
                                 </div>
                                 <div class="text-center p-3 bg-white/50 rounded-lg">
@@ -540,7 +554,7 @@ export default function Dashboard() {
                                         {NFTQueStatus}
                                     </div>
                                     <div class="text-xs sm:text-sm text-gray-600">
-                                        NFTque Position
+                                        Trade Position
                                     </div>
                                 </div>
                             </div>

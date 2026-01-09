@@ -3364,6 +3364,19 @@ export const helperv2Abi = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_users",
+				"type": "address[]"
+			}
+		],
+		"name": "migrateBulk",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -3388,16 +3401,6 @@ export const helperv2Abi = [
 				"internalType": "address",
 				"name": "_ref",
 				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "funds",
-				"type": "uint256"
 			}
 		],
 		"name": "register",
@@ -3700,9 +3703,66 @@ export const helperv2Abi = [
 						"type": "bool"
 					},
 					{
-						"internalType": "uint256[]",
-						"name": "integers",
-						"type": "uint256[]"
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "userJoiningTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "userTradingTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "userTradingLimitTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "userLimitUtilized",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradingLevelBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "packageLevelBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "userLevelIncomeBlockTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradingReferralBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "packageReferralBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "selfTradingProfit",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "packageUpgraded",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Helperv2.UserDetails",
+						"name": "data",
+						"type": "tuple"
 					}
 				],
 				"internalType": "struct Helperv2.User",
@@ -3856,6 +3916,19 @@ export const helperv2Abi = [
 				"internalType": "bytes32",
 				"name": "",
 				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "rateHexa",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -4022,6 +4095,68 @@ export const helperv2Abi = [
 				"internalType": "bool",
 				"name": "registered",
 				"type": "bool"
+			},
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "userJoiningTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "userTradingTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "userTradingLimitTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "userLimitUtilized",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tradingLevelBonus",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "packageLevelBonus",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "userLevelIncomeBlockTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tradingReferralBonus",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "packageReferralBonus",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "selfTradingProfit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "packageUpgraded",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct Helperv2.UserDetails",
+				"name": "data",
+				"type": "tuple"
 			}
 		],
 		"stateMutability": "view",
@@ -4988,9 +5123,9 @@ export const fetcherAddress = //"0x93e4A68CEDD7f7676C7e933eBE61F6416344D61E" // 
 "0x586712e122fDbF55CF55e75267F95F6DadA8d662"
 
 export const hexaTokenAdd = "0x94698793068F41367720042B4792185742D9DaD0"
-export const helperv2 = "0xEC7833b60FfCaDD52C6202C575adFf87985bcA7E"
+export const helperv2 = "0x1E734f7010C5F978b500c9cF6b522Ea2D4c1Da9e"
 export const P2PAdd = "0xD24a760aed23C450EE939F2d128Cc86C0AA4E3B8"
-export const fetcherHelperv2 = "0xE81C5F632cF23EDE56512B57b32fa980B54f2424"
+export const fetcherHelperv2 = "0x059073D68C5FaCd36b3A1CF28885c18890eD641D"
 
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";

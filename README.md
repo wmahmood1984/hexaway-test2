@@ -4,3 +4,4 @@ to generate P2p smart contract
 to integrate price oracle
 to change the structs to bytes. 
 to make fetcher contract 
+admin distribution contracts 

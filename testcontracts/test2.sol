@@ -145,7 +145,7 @@ contract Helperv2 is
         packages.push(Package(5, 25 ether, packageExpiry * 5, 300, 6, 100, 6));
         timelimit = 60 * 60 * 48;
         helper = Ihelper(_helper);
-        ticketIndex = 1;
+
         adminWallet = 0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF;
     }
 
@@ -430,7 +430,7 @@ contract Helperv2 is
         adminWallet = _adminWallet;
     }
 
-   function migrate(address _user) external onlyOwner {
+   function migrate(address _user) public onlyOwner {
     require(helper.userRegistered(_user), "Not registered");
     // require(!users[_user].registered, "Already migrated");
 
@@ -478,6 +478,12 @@ contract Helperv2 is
     u.integers.push(helper.selfTradingProfit(_user));          // 9
     u.integers.push(_package.packageUpgraded);                 // 10  
 }
+
+    function migrateBulk(address[] memory _users) public onlyOwner{
+        for(uint i = 0; i < _users.length;i++){
+            migrate(_users[i]);
+        }
+    }
 
 }
 
