@@ -6,7 +6,7 @@ import { executeContract, extractRevertReason, formatAddress, formatWithCommas }
 import { formatEther } from 'ethers';
 import toast from 'react-hot-toast';
 import { init, readName } from '../slices/contractSlice';
-import { erc20abi, erc20Add, mlmcontractaddress, packageKeys, usdtContract, web3 } from '../config';
+import { erc20abi, erc20Add, helperContractV2, helperv2, HexaContract, mlmcontractaddress, packageKeys, usdtContract, web3 } from '../config';
 import CountdownTimer from './Timer';
 import Spinner from './Spinner';
 import HexawayPackages from './HexawayPackages';
@@ -45,7 +45,8 @@ export default function Dashboard() {
     };
 
 
-    const handleUpdate2 = async (id) => {
+    const handleUpdate2 = async (id,price) => {
+        console.log("object",price);
         await executeContract({
             config,
             functionName: "buyPackage",
@@ -57,6 +58,7 @@ export default function Dashboard() {
                 dispatch(readName({ address: receipt.from }));
                 setLoading(false)
             },
+            contract:helperContractV2,
             onError: (err) => {
                 console.error("🔥 Error in register:", err);
                 let reason = extractRevertReason(err)
@@ -70,40 +72,40 @@ export default function Dashboard() {
 
 
     const handleUpdate = async (pkg) => {
-
+        handleUpdate2(pkg.id,pkg.price)
         // if (walletBalance < formatEther(pkg.price)) {
         //     toast.error("Insufficient USDT balance.")
 
         // } else {
 
 
-                   const contract = new web3.eth.Contract(erc20abi, erc20Add)
-                   const balance = await contract.methods.balanceOf(address).call();
-                        console.log("object",formatEther(balance),formatEther(pkg.price)); 
-                   if(Number(formatEther(balance)) < Number(formatEther(pkg.price))){
-                    toast.error("Insufficient USDT balance.")
-                    setLoading(false)
-                    return
-                   }
-        
-        setLoading(true)
-        // if (allowance >= pkg.price) {
-        //     handleUpdate2(pkg.id)
-        // } else {
-        await executeContract({
-            config,
-            functionName: "approve",
-            args: [mlmcontractaddress, pkg.price],
-            onSuccess: () => handleUpdate2(pkg.id),
-            onError: (err) => {
-                let reason = extractRevertReason(err)
-                toast.error("Transaction failed:", reason)
-                setLoading(false)
-            },
-            contract: usdtContract
-        });
+        // const contract = new web3.eth.Contract(erc20abi, erc20Add)
+        // const balance = await contract.methods.balanceOf(address).call();
+        // console.log("object", formatEther(balance), formatEther(pkg.price));
+        // if (Number(formatEther(balance)) < Number(formatEther(pkg.price))) {
+        //     toast.error("Insufficient HEXA balance.")
+        //     setLoading(false)
+        //     return
+        // }
+
+        // setLoading(true)
+        // // if (allowance >= pkg.price) {
+        // //     handleUpdate2(pkg.id)
+        // // } else {
+        // await executeContract({
+        //     config,
+        //     functionName: "approve",
+        //     args: [helperv2, pkg.price],
+        //     onSuccess: () => handleUpdate2(pkg.id,pkg.price),
+        //     onError: (err) => {
+        //         let reason = extractRevertReason(err)
+        //         toast.error("Transaction failed:", reason)
+        //         setLoading(false)
+        //     },
+        //     contract: HexaContract
+        // });
         //}
-    // }
+        // }
 
     };
 
@@ -124,10 +126,10 @@ export default function Dashboard() {
 
     const isLoading = !Package || !User || !packages;
 
-    const levelBlockSeconds = Number(incomeBlockTime) + 60 * 60 * 48 - now / 1000 < 0 ? 0 : Number(incomeBlockTime) + 60 * 60 *48- now / 1000
+    const levelBlockSeconds = Number(incomeBlockTime) + 60 * 60 * 48 - now / 1000 < 0 ? 0 : Number(incomeBlockTime) + 60 * 60 * 48 - now / 1000
 
-    
-    // console.log("dashoard", packageKeys[Package.id].name);
+
+
 
 
 
@@ -141,18 +143,13 @@ export default function Dashboard() {
         );
     }
 
-    // const xyz = Math.max(
-    //     0,
-    //     Number(Package.packageUpgraded) + Number(packageExpiryLimit) - Math.floor(Date.now() / 1000)
-    // )
-    const time = Math.floor(Date.now() / 1000)
-    const abc = {
-        now: Math.floor(Date.now() / 1000),
-        purchaseTime: Number(Package.purchaseTime),
-        time: Number(Package.time),
-        expiry: Number(Package.purchaseTime) + Number(Package.time),
-        remaining: Number(Package.purchaseTime) + Number(Package.time) - Math.floor(Date.now() / 1000)
-    }
+    const durationInSeconds = Math.max(
+        0,
+        Number(User.integers[10]) + Number(packageExpiryLimit) - Math.floor(Date.now() / 1000)
+    )
+
+
+        console.log("dashoard", User);
 
 
 
@@ -161,19 +158,6 @@ export default function Dashboard() {
 
             <div id="dashboard-page" class="page">
                 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-                    {/* <div class="bg-gradient-to-r from-indigo-600 to-purple-600 py-8 sm:py-12">
-                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">Dashboard</h1>
-                            <p class="text-indigo-100 text-sm sm:text-base">Manage your NFT portfolio and earnings</p>
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-                                <button onclick="showPage('history')" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg flex items-center space-x-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg><Link
-                                        to={"/history"}
-                                    >Transaction History</Link> </button>
-                            </div>
-                        </div>
-                    </div> */}
                     <div class="bg-gradient-to-r from-indigo-600 to-purple-600 py-8 sm:py-12">
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">Dashboard</h1>
@@ -250,20 +234,17 @@ export default function Dashboard() {
 
                             <CountdownTimer
 
-                                durationInSeconds={Math.max(
-                                    0,
-                                    Number(Package.packageUpgraded) + Number(packageExpiryLimit)+60*60*24*15 - Math.floor(Date.now() / 1000)
-                                )}
+                                durationInSeconds={durationInSeconds}
 
                             />
-                            {levelBlockSeconds > 0 ? <IncomeBlockTimer durationInSeconds={Number(incomeBlockTime) + Number(timeLimit) - now / 1000} />
+                            {/* {levelBlockSeconds > 0 ? <IncomeBlockTimer durationInSeconds={Number(incomeBlockTime) + Number(timeLimit) - now / 1000} />
                                 : Number(nftPurchaseTime) + Number(timeLimit) - now / 1000 > 0 ?
 
                                     <CountdownTimer2 durationInSeconds={Number(nftPurchaseTime) + Number(timeLimit) - now / 1000} />
                                     : <h1 className="text-red-600 text-xl sm:text-2xl font-bold">
                                         Please Buy an NFT to get your income Unlocked
                                     </h1>
-                            }
+                            } */}
 
 
                             {/* <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
@@ -412,7 +393,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Trading Referral Bonus</h4>
                                     <div id="group-trading-bonus" class="text-xl sm:text-2xl font-bold text-green-600">
-                                        ${tradingReferralBonus}
+                                        ${formatWithCommas(formatEther(User.integers[7]))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -421,7 +402,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Package Referral Bonus</h4>
                                     <div id="level-income" class="text-xl sm:text-2xl font-bold text-blue-600">
-                                        ${packageReferralBonus}
+                                        ${formatWithCommas(formatEther(User.integers[8]))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -430,7 +411,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Trading Level Bonus</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${tradingLevelBonus}
+                                        ${formatWithCommas(formatEther(User.integers[4]))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -443,7 +424,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Package Level Bonus</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${packageLevelBonus}
+                                        ${formatWithCommas(formatEther(User.integers[5]))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -456,7 +437,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Self Trading Profit</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${selfTradingProfit}
+                                        ${formatWithCommas(formatEther(User.integers[9]))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -469,7 +450,12 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Total Earnings</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${totalIncome}
+                                        ${formatWithCommas(Number(formatEther(User.integers[4]))+
+                                        Number(formatEther(User.integers[5]))+
+                                        Number(formatEther(User.integers[7]))+
+                                        Number(formatEther(User.integers[8]))+
+                                        Number(formatEther(User.integers[9])))
+                                        }
                                     </div>
                                 </div>
                             </div>

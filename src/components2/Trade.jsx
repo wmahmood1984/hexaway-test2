@@ -45,6 +45,7 @@ export default function Trade({ setCreateActive }) {
 
 
         const handleTrade2 = async (id=0) => {
+            setLoading(true)
     
             await executeContract({
                 config,
@@ -116,13 +117,13 @@ export default function Trade({ setCreateActive }) {
     const now = new Date().getTime() / 1000
 
     const revisedLimitUtilized =
-        now - Number(User.userTradingLimitTime) > 60 * 60 * 24 ? 0 : User.userLimitUtilized;
+        now - Number(User.integers[2]) > 60 * 60 * 24 ? 0 : User.integers[3];
 
-    const duration = Number(User.userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(User.userTradingLimitTime) + 60 * 60 * 24 - now : 0
+    const duration = Number(User.integers[2]) + 60 * 60 * 24 - now > 0 ? Number(User.integers[2]) + 60 * 60 * 24 - now : 0
 
    const tradingLimitUsage = `${Number(Number(revisedLimitUtilized) / Number(Package.limit) * 100).toFixed(2)}`
 
-    console.log("object", revisedLimitUtilized, Package.limit);
+    console.log("object",User.integers);
 
 
 

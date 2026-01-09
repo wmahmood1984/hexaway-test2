@@ -122,7 +122,7 @@ export default function HexawayPackages({ packages, Package, downlines, handleUp
               ${formatEther(pkg.price)}
             </div>
             <div className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
-              Limit: {formatEther(pkg.limit)}
+              Limit: {pkg.limit}
             </div>
             <button
               disabled={!canUpgrade(i)}

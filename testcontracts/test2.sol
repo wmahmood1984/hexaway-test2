@@ -52,12 +52,15 @@ interface Ihelper {
     ) external view returns (uint);
     function packageLevelBonus(address user) external view returns (uint);
     function tradingLevelBonus(address user) external view returns (uint);
-
+    function tradingReferralBonus(address user) external view returns (uint);
+    function packageReferralBonus(address user) external view returns (uint);
+    function selfTradingProfit(address user) external view returns (uint);
     function getNFTs() external view returns (NFT[] memory);
     function getNFTused() external view returns (NFT[] memory);
     function idPurchasedtime(uint256 id) external view returns (uint256);
     function getusers() external view returns (address[] memory);
     function getUser(address _user) external view returns (User memory);
+    function userRegistered(address _user) external view returns (bool);
 }
 
 contract Helperv2 is
@@ -82,27 +85,25 @@ contract Helperv2 is
         address[] children;
         address[] indirect;
         address[] direct;
-        uint packageUpgraded;
-        uint userJoiningTime;
-        uint userTradingTime;
-        uint userTradingLimitTime;
-        uint userLimitUtilized;
-        uint tradingLevelBonus;
-        uint packageLevelBonus;
-        uint userLevelIncomeBlockTime;
+        bool registered;
+        uint[] integers;
     }
+
 
     struct ticket {
         uint id;
         address user;
         uint income;
+        bool filled;
+        uint time;
+        uint future1;
+        uint future2;
     }
 
     IERC20 public paymentToken;
     Package[] public packages;
     mapping(address => Package) public userPackage;
     mapping(address => User) public users;
-    mapping(address => bool) public userRegistered;
     address[] usersArray;
 
     uint public packageExpiry;
@@ -156,14 +157,15 @@ contract Helperv2 is
         require(funds >= amount, "insufficient funds");
         require(users[_user].referrer == address(0), "zero address");
         require(_referrer != _user, "self referrer");
-        require(userRegistered[_referrer], "already registered");
+        require(users[_referrer].registered, "already registered");
         address placement = findAvailableSlot(_referrer);
         users[_user].referrer = _referrer;
         users[_user].parent = placement;
+        users[_user].registered = true;
         users[placement].children.push(_user);
-        users[_user].packageUpgraded = block.timestamp;
-        users[_user].userJoiningTime = block.timestamp;
-        users[_user].userTradingLimitTime = block.timestamp;
+        users[_user].integers[10] = block.timestamp;
+        users[_user].integers[0] = block.timestamp;
+        users[_user].integers[2] = block.timestamp;
         usersArray.push(_user);
         // Direct referral list
         users[_referrer].direct.push(_user);
@@ -177,10 +179,12 @@ contract Helperv2 is
             current = users[current].parent;
         }
 
-        userRegistered[_user] = true;
-
-        if (block.timestamp - users[_referrer].packageUpgraded <= userPackage[_referrer].time) {
+        if (
+            block.timestamp - users[_referrer].integers[10] <=
+            userPackage[_referrer].time
+        ) {
             paymentToken.transfer(_referrer, amount / 2);
+            users[_referrer].integers[8]+=amount / 2;
         }
 
         paymentToken.transfer(adminWallet, amount / 2);
@@ -207,27 +211,36 @@ contract Helperv2 is
         }
     }
 
-    function buyPackage(uint8 id, address _user, uint funds) public {
+    function buyPackage(uint8 id) public {
         uint amount = packages[id].price;
-        require(funds >= amount, "insufficient funds");
+        address _user = msg.sender;
+
         require(checkEligibility(_user, id), "not eligible");
         require(id >= userPackage[_user].id, "cannot upgrade old package");
-        require(userRegistered[_user], "6");
+        require(users[_user].registered, "6");
+        require(
+            paymentToken.allowance(msg.sender, address(this)) >= amount,
+            "7"
+        );
+        paymentToken.transferFrom(msg.sender, address(this), amount);
         Package memory tx1 = packages[id];
-        users[_user].packageUpgraded = block.timestamp;
+        users[_user].integers[10] = block.timestamp;
 
         userPackage[_user] = tx1;
-        users[_user].userLimitUtilized = 0;
-        users[_user].userTradingLimitTime = block.timestamp;
+        users[_user].integers[3] = 0;
+        users[_user].integers[2] = block.timestamp;
 
         paymentToken.transfer(adminWallet, (amount * 20) / 100);
 
         address up = users[_user].referrer;
 
-        if (block.timestamp - users[up].packageUpgraded <= userPackage[up].time) {
+        if (
+            block.timestamp - users[up].integers[10] <= userPackage[up].time
+        ) {
             paymentToken.transfer(up, (amount * 20) / 100);
+            users[up].integers[8]+=amount / 2;
         }
-        
+
         address[] memory _uplines = getUplines(_user);
 
         processLevelIncome(_uplines, (amount * 80) / 100, 25, 2, 0);
@@ -243,14 +256,12 @@ contract Helperv2 is
     ) internal {
         uint leftOver = 0;
 
-        
-
         for (uint i = 0; i < _uplines.length; i++) {
             address up = _uplines[i];
             bool cond = _type == 2 // Package Buy
                 ? users[up].direct.length >= 2
                 : ((userPackage[up].id == 5 && // NFT buy
-                    users[up].userLimitUtilized >=
+                    users[up].integers[3] >=
                         (userPackage[up].limit / 2)) ||
                     userPackage[up].id != 5) &&
                     userPackage[up].levelUnlock >= i &&
@@ -258,29 +269,26 @@ contract Helperv2 is
             uint transactionType = _type == 1 ? 2 : 3;
             if (
                 cond &&
-                block.timestamp - users[up].packageUpgraded <= userPackage[up].time && 
+                block.timestamp - users[up].integers[10] <=
+                    userPackage[up].time &&
                 userPackage[up].id > 0
             ) {
+                paymentToken.transfer(up, _amount / levelD);
+                if (_type == 1) {
+                    users[up].integers[3] += (_amount * 60) / levelD;
+                } else {
+                    users[up].integers[5] += _amount / levelD;
+                }
 
-                    paymentToken.transfer(up, _amount  / levelD);
-                    if (_type == 1) {
-                        users[up].tradingLevelBonus +=
-                            _amount * 60 / levelD;
-                    } else {
-                        users[up].packageLevelBonus +=
-                            _amount / levelD;
-                    }
-
-                    emit Incomes(
-                        block.timestamp,
-                        _amount  / levelD,
-                        transactionType,
-                        up,
-                        i + 1,
-                        _id
-                    );
-                    leftOver++;
-
+                emit Incomes(
+                    block.timestamp,
+                    _amount / levelD,
+                    transactionType,
+                    up,
+                    i + 1,
+                    _id
+                );
+                leftOver++;
             }
         }
 
@@ -321,7 +329,7 @@ contract Helperv2 is
         Package memory _currentPackage = userPackage[_user];
 
         condition =
-            block.timestamp - users[_user].packageUpgraded >=
+            block.timestamp - users[_user].integers[10] >=
                 _currentPackage.time ||
             users[_user].indirect.length >= _package.team;
     }
@@ -337,33 +345,51 @@ contract Helperv2 is
         );
         paymentToken.transferFrom(msg.sender, address(this), amount);
 
-        ticket memory tx1 = ticket(msg.sender, 0);
+        ticket memory tx1 = ticket(
+            ticketIndex,
+            msg.sender,
+            0,
+            false,
+            block.timestamp,
+            0,
+            0
+        );
         ticketMapping[ticketIndex] = tx1;
         ticketIndex++;
 
         paymentToken.transfer(adminWallet, (amount * 5) / 100);
-        address referrer = users[msg.sender].referrer == address(0)? adminWallet: users[msg.sender].referrer;
+        address referrer = users[msg.sender].referrer == address(0)
+            ? adminWallet
+            : users[msg.sender].referrer;
         paymentToken.transfer(referrer, (amount * 5) / 100);
-        users[msg.sender].userLimitUtilized ++;
-        require(users[msg.sender].userLimitUtilized<=userPackage[msg.sender].limit,"2");
+        users[referrer].integers[7]+=(amount * 5) / 100;
+        users[msg.sender].integers[3]++;
+        require(
+            users[msg.sender].integers[3] <=
+                userPackage[msg.sender].limit,
+            "2"
+        );
 
-        if (block.timestamp - users[msg.sender].userTradingLimitTime > 24 hours) {
+        if (
+            block.timestamp - users[msg.sender].integers[2] > 24 hours
+        ) {
             // Reset after 3 minutes
-            users[msg.sender].userTradingLimitTime = block.timestamp;
-            users[msg.sender].userLimitUtilized = 0;
+            users[msg.sender].integers[2] = block.timestamp;
+            users[msg.sender].integers[3] = 0;
         }
-        address [] memory _uplines = getUplines(msg.sender);
-        
-        if(_uplines.length==25){
-            paymentToken.transfer(_uplines[24],amount*5/100);
-        }else{
-            paymentToken.transfer(adminWallet,amount*5/100);
+        address[] memory _uplines = getUplines(msg.sender);
+
+        if (_uplines.length == 25) {
+            paymentToken.transfer(_uplines[24], (amount * 5) / 100);
+        } else {
+            paymentToken.transfer(adminWallet, (amount * 5) / 100);
         }
 
         processLevelIncome(_uplines, (amount * 35) / 100, 24, 1, 0);
         balance[ticketMapping[activeTicketIndex].user] += (amount * 50) / 100;
-
+        users[ticketMapping[activeTicketIndex].user].integers[9]+=(amount * 50) / 100;
         if (ticketMapping[activeTicketIndex].income >= (amount * 3) / 2) {
+
             activeTicketIndex++;
         }
 
@@ -396,53 +422,79 @@ contract Helperv2 is
         return (users[_user]);
     }
 
+    function getPackages() public view returns (Package[] memory) {
+        return packages;
+    }
+
     function changeWallet(address _adminWallet) public onlyOwner {
         adminWallet = _adminWallet;
     }
 
-    function migrate(address _user) public onlyOwner {
-        Ihelper.Package memory _package = helper.userPackage(_user);
-        Ihelper.User memory user = helper.getUser(_user);
-        userPackage[_user] = Package(
-            _package.id,
-            _package.price,
-            _package.time,
-            _package.team,
-            packages[_package.id].limit,
-            _package.levelUnlock,
-            _package.directrequired
-        );
+   function migrate(address _user) external onlyOwner {
+    require(helper.userRegistered(_user), "Not registered");
+    // require(!users[_user].registered, "Already migrated");
 
-        users[_user] = User({
-            referrer: user.referrer,
-            parent: user.parent,
-            children: user.children,
-            indirect: user.indirect,
-            direct: user.direct,
-            packageUpgraded: _package.packageUpgraded,
-            userJoiningTime: helper.userJoiningTime(_user),
-            userTradingTime: helper.userTradingTime(_user),
-            userTradingLimitTime: helper.userTradingLimitTime(_user),
-            userLimitUtilized: 0,
-            tradingLevelBonus: 0,
-            packageLevelBonus: 0,
-            userLevelIncomeBlockTime: 0
-        });
-    }
+    // Fetch old data
+    Ihelper.User memory oldUser = helper.getUser(_user);
+    Ihelper.Package memory _package = helper.userPackage(_user);
+
+    // Migrate package
+    userPackage[_user] = Package(
+        _package.id,
+        _package.price,
+        _package.time,
+        _package.team,
+        packages[_package.id].limit,
+        _package.levelUnlock,
+        _package.directrequired
+    );
+
+    // Storage pointer
+    User storage u = users[_user];
+
+    // Migrate address-based relationships
+    u.referrer = oldUser.referrer;
+    u.parent   = oldUser.parent;
+    u.children = oldUser.children;
+    u.indirect = oldUser.indirect;
+    u.direct   = oldUser.direct;
+
+    // Mark registered BEFORE pushing integers (reentrancy safety)
+    u.registered = true;
+
+    // =========================
+    // PUSH INTEGER VALUES
+    // =========================
+
+    u.integers.push(helper.userJoiningTime(_user));            // 0
+    u.integers.push(helper.userTradingTime(_user));            // 1
+    u.integers.push(helper.userTradingLimitTime(_user));       // 2
+    u.integers.push(0);          // 3
+    u.integers.push(helper.tradingLevelBonus(_user));          // 4
+    u.integers.push(helper.packageLevelBonus(_user));          // 5
+    u.integers.push(0);   // 6
+    u.integers.push(helper.tradingReferralBonus(_user));       // 7
+    u.integers.push(helper.packageReferralBonus(_user));       // 8
+    u.integers.push(helper.selfTradingProfit(_user));          // 9
+    u.integers.push(_package.packageUpgraded);                 // 10  
 }
 
+}
 
 interface IHelperV2 {
     struct ticket {
+        uint id;
         address user;
         uint income;
+        bool filled;
+        uint time;
+        uint future1;
+        uint future2;
     }
 
     function ticketIndex() external view returns (uint);
-    function ticketMapping(uint) external view returns (address user, uint income);
+    function ticketMapping(uint) external view returns (ticket memory);
 }
-
-
 
 contract DataFetcherUpgradeable is
     Initializable,
@@ -451,8 +503,6 @@ contract DataFetcherUpgradeable is
 {
     IHelperV2 public helper;
 
-
-
     address[] public oldUsers;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -460,8 +510,8 @@ contract DataFetcherUpgradeable is
         _disableInitializers();
     }
 
-    function initialize(address _owner, address _helper) public initializer {
-        __Ownable_init(_owner);
+    function initialize(address _helper) public initializer {
+        __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
 
         helper = IHelperV2(_helper);
@@ -471,51 +521,35 @@ contract DataFetcherUpgradeable is
         helper = IHelperV2(_helper);
     }
 
+    function getTicketsByUser(
+        address _user
+    ) public view returns (IHelperV2.ticket[] memory) {
+        uint totalTickets = helper.ticketIndex();
 
-function getTicketsByUser(
-    address _user
-) public view returns (IHelperV2.ticket[] memory) {
-
-    uint totalTickets = helper.ticketIndex();
-
-    // First pass: count matching tickets
-    uint count = 0;
-    for (uint i = 0; i < totalTickets; i++) {
-        (address user, ) = helper.ticketMapping(i);
-        if (user == _user) {
-            count++;
+        // First pass: count matching tickets
+        uint count = 0;
+        for (uint i = 0; i < totalTickets; i++) {
+            IHelperV2.ticket memory tx2 = helper.ticketMapping(i);
+            if (tx2.user == _user) {
+                count++;
+            }
         }
-    }
 
-    // Allocate exact-sized array
-    IHelperV2.ticket[] memory userTickets = new IHelperV2.ticket[](count);
+        // Allocate exact-sized array
+        IHelperV2.ticket[] memory userTickets = new IHelperV2.ticket[](count);
 
-    // Second pass: fill array
-    uint j = 0;
-    for (uint i = 0; i < totalTickets; i++) {
-        (address user, uint income) = helper.ticketMapping(i);
-        if (user == _user) {
-            userTickets[j] = IHelperV2.ticket({
-                user: user,
-                income: income
-            });
-            j++;
+        // Second pass: fill array
+        uint j = 0;
+        for (uint i = 0; i < totalTickets; i++) {
+            IHelperV2.ticket memory tx1 = helper.ticketMapping(i);
+            if (tx1.user == _user) {
+                userTickets[j] = tx1;
+                j++;
+            }
         }
+
+        return userTickets;
     }
-
-    return userTickets;
-}
-
-
-
 
     function _authorizeUpgrade(address newImpl) internal override onlyOwner {}
-
-   
-
- 
-
-
-
 }
-

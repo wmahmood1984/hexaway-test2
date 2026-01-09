@@ -48,7 +48,7 @@ export const readName = createAsyncThunk(
 
       const name = await safeCall("name", () => nftContract.methods.name().call());
       // const nfts = await safeCall("getNFTs", () => contract.methods.getNFTs().call());
-      const packages = await safeCall("getPackages", () => contract.methods.getPackages().call());
+      const packages = await safeCall("getPackages", () => v2Contract.methods.getPackages().call());
       const admin = await safeCall("admin", () => contract.methods.owner().call());
       const NFTque = await safeCall("getNFTque", () => contract.methods.getNFTque().call());
       const registered = await safeCall("userRegistered", () => contract.methods.userRegistered(a.address).call());
@@ -56,7 +56,7 @@ export const readName = createAsyncThunk(
       const NFTMayBeCreated = await safeCall("NFTMayBeCreated", () => contract.methods.NFTMayBeCreated().call());
       const nextTokenId = await safeCall("_nextTokenId", () => nftContract.methods._nextTokenId().call());
       const timeLimit = await safeCall("timelimit", () => contract.methods.timelimit().call());
-      const packageExpiryLimit = await safeCall("packageExpiry", () => contract.methods.packageExpiry().call());
+      const packageExpiryLimit = await safeCall("packageExpiry", () => v2Contract.methods.packageExpiry().call());
       const nftQueIndex = await safeCall("nftQueIndex", ()=>contract.methods.nftQueIndex().call())
 
 
