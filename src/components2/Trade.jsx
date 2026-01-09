@@ -123,7 +123,7 @@ export default function Trade({ setCreateActive }) {
 
    const tradingLimitUsage = `${Number(Number(revisedLimitUtilized) / Number(Package.limit) * 100).toFixed(2)}`
 
-    console.log("object",User);
+    console.log("object",tickets);
 
 
 
