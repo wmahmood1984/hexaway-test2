@@ -117,13 +117,13 @@ export default function Trade({ setCreateActive }) {
     const now = new Date().getTime() / 1000
 
     const revisedLimitUtilized =
-        now - Number(User.integers[2]) > 60 * 60 * 24 ? 0 : User.integers[3];
+        now - Number(User.data.userTradingLimitTime) > 60 * 60 * 24 ? 0 : User.data.userLimitUtilized;
 
-    const duration = Number(User.integers[2]) + 60 * 60 * 24 - now > 0 ? Number(User.integers[2]) + 60 * 60 * 24 - now : 0
+    const duration = Number(User.data.userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(User.data.userTradingLimitTime) + 60 * 60 * 24 - now : 0
 
    const tradingLimitUsage = `${Number(Number(revisedLimitUtilized) / Number(Package.limit) * 100).toFixed(2)}`
 
-    console.log("object",User.integers);
+    console.log("object",User);
 
 
 

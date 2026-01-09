@@ -157,11 +157,11 @@ export default function Dashboard() {
 
     const durationInSeconds = Math.max(
         0,
-        Number(User.integers[10]) + Number(packageExpiryLimit) - Math.floor(Date.now() / 1000)
+        Number(User.data.packageUpgraded) + Number(packageExpiryLimit) - Math.floor(Date.now() / 1000)
     )
 
-    const position = Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.purchasedTime) - Number(b.purchasedTime))[0].id)+1 - (activeTicketIndex+1) == 0? 1 :
-                    Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.purchasedTime) - Number(b.purchasedTime))[0].id)+1 - (activeTicketIndex+1)
+    const position = Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id)))+1 - (activeTicketIndex+1) == 0? 1 :
+                    Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id)))+1 - (activeTicketIndex+1)
 
         console.log("dashoard", position);
 
@@ -407,7 +407,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Trading Referral Bonus</h4>
                                     <div id="group-trading-bonus" class="text-xl sm:text-2xl font-bold text-green-600">
-                                        ${formatWithCommas(formatEther(User.integers[7]))}
+                                        ${formatWithCommas(formatEther(User.data.tradingReferralBonus))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -416,7 +416,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Package Referral Bonus</h4>
                                     <div id="level-income" class="text-xl sm:text-2xl font-bold text-blue-600">
-                                        ${formatWithCommas(formatEther(User.integers[8]))}
+                                        ${formatWithCommas(formatEther(User.data.packageReferralBonus))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -425,7 +425,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Trading Level Bonus</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${formatWithCommas(formatEther(User.integers[4]))}
+                                        ${formatWithCommas(formatEther(User.data.tradingLevelBonus))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -438,7 +438,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Package Level Bonus</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${formatWithCommas(formatEther(User.integers[5]))}
+                                        ${formatWithCommas(formatEther(User.data.packageLevelBonus))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -451,7 +451,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Self Trading Profit</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${formatWithCommas(formatEther(User.integers[9]))}
+                                        ${formatWithCommas(formatEther(User.data.selfTradingProfit))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -464,11 +464,11 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Total Earnings</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${formatWithCommas(Number(formatEther(User.integers[4]))+
-                                        Number(formatEther(User.integers[5]))+
-                                        Number(formatEther(User.integers[7]))+
-                                        Number(formatEther(User.integers[8]))+
-                                        Number(formatEther(User.integers[9])))
+                                        ${formatWithCommas(Number(formatEther(User.data.tradingLevelBonus))+
+                                        Number(formatEther(User.data.packageLevelBonus))+
+                                        Number(formatEther(User.data.tradingReferralBonus))+
+                                        Number(formatEther(User.data.packageReferralBonus))+
+                                        Number(formatEther(User.data.selfTradingProfit)))
                                         }
                                     </div>
                                 </div>
@@ -543,7 +543,7 @@ export default function Dashboard() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div class="text-center p-3 bg-white/50 rounded-lg">
                                     <div class="text-lg sm:text-xl font-bold text-pink-600" id="nftque-earnings">
-                                        ${formatWithCommas(formatEther(User.integers[9]))}
+                                        ${formatWithCommas(formatEther(User.data.selfTradingProfit))}
                                     </div>
                                     <div class="text-xs sm:text-sm text-gray-600">
                                         Trade Earnings
