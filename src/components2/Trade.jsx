@@ -48,6 +48,8 @@ export default function Trade({ setCreateActive }) {
         setTicketIndex(_index)
     }
 
+    const now = new Date().getTime() / 1000
+
 
     const revisedLimitUtilized =
         now - Number(User.data.userTradingLimitTime) > 60 * 60 * 24 ? 0 : User.data.userLimitUtilized;
@@ -177,7 +179,7 @@ export default function Trade({ setCreateActive }) {
         );
     }
 
-    const now = new Date().getTime() / 1000
+
 
 
 
