@@ -6,7 +6,7 @@ import User from "./User";
 
 export default function Tree() {
   const {
-    downlines,totalIncome
+    User,totalIncome
   } = useSelector((state) => state.contract);
 
   const { address } = useAppKitAccount();
@@ -94,7 +94,7 @@ export default function Tree() {
           <div className="text-lg font-semibold">Your Account</div>
           <div className="text-sm text-gray-600">Root Level</div>
           <div className="text-xs text-indigo-600 font-medium">
-            Total Network: {downlines?.indirect?.length || 0} Member(s)
+            Total Network: {User?.indirect?.length || 0} Member(s)
           </div>
         </div>
 
@@ -184,12 +184,12 @@ export default function Tree() {
         {/* --- Summary Cards --- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 mt-8 pt-8 border-t border-gray-200 max-w-md mx-auto">
           <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-            <div className="text-2xl font-bold text-green-600">{downlines.direct.length}</div>
+            <div className="text-2xl font-bold text-green-600">{User.direct.length}</div>
             <div className="text-sm text-gray-600 font-medium">Direct</div>
             <div className="text-xs text-gray-500">Referrals</div>
           </div>
           <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl border border-indigo-200">
-            <div className="text-2xl font-bold text-indigo-600">{downlines.indirect.length}</div>
+            <div className="text-2xl font-bold text-indigo-600">{User.indirect.length}</div>
             <div className="text-sm text-gray-600 font-medium">Total Team</div>
             <div className="text-xs text-gray-500">All Levels</div>
           </div>

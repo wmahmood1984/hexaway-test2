@@ -20,8 +20,10 @@ export default function Teamtree() {
     const selectedClasses =
         "border-2 border-indigo-500 bg-indigo-50 shadow-lg hover:shadow-lg";
     const {
-        downlines, totalIncome
+        User, totalIncome
     } = useSelector((state) => state.contract);
+
+    const downlines = User
 
     const { address } = useAppKitAccount();
     const [levels1, setLevels] = useState([]); // array of arrays
