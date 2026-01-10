@@ -564,6 +564,14 @@ export default function Dashboard() {
                                         Trade Position
                                     </div>
                                 </div>
+                                <div class="text-center p-3 bg-white/50 rounded-lg">
+                                    <div class="text-lg sm:text-xl font-bold text-indigo-600" id="nftque-position">
+                                        {Number(activeTicketIndex)+1}
+                                    </div>
+                                    <div class="text-xs sm:text-sm text-gray-600">
+                                        Current Trade in Que
+                                    </div>
+                                </div>
                             </div>
                             <div class="mt-4 sm:mt-6">
                                 <div class="flex items-center justify-between mb-2"><span class="text-xs sm:text-sm text-gray-600"></span> <span class="text-xs sm:text-sm font-medium text-purple-600" id="nftque-progress"></span>
