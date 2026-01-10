@@ -42,6 +42,7 @@ export default function Trade({ setCreateActive }) {
 
     const abc = async () => {
         const _tickets = await fetcherContract.methods.getTicketsByUser(address).call()
+
         setTickets(_tickets)
 
         const _index = await helperContract.methods.ticketIndex().call()
@@ -50,7 +51,7 @@ export default function Trade({ setCreateActive }) {
 
     const now = new Date().getTime() / 1000
 
-
+            console.log("object", tickets);
     const revisedLimitUtilized =
         now - Number(User.data.userTradingLimitTime) > 60 * 60 * 24 ? 0 : User.data.userLimitUtilized;
 
@@ -187,7 +188,7 @@ export default function Trade({ setCreateActive }) {
 
     const tradingLimitUsage = `${Number(Number(revisedLimitUtilized) / Number(Package.limit) * 100).toFixed(2)}`
 
-    console.log("object", tickets);
+
 
 
 
@@ -392,7 +393,7 @@ export default function Trade({ setCreateActive }) {
                                         <div class="mobile-status-wrapper" style={{ flex: "0 0 120px", textAlign: "center", minWidth: 0 }}>
                                             <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Status</div>
                                             <div class="token-field-content">
-                                                {v.filled ? <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
+                                                {v.active ? <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
                                                     <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                                                         complete
                                                     </span>
@@ -408,10 +409,11 @@ export default function Trade({ setCreateActive }) {
                                         <div style={{ flex: "0 0 130px", minWidth: 0 }}>
                                             <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Trade</div>
                                             <button
-                                                disabled={!v.filled}
+                                                
+                                                disabled={!v.active}
                                                 class="trade-btn"
-                                                onclick="handleTrade('TKN-001', 'Bitcoin')"
-                                                style={{ width: "100%", background: v.filled ? "linear-gradient(135deg, #6366f1, #10b981)" : "grey", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", fontFamily: "'Orbitron', sans-serif", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.3px", boxShadow: "0 3px 8px rgba(99, 102, 241, 0.35)" }}
+                                                onClick={()=>{handleTrade(v.id)}}
+                                                style={{ width: "100%", background: v.active ? "linear-gradient(135deg, #6366f1, #10b981)" : "grey", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", fontFamily: "'Orbitron', sans-serif", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.3px", boxShadow: "0 3px 8px rgba(99, 102, 241, 0.35)" }}
                                             >
                                                 Trade Now
                                             </button>

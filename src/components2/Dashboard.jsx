@@ -6,7 +6,7 @@ import { executeContract, extractRevertReason, formatAddress, formatWithCommas }
 import { formatEther } from 'ethers';
 import toast from 'react-hot-toast';
 import { init, readName } from '../slices/contractSlice';
-import { erc20abi, erc20Add, fetcherHelperv2, fetcherV2Abi, helperContractV2, helperv2, helperv2Abi, HexaContract, mlmcontractaddress, packageKeys, usdtContract, web3 } from '../config';
+import { erc20abi, erc20Add, fetcherHelperv2, fetcherV2Abi, helperContractV2, helperv2, helperv2Abi, HexaContract, hexaTokenAdd, mlmcontractaddress, packageKeys, usdtContract, web3 } from '../config';
 import CountdownTimer from './Timer';
 import Spinner from './Spinner';
 import HexawayPackages from './HexawayPackages';
@@ -84,14 +84,11 @@ export default function Dashboard() {
 
 
     const handleUpdate = async (pkg) => {
-        console.log("object",walletBalance,formatEther(pkg.price),walletBalance < formatEther(pkg.price));
-        if (Number(walletBalance) < Number(formatEther(pkg.price))) {
-            toast.error("Insufficient USDT balance.")
-
-        } else {
+        console.log("object",walletBalance,formatEther(pkg.price),Number(walletBalance) < Number(formatEther(pkg.price)));
 
 
-        const contract = new web3.eth.Contract(erc20abi, erc20Add)
+
+        const contract = new web3.eth.Contract(erc20abi, hexaTokenAdd)
         const balance = await contract.methods.balanceOf(address).call();
         console.log("object", formatEther(balance), formatEther(pkg.price));
         if (Number(formatEther(balance)) < Number(formatEther(pkg.price)*100)) {
@@ -116,7 +113,6 @@ export default function Dashboard() {
             },
             contract: HexaContract
         });
-        }
         }
 
     
