@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { helperAbi, helperAddress, web3 } from "../config";
+import { helperAbi, helperAddress, helperv2, helperv2Abi, web3 } from "../config";
 import User from "./User";
 
 export default function Tree() {
@@ -59,7 +59,7 @@ export default function Tree() {
   useEffect(() => {
     const fetchData = async () => {
       if (!address) return;
-      const contract = new web3.eth.Contract(helperAbi, helperAddress);
+      const contract = new web3.eth.Contract(helperv2Abi, helperv2);
       const levelsData = await buildLevels(address, contract);
       setLevels(levelsData);
     };
@@ -77,6 +77,8 @@ export default function Tree() {
     ];
     return colors[level % colors.length];
   };
+
+console.log("Tree",User);
 
   return (
     <div className="py-10">

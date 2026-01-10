@@ -152,7 +152,7 @@ contract Helperv2 is
         __UUPSUpgradeable_init();
         paymentToken = IERC20(_paymentToken);
         packageExpiry = 60 * 60 * 24 * 45;
-        packages.push(Package(0, 2 ether, 0, 0, 1, 1, 0));
+        packages.push(Package(0, 2 ether, packageExpiry * 1, 0, 1, 1, 0));
         packages.push(Package(1, 5 ether, packageExpiry * 1, 0, 2, 5, 2));
         packages.push(Package(2, 10 ether, packageExpiry * 2, 15, 3, 10, 3));
         packages.push(Package(3, 15 ether, packageExpiry * 3, 40, 4, 20, 4));
@@ -206,6 +206,14 @@ contract Helperv2 is
         ) {
             paymentToken.transfer(_referrer, amount / 2);
             users[_referrer].data.packageReferralBonus += amount / 2;
+            emit Incomes(
+                    block.timestamp,
+                    (amount * 2),
+                    1,
+                    _referrer,
+                    0,
+                    0
+                );
         }
 
         paymentToken.transfer(adminWallet, amount / 2);
@@ -261,11 +269,19 @@ contract Helperv2 is
         ) {
             paymentToken.transfer(up, (amount * 20) / 100);
             users[up].data.packageReferralBonus += amount / 2;
+            emit Incomes(
+                    block.timestamp,
+                    (amount * 20) / 100,
+                    1,
+                    up,
+                    0,
+                    0
+                );
         }
 
         address[] memory _uplines = getUplines(_user);
 
-        processLevelIncome(_uplines, (amount * 80) / 100, 25, 2, 0);
+        processLevelIncome(_uplines, (amount * 60) / 100, 25, 2, 0);
         emit Upgrades(block.timestamp, amount, id, _user);
     }
 
@@ -284,7 +300,7 @@ contract Helperv2 is
                 ? users[up].direct.length >= 2
                 : ((userPackage[up].id == 5 && // NFT buy
                     users[up].data.userLimitUtilized >=
-                    (userPackage[up].limit / 2)) ||
+                        (userPackage[up].limit / 2)) ||
                     userPackage[up].id != 5) &&
                     userPackage[up].levelUnlock >= i &&
                     users[up].direct.length >= userPackage[up].directrequired;
@@ -348,17 +364,17 @@ contract Helperv2 is
     ) public view returns (bool condition) {
         Package memory _package = packages[_id];
 
-        Package memory _currentPackage = userPackage[_user];
+    //    Package memory _currentPackage = userPackage[_user];
 
         condition =
             block.timestamp - users[_user].data.packageUpgraded >=
-                _currentPackage.time ||
+                _package.time ||
             users[_user].indirect.length >= _package.team;
     }
 
-    function trade(uint _ticket) public {
+    function trade() public {
         uint amount = 6 ether * rateHexa;
-        uint redeemedAmount = 9 ether * rateHexa;
+
 
         require(
             paymentToken.allowance(msg.sender, address(this)) >= amount,
@@ -379,11 +395,19 @@ contract Helperv2 is
         ticketMapping[ticketIndex] = tx1;
         ticketIndex++;
 
-        paymentToken.transfer(adminWallet, (amount * 5) / 100);
+        paymentToken.transfer(adminWallet, (amount * 10) / 100);
         address referrer = users[msg.sender].referrer == address(0)
             ? adminWallet
             : users[msg.sender].referrer;
         paymentToken.transfer(referrer, (amount * 5) / 100);
+        emit Incomes(
+                    block.timestamp,
+                    (amount * 5) / 100,
+                    0,
+                    referrer,
+                    0,
+                    0
+                );
         users[referrer].data.tradingReferralBonus += (amount * 5) / 100;
         users[msg.sender].data.userLimitUtilized++;
         require(
@@ -408,24 +432,32 @@ contract Helperv2 is
             paymentToken.transfer(adminWallet, (amount * 5) / 100);
         }
 
-        processLevelIncome(_uplines, (amount * 35) / 100, 24, 1, 0);
-        ticketMapping[activeTicketIndex].income +=(amount * 50) / 100;
+        processLevelIncome(_uplines, (amount * 30) / 100, 24, 1, 0);
+        ticketMapping[activeTicketIndex].income += (amount * 50) / 100;
         balance[ticketMapping[activeTicketIndex].user] += (amount * 50) / 100;
         users[ticketMapping[activeTicketIndex].user].data.selfTradingProfit +=
             (amount * 50) / 100;
-        
-        if (ticketMapping[_ticket].active) {
-            require(ticketMapping[_ticket].user==msg.sender,"you are not authorized");
-            require(!ticketMapping[_ticket].filled,"already filled");
-            ticketMapping[_ticket].filled = true;
-            paymentToken.transfer(msg.sender, redeemedAmount);
-        }
 
         if (ticketMapping[activeTicketIndex].income >= (amount * 3) / 2) {
-            ticketMapping[activeTicketIndex].active=true;
+            ticketMapping[activeTicketIndex].active = true;
             activeTicketIndex++;
         }
+    }
 
+    function settle(uint _ticket) public {
+        trade();
+            require(
+                ticketMapping[_ticket].user == msg.sender
+                && !ticketMapping[_ticket].filled
+                && ticketMapping[_ticket].active
+                ,
+                
+                "you are not authorized"
+            );
+
+            ticketMapping[_ticket].filled = true;
+            balance[ticketMapping[_ticket].user] -= 9 ether*rateHexa;
+            paymentToken.transfer(msg.sender, 9 ether*rateHexa);
         
     }
 
@@ -525,6 +557,7 @@ interface IHelperV2 {
         uint income;
         bool filled;
         uint time;
+        bool active;
         uint future1;
         uint future2;
     }

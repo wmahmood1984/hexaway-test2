@@ -7,6 +7,6 @@ to make fetcher contract
 admin distribution contracts 
 
 
-2) fix the error mesage of package 
+1) Price inclusion. 
 
 

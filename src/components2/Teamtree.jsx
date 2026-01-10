@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import UserCard from './UserCard';
 import { useSelector } from 'react-redux';
 import { useAppKitAccount } from '@reown/appkit/react';
-import { helperAbi, helperAddress, web3 } from '../config';
+import { helperAbi, helperAddress, helperv2, helperv2Abi, web3 } from '../config';
 
 export default function Teamtree() {
 
@@ -78,7 +78,7 @@ export default function Teamtree() {
         const fetchData = async () => {
             if (!address) return;
             setLoading(true);
-            const contract = new web3.eth.Contract(helperAbi, helperAddress);
+            const contract = new web3.eth.Contract(helperv2Abi, helperv2);
             const levelsData = await buildLevels(address, contract);
             setLevels(levelsData);
             
