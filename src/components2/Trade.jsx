@@ -49,7 +49,59 @@ export default function Trade({ setCreateActive }) {
     }
 
 
-    
+    const revisedLimitUtilized =
+        now - Number(User.data.userTradingLimitTime) > 60 * 60 * 24 ? 0 : User.data.userLimitUtilized;
+
+
+    const canBuy = () => {
+        const nowSec = Math.floor(Date.now() / 1000); // current time in seconds
+
+        // 1️⃣ Check package expiry
+        const packageValid = nowSec - Number(User.data.packageUpgraded) <= Package.time;
+
+        // 2️⃣ Calculate remaining trading limit
+        const remainingLimit = Number(formatEther(Package.limit)) - Number(revisedLimitUtilized);
+
+        // 3️⃣ Calculate NFT total cost (price + 7%)
+        const nftValue = 600 
+
+        // 4️⃣ Now check both conditions sequentially
+        if (!packageValid) {
+            return {
+                cond: false,
+                msg: "Your package is expired.",
+            };
+        }
+        console.log("object", remainingLimit, nftValue + 50);
+
+        console.log({
+            "package limit": Number(formatEther(Package.limit))
+            , "limit utilized": revisedLimitUtilized, "nft value": nftValue + 50
+        });
+
+        if (remainingLimit ==0 ) {
+            return {
+                cond: false,
+                msg: "Your trade limit is exceeding.",
+            };
+        }
+
+        if (walletBalance < nftValue) {
+            return {
+                cond: false,
+                msg: "Insufficient HEXA Balance.",
+            };
+        }
+
+        // ✅ Both conditions satisfied
+        return {
+            cond: true,
+            msg: "You can buy this NFT.",
+        };
+    };
+
+
+
 
 
 
@@ -82,6 +134,12 @@ export default function Trade({ setCreateActive }) {
 
 
     const handleTrade = async (id) => {
+       const {cond,msg} = canBuy()
+       if(!cond){
+        toast.error(msg)
+        return
+       }
+        
         try {
             setLoading(true);
             await executeContract({
@@ -121,8 +179,7 @@ export default function Trade({ setCreateActive }) {
 
     const now = new Date().getTime() / 1000
 
-    const revisedLimitUtilized =
-        now - Number(User.data.userTradingLimitTime) > 60 * 60 * 24 ? 0 : User.data.userLimitUtilized;
+
 
     const duration = Number(User.data.userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(User.data.userTradingLimitTime) + 60 * 60 * 24 - now : 0
 
