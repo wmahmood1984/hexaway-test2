@@ -160,8 +160,15 @@ export default function Dashboard() {
         Number(User.data.packageUpgraded) + Number(packageExpiryLimit) - Math.floor(Date.now() / 1000)
     )
 
-    const position = Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id)))+1 - (activeTicketIndex+1) == 0? 1 :
-                    Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id)))+1 - (activeTicketIndex+1)
+    const sortedPositions = tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id))
+    const firstPosition = tickets && sortedPositions.length>0? sortedPositions[0]: []
+    const position = tickets && firstPosition.length > 0?   
+             Number(firstPosition.id)+1-Number(activeTicketIndex)+1 ==0? 1:
+             Number(firstPosition.id)+1-Number(activeTicketIndex)+1 : "Not in Que"
+    
+    
+   // Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id)))+1 - (activeTicketIndex+1) == 0? 1 :
+     //               Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id)))+1 - (activeTicketIndex+1)
 
         console.log("dashoard", position);
 
@@ -551,7 +558,7 @@ export default function Dashboard() {
                                 </div>
                                 <div class="text-center p-3 bg-white/50 rounded-lg">
                                     <div class="text-lg sm:text-xl font-bold text-indigo-600" id="nftque-position">
-                                        {NFTQueStatus}
+                                        {position}
                                     </div>
                                     <div class="text-xs sm:text-sm text-gray-600">
                                         Trade Position

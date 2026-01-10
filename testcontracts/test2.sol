@@ -407,6 +407,7 @@ contract Helperv2 is
         }
 
         processLevelIncome(_uplines, (amount * 35) / 100, 24, 1, 0);
+        ticketMapping[activeTicketIndex].income +=(amount * 50) / 100;
         balance[ticketMapping[activeTicketIndex].user] += (amount * 50) / 100;
         users[ticketMapping[activeTicketIndex].user].data.selfTradingProfit +=
             (amount * 50) / 100;
@@ -453,6 +454,7 @@ contract Helperv2 is
 
     function migrate(address _user) public onlyOwner {
         require(helper.userRegistered(_user), "Not registered");
+        require(!users[_user].registered, "Not registered");
         // require(!users[_user].registered, "Already migrated");
 
         // Fetch old data
