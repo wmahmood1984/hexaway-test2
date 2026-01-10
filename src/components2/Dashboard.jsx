@@ -84,8 +84,8 @@ export default function Dashboard() {
 
 
     const handleUpdate = async (pkg) => {
-
-        if (walletBalance < formatEther(pkg.price)) {
+        console.log("object",walletBalance,formatEther(pkg.price),walletBalance < formatEther(pkg.price));
+        if (Number(walletBalance) < Number(formatEther(pkg.price))) {
             toast.error("Insufficient USDT balance.")
 
         } else {
@@ -538,7 +538,7 @@ export default function Dashboard() {
                                 <h3 class="text-base sm:text-lg font-semibold text-purple-800 mb-2 sm:mb-0">🎨 Trade Status</h3>
                                 <span
                                     id="nftque-status-badge"
-                                    className={`px-3 py-1 rounded-full font-semibold self-start text-sm sm:text-base ${NFTQueStatus === "Not in the Que"
+                                    className={`px-3 py-1 rounded-full font-semibold self-start text-sm sm:text-base ${position === "Not in Que"
                                         ? "bg-red-100 text-red-700"
                                         : "bg-green-100 text-green-700"
                                         }`}
