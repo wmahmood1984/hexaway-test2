@@ -51,7 +51,7 @@ export default function Trade({ setCreateActive }) {
 
     const now = new Date().getTime() / 1000
 
-            console.log("object", tickets);
+    console.log("object", tickets);
     const revisedLimitUtilized =
         now - Number(User.data.userTradingLimitTime) > 60 * 60 * 24 ? 0 : User.data.userLimitUtilized;
 
@@ -63,10 +63,10 @@ export default function Trade({ setCreateActive }) {
         const packageValid = nowSec - Number(User.data.packageUpgraded) <= Package.time;
 
         // 2️⃣ Calculate remaining trading limit
-        const remainingLimit = Number(formatEther(Package.limit)) - Number(revisedLimitUtilized);
+        const remainingLimit = Number(Package.limit) - Number(revisedLimitUtilized);
 
         // 3️⃣ Calculate NFT total cost (price + 7%)
-        const nftValue = 600 
+        const nftValue = 600
 
         // 4️⃣ Now check both conditions sequentially
         if (!packageValid) {
@@ -75,14 +75,14 @@ export default function Trade({ setCreateActive }) {
                 msg: "Your package is expired.",
             };
         }
-        console.log("object", remainingLimit, nftValue + 50);
+        console.log("object", walletBalance, nftValue);
 
         console.log({
             "package limit": Number(formatEther(Package.limit))
             , "limit utilized": revisedLimitUtilized, "nft value": nftValue + 50
         });
 
-        if (remainingLimit ==0 ) {
+        if (remainingLimit == 0) {
             return {
                 cond: false,
                 msg: "Your trade limit is exceeding.",
@@ -109,13 +109,14 @@ export default function Trade({ setCreateActive }) {
 
 
 
-    const handleTrade2 = async () => {
+    const handleTrade2 = async (trade, id) => {
         setLoading(true)
 
         await executeContract({
             config,
-            functionName: "trade",
-            args: [ticketIndex],
+            functionName: trade,
+
+            args: trade == "trade" ? [] : [id],
             onSuccess: (txHash, receipt) => {
                 console.log("🎉 Tx Hash:", txHash);
                 console.log("🚀 Tx Receipt:", receipt);
@@ -136,21 +137,23 @@ export default function Trade({ setCreateActive }) {
 
 
 
-    const handleTrade = async (id) => {
-       const {cond,msg} = canBuy()
-       if(!cond){
-        toast.error(msg)
-        return
-       }
-        
+    const handleTrade = async (trade) => {
+        const { cond, msg } = canBuy()
+        if (!cond) {
+            toast.error(msg)
+            return
+        }
+
+        const value = "600"
+
         try {
             setLoading(true);
             await executeContract({
                 config,
                 functionName: "approve",
-                args: [helperv2, parseEther("6000")],
+                args: [helperv2, parseEther(value)],
                 contract: HexaContract,
-                onSuccess: () => handleTrade2(),
+                onSuccess: () => handleTrade2(trade),
                 onError: () => {
                     setLoading(false);
                     toast.error("Approval failed");
@@ -184,17 +187,18 @@ export default function Trade({ setCreateActive }) {
 
 
 
-    const duration = Number(User.data.userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(User.data.userTradingLimitTime) + 60 * 60 * 24 - now : 0
+    const duration = Number(User?.data?.userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(User?.data?.userTradingLimitTime) + 60 * 60 * 24 - now : 0
 
     const tradingLimitUsage = `${Number(Number(revisedLimitUtilized) / Number(Package.limit) * 100).toFixed(2)}`
 
 
 
 
+    const pendingTrades = tickets && tickets.filter(t => !t.filled)
+    const filledTrades = tickets && tickets.filter(t => t.filled)
 
-
-
-
+    const activeTrades = tickets && pendingTrades.filter(t => t.active)
+    const tradeDisabled = activeTrades.length > 0 ? true : false
 
     return (
         <div>
@@ -313,13 +317,26 @@ export default function Trade({ setCreateActive }) {
                         <main style={{ maxWidth: "1600px", margin: "0 auto", padding: "40px 24px" }}>
 
                             <button
-                                onClick={handleTrade}
+                                disabled={tradeDisabled}
+                                onClick={() => handleTrade("trade")}
                                 style={{
                                     fontSize: "50px", color: "white", cursor: "pointer",
-                                    textAlign: "center", marginLeft: "380px", marginBottom: "50px", padding: "10px 10px", borderRadius: "24px", background: "linear-gradient(135deg, #6366f1, #10b981)", boxShadow: "0 20px 60px rgba(99, 102, 241, 0.3)", animation: "slideUp 0.5s ease-out"
+                                    textAlign: "center", marginLeft: "380px", marginBottom: "50px", padding: "10px 10px", borderRadius: "24px",
+                                    background: tradeDisabled ? "grey" : "linear-gradient(135deg, #6366f1, #10b981)", boxShadow: "0 20px 60px rgba(99, 102, 241, 0.3)", animation: "slideUp 0.5s ease-out"
                                 }}>
                                 Trade Now
                             </button>
+
+                            <header
+
+                                style={{
+                                    fontSize: "50px", color: "white",
+                                    textAlign: "center"
+                                    , marginBottom: "50px", padding: "10px 10px", borderRadius: "24px",
+                                    background: "linear-gradient(135deg, #6366f1, #10b981)", boxShadow: "0 20px 60px rgba(99, 102, 241, 0.3)", animation: "slideUp 0.5s ease-out"
+                                }}>
+                                Current Trades
+                            </header>
 
 
                             <div class="header-row" style={{ background: "#ffffff", border: "2px solid rgba(99, 102, 241, 0.5)", borderRadius: "16px", padding: "16px 28px", marginBottom: "16px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
@@ -361,7 +378,7 @@ export default function Trade({ setCreateActive }) {
 
 
                             <div class="list-container">
-                                {tickets.map((v, e) =>
+                                {pendingTrades.map((v, e) =>
                                     <div class="token-card token-row" style={{ background: "#ffffff", border: "2px solid rgba(99, 102, 241, 0.3)", borderRadius: "16px", padding: "20px 28px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", animationDelay: "0s", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
 
                                         <div style={{ flex: "0 0 120px", minWidth: 0 }}>
@@ -393,15 +410,23 @@ export default function Trade({ setCreateActive }) {
                                         <div class="mobile-status-wrapper" style={{ flex: "0 0 120px", textAlign: "center", minWidth: 0 }}>
                                             <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Status</div>
                                             <div class="token-field-content">
-                                                {v.active ? <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
-                                                    <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                                        complete
-                                                    </span>
-                                                </div> : <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
-                                                    <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                                        processing
-                                                    </span>
-                                                </div>}
+                                                {v.filled ?
+                                                    <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
+                                                        <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                            Paid
+                                                        </span>
+                                                    </div> :
+                                                    v.active ?
+
+                                                        <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
+                                                            <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                                Active
+                                                            </span>
+                                                        </div> : <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
+                                                            <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                                processing
+                                                            </span>
+                                                        </div>}
                                             </div>
                                         </div>
 
@@ -409,15 +434,129 @@ export default function Trade({ setCreateActive }) {
                                         <div style={{ flex: "0 0 130px", minWidth: 0 }}>
                                             <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Trade</div>
                                             <button
-                                                
+
                                                 disabled={!v.active}
                                                 class="trade-btn"
-                                                onClick={()=>{handleTrade(v.id)}}
+                                                onClick={() => handleTrade("settle", v.id)}
                                                 style={{ width: "100%", background: v.active ? "linear-gradient(135deg, #6366f1, #10b981)" : "grey", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", fontFamily: "'Orbitron', sans-serif", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.3px", boxShadow: "0 3px 8px rgba(99, 102, 241, 0.35)" }}
                                             >
                                                 Trade Now
                                             </button>
                                         </div>
+                                    </div>
+                                )}
+
+
+
+
+                            </div>
+
+                            <header
+
+                                style={{
+                                    fontSize: "50px", color: "white",
+                                    textAlign: "center",
+                                    marginTop:"50px"
+                                    , marginBottom: "50px", padding: "10px 10px", borderRadius: "24px",
+                                    background: "linear-gradient(135deg, #6366f1, #10b981)", boxShadow: "0 20px 60px rgba(99, 102, 241, 0.3)", animation: "slideUp 0.5s ease-out"
+                                }}>
+                                Completed Trades
+                            </header>
+
+
+                            <div class="header-row" style={{ background: "#ffffff", border: "2px solid rgba(99, 102, 241, 0.5)", borderRadius: "16px", padding: "16px 28px", marginBottom: "16px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
+
+                                <div style={{ flex: "0 0 120px", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Token ID
+                                    </h2>
+                                </div>
+
+
+                                <div style={{ flex: "0 0 140px", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Date
+                                    </h2>
+                                </div>
+
+
+                                <div style={{ flex: "0 0 180px", textAlign: "right", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Amount
+                                    </h2>
+                                </div>
+
+
+                                <div style={{ flex: "0 0 120px", textAlign: "center", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Status
+                                    </h2>
+                                </div>
+
+{/* 
+                                <div style={{ flex: "0 0 130px", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Trade
+                                    </h2>
+                                </div> */}
+                            </div>
+
+
+                            <div class="list-container">
+                                {filledTrades.map((v, e) =>
+                                    <div class="token-card token-row" style={{ background: "#ffffff", border: "2px solid rgba(99, 102, 241, 0.3)", borderRadius: "16px", padding: "20px 28px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", animationDelay: "0s", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
+
+                                        <div style={{ flex: "0 0 120px", minWidth: 0 }}>
+                                            <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Token ID</div>
+                                            <div class="token-field-content">
+                                                <code style={{ fontFamily: "'Courier New', monospace", fontSize: "14px", color: "#6366f1", background: "#f8fafc", padding: "6px 12px", borderRadius: "8px", display: "inline-block", fontWeight: 700 }}>
+                                                    TKN-{v.id}
+                                                </code>
+                                            </div>
+                                        </div>
+
+
+                                        <div style={{ flex: "0 0 140px", minWidth: 0 }}>
+                                            <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Date</div>
+                                            <div class="token-field-content" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 600 }}>
+                                                {secondsToDMY(v.time)}
+                                            </div>
+                                        </div>
+
+
+                                        <div class="mobile-amount-wrapper" style={{ flex: "0 0 180px", textAlign: "right", minWidth: 0 }}>
+                                            <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Amount</div>
+                                            <div class="token-field-content" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#10b981", fontWeight: 700 }}>
+                                                {formatEther(v.income)} HEXA
+                                            </div>
+                                        </div>
+
+
+                                        <div class="mobile-status-wrapper" style={{ flex: "0 0 120px", textAlign: "center", minWidth: 0 }}>
+                                            <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Status</div>
+                                            <div class="token-field-content">
+                                                {v.filled ?
+                                                    <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
+                                                        <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                            Paid
+                                                        </span>
+                                                    </div> :
+                                                    v.active ?
+
+                                                        <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
+                                                            <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                                Active
+                                                            </span>
+                                                        </div> : <div style={{ background: "rgba(16, 185, 129, 0.2)", padding: "6px 14px", borderRadius: "20px", border: "1px solid #10b981", display: "inline-block" }}>
+                                                            <span class="status-active" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "12px", color: "#10b981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                                processing
+                                                            </span>
+                                                        </div>}
+                                            </div>
+                                        </div>
+
+
+
                                     </div>
                                 )}
 

@@ -166,7 +166,7 @@ export default function Dashboard() {
    // Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id)))+1 - (activeTicketIndex+1) == 0? 1 :
      //               Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id)))+1 - (activeTicketIndex+1)
 
-        console.log("dashoard", position);
+        console.log("dashoard", User);
 
 
 

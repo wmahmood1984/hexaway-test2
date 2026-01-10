@@ -3124,6 +3124,92 @@ export const helperv2Abi = [
 	{
 		"inputs": [
 			{
+				"internalType": "uint8",
+				"name": "id",
+				"type": "uint8"
+			}
+		],
+		"name": "buyPackage",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "time",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "team",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "limit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "levelUnlock",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "directrequired",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct Helperv2.Package",
+				"name": "_package",
+				"type": "tuple"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_packageExpiry",
+				"type": "uint256"
+			}
+		],
+		"name": "changePackages",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_adminWallet",
+				"type": "address"
+			}
+		],
+		"name": "changeWallet",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "implementation",
 				"type": "address"
@@ -3234,6 +3320,24 @@ export const helperv2Abi = [
 		"type": "event"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_paymentToken",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_helper",
+				"type": "address"
+			}
+		],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -3245,6 +3349,32 @@ export const helperv2Abi = [
 		],
 		"name": "Initialized",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "migrate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_users",
+				"type": "address[]"
+			}
+		],
+		"name": "migrateBulk",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -3264,6 +3394,59 @@ export const helperv2Abi = [
 		],
 		"name": "OwnershipTransferred",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_ref",
+				"type": "address"
+			}
+		],
+		"name": "register",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_ticket",
+				"type": "uint256"
+			}
+		],
+		"name": "settle",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "trade",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -3310,16 +3493,21 @@ export const helperv2Abi = [
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "UPGRADE_INTERFACE_VERSION",
-		"outputs": [
+		"inputs": [
 			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
+				"internalType": "address",
+				"name": "newImplementation",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
 			}
 		],
-		"stateMutability": "view",
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -3365,92 +3553,6 @@ export const helperv2Abi = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint8",
-				"name": "id",
-				"type": "uint8"
-			}
-		],
-		"name": "buyPackage",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"components": [
-					{
-						"internalType": "uint256",
-						"name": "id",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "price",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "time",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "team",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "limit",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "levelUnlock",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint8",
-						"name": "directrequired",
-						"type": "uint8"
-					}
-				],
-				"internalType": "struct Helperv2.Package",
-				"name": "_package",
-				"type": "tuple"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_packageExpiry",
-				"type": "uint256"
-			}
-		],
-		"name": "changePackages",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_adminWallet",
-				"type": "address"
-			}
-		],
-		"name": "changeWallet",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -3695,50 +3797,6 @@ export const helperv2Abi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_paymentToken",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_helper",
-				"type": "address"
-			}
-		],
-		"name": "initialize",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			}
-		],
-		"name": "migrate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_users",
-				"type": "address[]"
-			}
-		],
-		"name": "migrateBulk",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "",
 				"type": "address"
 			},
@@ -3884,26 +3942,6 @@ export const helperv2Abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_ref",
-				"type": "address"
-			}
-		],
-		"name": "register",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "ticketIndex",
 		"outputs": [
@@ -3984,47 +4022,16 @@ export const helperv2Abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "UPGRADE_INTERFACE_VERSION",
+		"outputs": [
 			{
-				"internalType": "uint256",
-				"name": "_ticket",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
-		"name": "trade",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
-			}
-		],
-		"name": "upgradeToAndCall",
-		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{

@@ -65,7 +65,7 @@ export const readName = createAsyncThunk(
 
       let Package = null;
       let uplines = [];
-      let User = [];
+      let User = null;
       let allowance = 0;
       let directReferrals = [];
       let limitUtilized = 0;
