@@ -319,7 +319,7 @@ export default function Trade({ setCreateActive }) {
                                     <div class="mobile-amount-wrapper" style={{ flex: "0 0 180px", textAlign: "right", minWidth: 0 }}>
                                         <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Amount</div>
                                         <div class="token-field-content" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#10b981", fontWeight: 700 }}>
-                                            ${formatEther(v.income)}
+                                            {formatEther(v.income)} HEXA 
                                         </div>
                                     </div>
 

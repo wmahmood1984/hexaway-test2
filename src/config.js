@@ -3983,6 +3983,11 @@ export const helperv2Abi = [
 				"type": "uint256"
 			},
 			{
+				"internalType": "bool",
+				"name": "active",
+				"type": "bool"
+			},
+			{
 				"internalType": "uint256",
 				"name": "future1",
 				"type": "uint256"
@@ -5123,9 +5128,9 @@ export const fetcherAddress = //"0x93e4A68CEDD7f7676C7e933eBE61F6416344D61E" // 
 "0x586712e122fDbF55CF55e75267F95F6DadA8d662"
 
 export const hexaTokenAdd = "0x94698793068F41367720042B4792185742D9DaD0"
-export const helperv2 = "0x1E734f7010C5F978b500c9cF6b522Ea2D4c1Da9e"
+export const helperv2 = "0xE22aF4c94cb2284Bd8470ECA35A5F9D11595841E"
 export const P2PAdd = "0xD24a760aed23C450EE939F2d128Cc86C0AA4E3B8"
-export const fetcherHelperv2 = "0x059073D68C5FaCd36b3A1CF28885c18890eD641D"
+export const fetcherHelperv2 = "0xBb0BB631487377581Bf14f3c6aC40025110Cc5e2"
 
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
