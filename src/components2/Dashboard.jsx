@@ -27,14 +27,14 @@ export default function Dashboard() {
     const [referrer, setReferrer] = useState()
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false);
-        const [tickets, setTickets] = useState()
-    const [activeTicketIndex,setActiveTicketIndex] = useState(0);
+    const [tickets, setTickets] = useState()
+    const [activeTicketIndex, setActiveTicketIndex] = useState(0);
     const fetcherContract = new web3.eth.Contract(fetcherV2Abi, fetcherHelperv2)
     const helperV2Contract = new web3.eth.Contract(helperv2Abi, helperv2)
 
-    useEffect(()=>{
+    useEffect(() => {
 
-        const abc = async ()=>{
+        const abc = async () => {
             const _tickets = await fetcherContract.methods.getTicketsByUser(address).call()
             setTickets(_tickets)
 
@@ -43,7 +43,7 @@ export default function Dashboard() {
         }
 
         abc()
-    },[address,loading])
+    }, [address, loading])
 
 
 
@@ -57,8 +57,8 @@ export default function Dashboard() {
     };
 
 
-    const handleUpdate2 = async (id,price) => {
-        console.log("object",price);
+    const handleUpdate2 = async (id, price) => {
+        console.log("object", price);
         await executeContract({
             config,
             functionName: "buyPackage",
@@ -70,7 +70,7 @@ export default function Dashboard() {
                 dispatch(readName({ address: receipt.from }));
                 setLoading(false)
             },
-            contract:helperContractV2,
+            contract: helperContractV2,
             onError: (err) => {
                 console.error("🔥 Error in register:", err);
                 let reason = extractRevertReason(err)
@@ -84,14 +84,14 @@ export default function Dashboard() {
 
 
     const handleUpdate = async (pkg) => {
-        console.log("object",walletBalance,formatEther(pkg.price),Number(walletBalance) < Number(formatEther(pkg.price)));
+        console.log("object", walletBalance, formatEther(pkg.price), Number(walletBalance) < Number(formatEther(pkg.price)));
 
 
 
         const contract = new web3.eth.Contract(erc20abi, hexaTokenAdd)
         const balance = await contract.methods.balanceOf(address).call();
         console.log("object", formatEther(balance), formatEther(pkg.price));
-        if (Number(formatEther(balance)) < Number(formatEther(pkg.price)*100)) {
+        if (Number(formatEther(balance)) < Number(formatEther(pkg.price) * 100)) {
             toast.error("Insufficient HEXA balance.")
             setLoading(false)
             return
@@ -104,8 +104,8 @@ export default function Dashboard() {
         await executeContract({
             config,
             functionName: "approve",
-            args: [helperv2, pkg.price*100],
-            onSuccess: () => handleUpdate2(pkg.id,pkg.price),
+            args: [helperv2, pkg.price * 100],
+            onSuccess: () => handleUpdate2(pkg.id, pkg.price),
             onError: (err) => {
                 let reason = extractRevertReason(err)
                 toast.error("Transaction failed:", reason)
@@ -113,9 +113,9 @@ export default function Dashboard() {
             },
             contract: HexaContract
         });
-        }
+    }
 
-    
+
 
     const normalizedAddr = address && address.toLowerCase();
     const normalizedQue = NFTque
@@ -124,10 +124,6 @@ export default function Dashboard() {
 
 
 
-
-    const NFTQueStatus = NFTque && normalizedQue.indexOf(normalizedAddr) < 0
-        ? "Not in the Que"
-        : normalizedQue.indexOf(normalizedAddr) + 1;
 
     const now = new Date().getTime()
 
@@ -156,17 +152,28 @@ export default function Dashboard() {
         Number(User.data.packageUpgraded) + Number(packageExpiryLimit) - Math.floor(Date.now() / 1000)
     )
 
-    const sortedPositions = tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id))
-    const firstPosition = tickets && sortedPositions.length>0? sortedPositions[0]: []
-    const position = tickets && firstPosition.length > 0?   
-             Number(firstPosition.id)+1-Number(activeTicketIndex)+1 ==0? 1:
-             Number(firstPosition.id)+1-Number(activeTicketIndex)+1 : "Not in Que"
-    
-    
-   // Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id)))+1 - (activeTicketIndex+1) == 0? 1 :
-     //               Number(tickets && tickets.filter(t=>t.user.toLowerCase()==address.toLowerCase()).sort((a, b) => Number(a.id) - Number(b.id)))+1 - (activeTicketIndex+1)
+    const pendingTrades = tickets && tickets.filter(t => !t.filled)
 
-        console.log("dashoard", User);
+    const sortedPositions =
+        tickets
+            ? pendingTrades
+                .filter(t => t.user.toLowerCase() === address.toLowerCase())
+                .sort((a, b) => Number(b.id) - Number(a.id)) // latest first
+            : [];
+
+    const latestTrade = sortedPositions.length > 0 ? sortedPositions[0] : null;
+
+    const position =
+        latestTrade && Number(latestTrade.id) > Number(activeTicketIndex)
+            ? Number(latestTrade.id) - Number(activeTicketIndex)
+            : "Not in Queue";
+
+    console.log("dashboard", {
+        sortedPositions,
+        latestTrade,
+        position
+    });
+
 
 
 
@@ -467,11 +474,11 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Total Earnings</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${formatWithCommas(Number(formatEther(User.data.tradingLevelBonus))+
-                                        Number(formatEther(User.data.packageLevelBonus))+
-                                        Number(formatEther(User.data.tradingReferralBonus))+
-                                        Number(formatEther(User.data.packageReferralBonus))+
-                                        Number(formatEther(User.data.selfTradingProfit)))
+                                        ${formatWithCommas(Number(formatEther(User.data.tradingLevelBonus)) +
+                                            Number(formatEther(User.data.packageLevelBonus)) +
+                                            Number(formatEther(User.data.tradingReferralBonus)) +
+                                            Number(formatEther(User.data.packageReferralBonus)) +
+                                            Number(formatEther(User.data.selfTradingProfit)))
                                         }
                                     </div>
                                 </div>
@@ -562,7 +569,7 @@ export default function Dashboard() {
                                 </div>
                                 <div class="text-center p-3 bg-white/50 rounded-lg">
                                     <div class="text-lg sm:text-xl font-bold text-indigo-600" id="nftque-position">
-                                        {Number(activeTicketIndex)+1}
+                                        {Number(activeTicketIndex) + 1}
                                     </div>
                                     <div class="text-xs sm:text-sm text-gray-600">
                                         Current Trade in Que

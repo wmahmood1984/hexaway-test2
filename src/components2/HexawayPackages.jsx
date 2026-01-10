@@ -13,13 +13,13 @@ export default function HexawayPackages({ packages, Package, downlines, handleUp
     const remaining = unlockTime - now - 60*60*24*45;
     if (remaining <= 0) return 0;
 
-        console.log("packages",{
-        now: Math.floor(Date.now() / 1000),
-        purchaseTime: Number(Package.purchaseTime),
-        time: Number(Package.time),
-        expiry: Number(Package.purchaseTime) + Number(Package.time)
-        ,remaining:unlockTime-now
-    });
+    //     console.log("packages",{
+    //     now: Math.floor(Date.now() / 1000),
+    //     purchaseTime: Number(Package.purchaseTime),
+    //     time: Number(Package.time),
+    //     expiry: Number(Package.purchaseTime) + Number(Package.time)
+    //     ,remaining:unlockTime-now
+    // });
 
     const days = Math.floor(remaining / 86400);
     const hours = Math.floor((remaining % 86400) / 3600);
@@ -80,7 +80,7 @@ export default function HexawayPackages({ packages, Package, downlines, handleUp
     const timeRemainingSec = unlockTime - now;
     const timeRemainingStr = timeRemainingSec > 0 ? getRemainingTime(pkg) : null;
     const timeFulfilled = timeRemainingSec <= 0;
-    console.log("can buy",remainingTeam,timeRemainingStr);
+
     if (!canUpgrade(i)) {
       if (remainingTeam > 0 && timeRemainingStr) {
         return `${remainingTeam} team size or ${timeRemainingStr} left`;
