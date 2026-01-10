@@ -109,6 +109,7 @@ contract Helperv2 is
         uint income;
         bool filled;
         uint time;
+        bool active;
         uint future1;
         uint future2;
     }
@@ -283,7 +284,7 @@ contract Helperv2 is
                 ? users[up].direct.length >= 2
                 : ((userPackage[up].id == 5 && // NFT buy
                     users[up].data.userLimitUtilized >=
-                        (userPackage[up].limit / 2)) ||
+                    (userPackage[up].limit / 2)) ||
                     userPackage[up].id != 5) &&
                     userPackage[up].levelUnlock >= i &&
                     users[up].direct.length >= userPackage[up].directrequired;
@@ -371,6 +372,7 @@ contract Helperv2 is
             0,
             false,
             block.timestamp,
+            false,
             0,
             0
         );
@@ -411,13 +413,20 @@ contract Helperv2 is
         balance[ticketMapping[activeTicketIndex].user] += (amount * 50) / 100;
         users[ticketMapping[activeTicketIndex].user].data.selfTradingProfit +=
             (amount * 50) / 100;
+        
+        if (ticketMapping[_ticket].active) {
+            require(ticketMapping[_ticket].user==msg.sender,"you are not authorized");
+            require(!ticketMapping[_ticket].filled,"already filled");
+            ticketMapping[_ticket].filled = true;
+            paymentToken.transfer(msg.sender, redeemedAmount);
+        }
+
         if (ticketMapping[activeTicketIndex].income >= (amount * 3) / 2) {
+            ticketMapping[activeTicketIndex].active=true;
             activeTicketIndex++;
         }
 
-        if (_ticket > 0) {
-            paymentToken.transfer(msg.sender, redeemedAmount);
-        }
+        
     }
 
     function changePackages(
