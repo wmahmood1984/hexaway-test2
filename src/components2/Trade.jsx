@@ -33,13 +33,16 @@ export default function Trade({ setCreateActive }) {
 
     useEffect(()=>{
 
-        const abc = async ()=>{
+
+
+        abc()
+    },[address])
+
+
+    const abc = async ()=>{
             const _tickets = await fetcherContract.methods.getTicketsByUser(address).call()
             setTickets(_tickets)
         }
-
-        abc()
-    },[address,loading])
 
    
 
@@ -56,7 +59,7 @@ export default function Trade({ setCreateActive }) {
                     console.log("🚀 Tx Receipt:", receipt);
                     dispatch(readName({ address: receipt.from }));
                     toast.success("Trade made Successfully")
-                    setLoading(false)
+                    abc()
                 },
                 contract: helperContractV2,
                 onError: (err) => {
@@ -72,14 +75,9 @@ export default function Trade({ setCreateActive }) {
     
     
         const handleTrade = async (id) => {
-    
-    
-            try {
+               try {
                 setLoading(true);
-      
-    
-    
-                await executeContract({
+                    await executeContract({
                     config,
                     functionName: "approve",
                     args: [helperv2, parseEther("6000")],
