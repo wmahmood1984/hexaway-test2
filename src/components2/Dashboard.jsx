@@ -543,7 +543,7 @@ export default function Dashboard() {
                                         : "bg-green-100 text-green-700"
                                         }`}
                                 >
-                                    {NFTQueStatus === "Not in the Que" ? "Inactive" : "Active"}
+                                    {position === "Not in Que" ? "Inactive" : "Active"}
                                 </span>
 
                             </div>
