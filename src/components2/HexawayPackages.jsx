@@ -8,7 +8,7 @@ export default function HexawayPackages({ packages, Package, downlines, handleUp
   // Helper: calculate remaining time until (purchaseTime + pkg.time)
   const getRemainingTime = (pkg) => {
     const now = Math.floor(Date.now() / 1000); // current time in seconds
-    const purchaseTime = Number(downlines.data.packageUpgraded || 0);
+    const purchaseTime = Number(downlines.data.userJoiningTime || 0);
     const unlockTime = purchaseTime + Number(pkg.time || 0);
     const remaining = unlockTime - now - 60*60*24*45;
     if (remaining <= 0) return 0;
@@ -49,7 +49,7 @@ export default function HexawayPackages({ packages, Package, downlines, handleUp
     if (!hasPrevPackage || alreadyActive) return false;
 
     const now = Math.floor(Date.now() / 1000);
-    const purchaseTime = Number(downlines.data.packageUpgraded || 0);
+    const purchaseTime = Number(downlines.data.userJoiningTime || 0);
     const unlockTime = purchaseTime + Number(pkg.time || 0);
     const timeFulfilled = now >= unlockTime;
 
@@ -75,7 +75,7 @@ export default function HexawayPackages({ packages, Package, downlines, handleUp
     const remainingTeam = Math.max(0, Number(pkg.team || 0) - teamHave);
 
     const now = Math.floor(Date.now() / 1000);
-    const purchaseTime = Number(downlines.data.packageUpgraded || 0);
+    const purchaseTime = Number(downlines.data.userJoiningTime || 0);
     const unlockTime = purchaseTime + Number(pkg.time || 0);
     const timeRemainingSec = unlockTime - now;
     const timeRemainingStr = timeRemainingSec > 0 ? getRemainingTime(pkg) : null;
