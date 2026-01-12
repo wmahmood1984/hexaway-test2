@@ -20,7 +20,7 @@
   /* Assign grid areas */
   .token-row > div:nth-child(1) { grid-area: token; }
   .token-row > div:nth-child(2) { grid-area: date; }
-  .token-row > div:nth-child(3) { grid-area: amount; }
+  .token-row > div:nth-child(3) { grid-area: amount (in Escrow); }
   .token-row > div:nth-child(4) { grid-area: status; }
   .token-row > div:nth-child(5) { grid-area: trade; }
 
