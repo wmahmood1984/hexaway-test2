@@ -10,6 +10,7 @@ import TradingLimitTimer from './Timer4';
 import toast from 'react-hot-toast';
 import { useConfig } from 'wagmi';
 import { readName } from '../slices/contractSlice';
+import "./Trade.css"
 
 export default function Trade({ setCreateActive }) {
 
@@ -111,7 +112,7 @@ export default function Trade({ setCreateActive }) {
 
     const handleTrade2 = async (trade, id) => {
         setLoading(true)
-
+        console.log("object", trade, id);
         await executeContract({
             config,
             functionName: trade,
@@ -137,7 +138,7 @@ export default function Trade({ setCreateActive }) {
 
 
 
-    const handleTrade = async (trade) => {
+    const handleTrade = async (trade, id) => {
         const { cond, msg } = canBuy()
         if (!cond) {
             toast.error(msg)
@@ -153,7 +154,7 @@ export default function Trade({ setCreateActive }) {
                 functionName: "approve",
                 args: [helperv2, parseEther(value)],
                 contract: HexaContract,
-                onSuccess: () => handleTrade2(trade),
+                onSuccess: () => handleTrade2(trade, id),
                 onError: () => {
                     setLoading(false);
                     toast.error("Approval failed");
@@ -201,6 +202,8 @@ export default function Trade({ setCreateActive }) {
     const tradeDisabled = activeTrades.length > 0 ? true : false
 
     return (
+
+
         <div>
 
             <div id="trade-page" class="page">
@@ -316,16 +319,24 @@ export default function Trade({ setCreateActive }) {
                     <div class="min-h-full w-full">
                         <main style={{ maxWidth: "1600px", margin: "0 auto", padding: "40px 24px" }}>
 
-                            <button
-                                disabled={tradeDisabled}
-                                onClick={() => handleTrade("trade")}
+                            <header
+                                onClick={() => handleTrade("trade", null)}
                                 style={{
-                                    fontSize: "50px", color: "white", cursor: "pointer",
-                                    textAlign: "center", marginLeft: "380px", marginBottom: "50px", padding: "10px 10px", borderRadius: "24px",
-                                    background: tradeDisabled ? "grey" : "linear-gradient(135deg, #6366f1, #10b981)", boxShadow: "0 20px 60px rgba(99, 102, 241, 0.3)", animation: "slideUp 0.5s ease-out"
-                                }}>
+                                    fontSize: "50px",
+                                    color: "white",
+                                    textAlign: "center",
+                                    maxWidth: "300px",
+                                    margin: "0 auto 50px auto",   // 👈 centers horizontally
+                                    padding: "10px 10px",
+                                    borderRadius: "24px",
+                                    background: "linear-gradient(135deg, #6366f1, #10b981)",
+                                    boxShadow: "0 20px 60px rgba(99, 102, 241, 0.3)",
+                                    animation: "slideUp 0.5s ease-out",
+                                    cursor: "pointer"
+                                }}
+                            >
                                 Trade Now
-                            </button>
+                            </header>
 
                             <header
 
@@ -379,7 +390,9 @@ export default function Trade({ setCreateActive }) {
 
                             <div class="list-container">
                                 {pendingTrades.map((v, e) =>
-                                    <div class="token-card token-row" style={{ background: "#ffffff", border: "2px solid rgba(99, 102, 241, 0.3)", borderRadius: "16px", padding: "20px 28px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", animationDelay: "0s", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
+                                    <div class="token-card token-row" style={{
+                                        marginBottom:"20px",
+                                        background: "#ffffff", border: "2px solid rgba(99, 102, 241, 0.3)", borderRadius: "16px", padding: "20px 28px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", animationDelay: "0s", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
 
                                         <div style={{ flex: "0 0 120px", minWidth: 0 }}>
                                             <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Token ID</div>
@@ -456,7 +469,7 @@ export default function Trade({ setCreateActive }) {
                                 style={{
                                     fontSize: "50px", color: "white",
                                     textAlign: "center",
-                                    marginTop:"50px"
+                                    marginTop: "50px"
                                     , marginBottom: "50px", padding: "10px 10px", borderRadius: "24px",
                                     background: "linear-gradient(135deg, #6366f1, #10b981)", boxShadow: "0 20px 60px rgba(99, 102, 241, 0.3)", animation: "slideUp 0.5s ease-out"
                                 }}>
@@ -493,7 +506,7 @@ export default function Trade({ setCreateActive }) {
                                     </h2>
                                 </div>
 
-{/* 
+                                {/* 
                                 <div style={{ flex: "0 0 130px", minWidth: 0 }}>
                                     <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
                                         Trade

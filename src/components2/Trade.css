@@ -1,0 +1,57 @@
+@media (max-width: 768px) {
+
+  /* Hide desktop header */
+  .header-row {
+    display: none !important;
+  }
+
+  /* Card becomes grid */
+  .token-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "token date"
+      "amount status"
+      "trade trade";
+    gap: 14px;
+    padding: 16px !important;
+  }
+
+  /* Assign grid areas */
+  .token-row > div:nth-child(1) { grid-area: token; }
+  .token-row > div:nth-child(2) { grid-area: date; }
+  .token-row > div:nth-child(3) { grid-area: amount; }
+  .token-row > div:nth-child(4) { grid-area: status; }
+  .token-row > div:nth-child(5) { grid-area: trade; }
+
+  /* Reset widths */
+  .token-row > div {
+    width: 100% !important;
+    flex: unset !important;
+    text-align: left !important;
+  }
+
+  /* Amount alignment */
+  .mobile-amount-wrapper {
+    text-align: left !important;
+  }
+
+  /* Status alignment */
+  .mobile-status-wrapper {
+    text-align: left !important;
+  }
+
+  /* Trade button full width */
+  .trade-btn {
+    width: 100% !important;
+  }
+
+  /* Show labels on mobile */
+  .mobile-label {
+    display: block !important;
+    font-size: 11px;
+    margin-bottom: 4px;
+    opacity: 0.7;
+    text-transform: uppercase;
+  }
+}
