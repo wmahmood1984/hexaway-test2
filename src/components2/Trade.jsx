@@ -320,6 +320,7 @@ export default function Trade({ setCreateActive }) {
                         <main style={{ maxWidth: "1600px", margin: "0 auto", padding: "40px 24px" }}>
 
                             <header
+                                disabled={tradeDisabled} 
                                 onClick={() => handleTrade("trade", null)}
                                 style={{
                                     fontSize: "50px",
@@ -329,7 +330,7 @@ export default function Trade({ setCreateActive }) {
                                     margin: "0 auto 50px auto",   // 👈 centers horizontally
                                     padding: "10px 10px",
                                     borderRadius: "24px",
-                                    background: "linear-gradient(135deg, #6366f1, #10b981)",
+                                    background: !tradeDisabled ? "linear-gradient(135deg, #6366f1, #10b981)":"grey",
                                     boxShadow: "0 20px 60px rgba(99, 102, 241, 0.3)",
                                     animation: "slideUp 0.5s ease-out",
                                     cursor: "pointer"
