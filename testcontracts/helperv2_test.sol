@@ -152,18 +152,18 @@ contract Helperv2 is
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         paymentToken = IERC20(_paymentToken);
-        packageExpiry = 60 * 60 * 24 * 45;
+        packageExpiry = 60 * 60 * 24 * 15;
         packages.push(Package(0, 2 ether, packageExpiry * 1, 0, 1, 1, 0));
-        packages.push(Package(1, 5 ether, packageExpiry * 1, 0, 2, 5, 2));
-        packages.push(Package(2, 10 ether, packageExpiry * 2, 15, 3, 10, 3));
-        packages.push(Package(3, 15 ether, packageExpiry * 3, 40, 4, 20, 4));
-        packages.push(Package(4, 20 ether, packageExpiry * 4, 100, 5, 50, 5)); //100 //90
-        packages.push(Package(5, 25 ether, packageExpiry * 5, 300, 6, 100, 6));
+        packages.push(Package(1, 5 ether, packageExpiry * 1, 0, 3, 5, 2));
+        packages.push(Package(2, 10 ether, packageExpiry * 2, 15, 7, 10, 1));
+        packages.push(Package(3, 15 ether, packageExpiry * 3, 40, 11, 15, 1));
+        packages.push(Package(4, 20 ether, packageExpiry * 4, 50, 15, 20, 1)); //100 //90
+        packages.push(Package(5, 25 ether, packageExpiry * 5, 60, 20, 24, 1));
         timelimit = 60 * 60 * 48;
         helper = Ihelper(_helper);
         rateHexa = 100;
 
-        adminWallet = 0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF;
+       adminWallet = 0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF;
     }
 
     function register(address _ref) public {
@@ -368,7 +368,7 @@ contract Helperv2 is
     //    Package memory _currentPackage = userPackage[_user];
 
         condition =
-            block.timestamp - users[_user].data.packageUpgraded >=
+            block.timestamp - users[_user].data.userJoiningTime >=
                 _package.time ||
             users[_user].indirect.length >= _package.team;
     }
