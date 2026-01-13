@@ -188,7 +188,7 @@ export default function Trade({ setCreateActive }) {
 
 
 
-    const duration = Number(User?.data?.userTradingLimitTime) + 60 * 60 * 24 - now > 0 ? Number(User?.data?.userTradingLimitTime) + 60 * 60 * 24 - now : 0
+    const duration = Number(User?.data?.userTradingLimitTime) + 60 * 30 - now > 0 ? Number(User?.data?.userTradingLimitTime) + 60 * 30 - now : 0
 
     const tradingLimitUsage = `${Number(Number(revisedLimitUtilized) / Number(Package.limit) * 100).toFixed(2)}`
 
