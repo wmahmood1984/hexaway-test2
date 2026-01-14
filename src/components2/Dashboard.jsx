@@ -230,7 +230,7 @@ export default function Dashboard() {
                                             Wallet Balance
                                         </div>
                                         <div class="text-sm sm:text-base lg:text-lg font-bold text-green-600" id="wallet-balance">
-                                            ${formatWithCommas(walletBalance)}
+                                            Hexa {formatWithCommas(walletBalance)}
                                         </div>
                                     </div>
                                     <div class="text-center p-3 sm:p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
@@ -419,7 +419,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Trading Referral Bonus</h4>
                                     <div id="group-trading-bonus" class="text-xl sm:text-2xl font-bold text-green-600">
-                                        ${formatWithCommas(formatEther(User.data.tradingReferralBonus))}
+                                        Hexa {formatWithCommas(formatEther(User.data.tradingReferralBonus))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -428,7 +428,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Package Referral Bonus</h4>
                                     <div id="level-income" class="text-xl sm:text-2xl font-bold text-blue-600">
-                                        ${formatWithCommas(formatEther(User.data.packageReferralBonus))}
+                                        Hexa {formatWithCommas(formatEther(User.data.packageReferralBonus))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -437,7 +437,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Trading Level Bonus</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${formatWithCommas(formatEther(User.data.tradingLevelBonus))}
+                                        Hexa {formatWithCommas(formatEther(User.data.tradingLevelBonus))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -450,7 +450,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Package Level Bonus</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${formatWithCommas(formatEther(User.data.packageLevelBonus))}
+                                        Hexa {formatWithCommas(formatEther(User.data.packageLevelBonus))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -463,7 +463,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Self Trading Profit</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${formatWithCommas(formatEther(User.data.selfTradingProfit))}
+                                        Hexa {formatWithCommas(formatEther(User.data.selfTradingProfit))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -476,7 +476,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Total Earnings</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        ${formatWithCommas(Number(formatEther(User.data.tradingLevelBonus)) +
+                                        Hexa {formatWithCommas(Number(formatEther(User.data.tradingLevelBonus)) +
                                             Number(formatEther(User.data.packageLevelBonus)) +
                                             Number(formatEther(User.data.tradingReferralBonus)) +
                                             Number(formatEther(User.data.packageReferralBonus)) +
@@ -543,7 +543,7 @@ export default function Dashboard() {
                                 <h3 class="text-base sm:text-lg font-semibold text-purple-800 mb-2 sm:mb-0">🎨 Trade Status</h3>
                                 <span
                                     id="nftque-status-badge"
-                                    className={`px-3 py-1 rounded-full font-semibold self-start text-sm sm:text-base ${position === "Not in Que"
+                                    className={`px-3 py-1 rounded-full font-semibold self-start text-sm sm:text-base Hexa{position === "Not in Que"
                                         ? "bg-red-100 text-red-700"
                                         : "bg-green-100 text-green-700"
                                         }`}
@@ -555,7 +555,7 @@ export default function Dashboard() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div class="text-center p-3 bg-white/50 rounded-lg">
                                     <div class="text-lg sm:text-xl font-bold text-pink-600" id="nftque-earnings">
-                                        ${formatWithCommas(formatEther(User.data.selfTradingProfit))}
+                                        Hexa {formatWithCommas(formatEther(User.data.selfTradingProfit))}
                                     </div>
                                     <div class="text-xs sm:text-sm text-gray-600">
                                         Trade Earnings
