@@ -166,7 +166,7 @@ export default function Dashboard() {
     const position = tickets && 
         latestTrade && Number(latestTrade.id) > Number(activeTicketIndex)
             ? Number(latestTrade.id) - Number(activeTicketIndex)
-            : Number(latestTrade.id) == Number(activeTicketIndex)
+            : Number(latestTrade?.id) == Number(activeTicketIndex)
             ? 1
             : "Not in Queue";
 
