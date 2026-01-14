@@ -161,17 +161,19 @@ export default function Dashboard() {
                 .sort((a, b) => Number(b.id) - Number(a.id)) // latest first
             : [];
 
-    const latestTrade = sortedPositions.length > 0 ? sortedPositions[0] : null;
+    const latestTrade = tickets &&  sortedPositions.length > 0 ? sortedPositions[0] : null;
 
-    const position =
+    const position = tickets && 
         latestTrade && Number(latestTrade.id) > Number(activeTicketIndex)
             ? Number(latestTrade.id) - Number(activeTicketIndex)
+            : Number(latestTrade.id) == Number(activeTicketIndex)
+            ? 1
             : "Not in Queue";
 
     console.log("dashboard", {
         sortedPositions,
-        latestTrade,
-        position
+        latestTrade,activeTicketIndex,
+        position, tickets
     });
 
 
