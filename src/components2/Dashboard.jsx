@@ -90,9 +90,23 @@ export default function Dashboard() {
 
         const contract = new web3.eth.Contract(erc20abi, hexaTokenAdd)
         const balance = await contract.methods.balanceOf(address).call();
+        const eligible = await helperV2Contract.methods.checkEligibility(address,pkg.id).call()
+        const User = await helperV2Contract.methods.getUser(address).call()
         console.log("object", formatEther(balance), formatEther(pkg.price));
         if (Number(formatEther(balance)) < Number(formatEther(pkg.price) * 100)) {
             toast.error("Insufficient HEXA balance.")
+            setLoading(false)
+            return
+        }
+
+        if (!eligible) {
+            toast.error("You are not eligible for update")
+            setLoading(false)
+            return
+        }
+
+        if (!User.registered) {
+            toast.error("Please get your self registered")
             setLoading(false)
             return
         }
