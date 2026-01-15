@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
-import { bulkAddAbi, bulkContractAdd, fetcherAbi, fetcherAddress, helperAbi, helperAddress, mlmcontractaddress, testweb3, usdtContract, web3 } from "../config";
+import { bulkAddAbi, bulkContractAdd, fetcherAbi, fetcherAddress, helperAbi, helperAddress, helperContractV2, mlmcontractaddress, testweb3, usdtContract, web3 } from "../config";
 import UserListDemo from "./UserListDemo";
 import { formatEther, parseEther } from "ethers";
 import { useAppKitAccount } from "@reown/appkit/react";
@@ -19,6 +19,7 @@ const contract = new web31.eth.Contract(contractABI, contractAddress);
 
 const MyForm = () => {
     const [newList, setNewList] = useState("");
+
     const [populationSize, setPopulationSize] = useState(0);
     const [searchText, setSearchText] = useState("");
     const config = useConfig()
@@ -437,6 +438,9 @@ const MyForm = () => {
     };
 
 
+
+
+
     const handleUpdate = async () => {
         setLoading(true)
         // if (allowance >= pkg.price) {
@@ -806,6 +810,25 @@ const MyForm = () => {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div>
+                    <label>
+                        Address 
+                        <input
+                    value={address1}
+                    placeholder="address"
+                    onChange={(e)=>{setAddress(e.target.value)}}
+                    ></input>
+
+                    </label>
+
+                    <button
+                    onClick={handleMigrate}
+                    >
+                        Migrate
+                    </button>
+
                 </div>
             </>
 

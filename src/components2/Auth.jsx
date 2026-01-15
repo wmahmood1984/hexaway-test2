@@ -14,7 +14,7 @@ export default function Auth({ setCreateActive, createActive }) {
 
     const [referrer, setReferrer] = useState(id)
 
-    const { registered } = useSelector((state) => state.contract);
+    const { User } = useSelector((state) => state.contract);
 
     const dispatch = useDispatch()
 
@@ -98,7 +98,7 @@ export default function Auth({ setCreateActive, createActive }) {
                 // }
                 // else 
                     
-                    if (registered && isConnected) {
+                    if (User?.registered && isConnected) {
                     navigate("/");
                 }
 
@@ -114,7 +114,7 @@ export default function Auth({ setCreateActive, createActive }) {
             abc()
 
         }
-    }, [registered, navigate, isConnected, address]);
+    }, [User?.registered, navigate, isConnected, address]);
 
 
 

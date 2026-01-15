@@ -171,9 +171,7 @@ export default function Dashboard() {
             : "Not in Queue";
 
     console.log("dashboard", {
-        sortedPositions,
-        latestTrade,activeTicketIndex,
-        position, tickets
+        User
     });
 
 
