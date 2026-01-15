@@ -2,7 +2,7 @@ import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { executeContract, extractRevertReason } from "../utils/contractExecutor";
 import { useConfig } from "wagmi";
 import { useEffect, useState } from "react";
-import { erc20abi, erc20Add, helperAbi, helperAddress, helperContractV2, helperv2, HexaContract, hexaTokenAdd, mlmcontractaddress, usdtContract, web3 } from "../config";
+import { erc20abi, erc20Add, helperAbi, helperAddress, helperContractV2, helperv2, helperv2Abi, HexaContract, hexaTokenAdd, mlmcontractaddress, usdtContract, web3 } from "../config";
 import { useDispatch } from "react-redux";
 import { readName } from "../slices/contractSlice";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ export default function ConnectButton({ referrer }) {
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false);
 
-    const contract = new web3.eth.Contract(helperAbi, helperAddress)
+    const contract = new web3.eth.Contract(helperv2Abi, helperv2)
 
     useEffect(() => {
 
@@ -50,7 +50,7 @@ export default function ConnectButton({ referrer }) {
                 navigate("/")
                 setLoading(false)
             },
-            contract:helperContractV2,
+            contract: helperContractV2,
             onError: (err) => {
                 let reason = extractRevertReason(err)
                 toast.error("Transaction failed:")
@@ -68,11 +68,14 @@ export default function ConnectButton({ referrer }) {
     const handleRegister = async (e) => {
         e.preventDefault(); // stop form submission
         setLoading(true)
-        const contract = new web3.eth.Contract(erc20abi, hexaTokenAdd)
-        const balance = await contract.methods.balanceOf(address).call();
+        const contract2 = new web3.eth.Contract(erc20abi, hexaTokenAdd)
+        const old = new web3.eth.Contract(helperAbi,helperAddress)
+        const balance = await contract2.methods.balanceOf(address).call();
         console.log("object", formatEther(balance), formatEther(packages[0].price), formatEther(balance) < formatEther(packages[0].price));
         const bal = BigInt(balance);            // raw units
         const price = BigInt(packages[0].price);
+        const alreadyRegistered = await old.methods.userRegistered(address).call()
+
 
         if (bal < price) {
             toast.error("Insufficient Hexa balance.")
@@ -80,8 +83,28 @@ export default function ConnectButton({ referrer }) {
             return
         }
 
-        if(!referrer){
+        if (!referrer) {
             toast.error("Referrer address is required.")
+            setLoading(false)
+            return
+        }
+
+        const referrerRegistered = await contract.methods.getUser(referrer).call()
+
+        if (referrer.toLowerCase() === address.toLowerCase()) {
+            toast.error("Same referrer not allowed")
+            setLoading(false)
+            return
+        }
+
+        if (alreadyRegistered) {
+            toast.error("Get your id migrated")
+            setLoading(false)
+            return
+        }
+
+        if (!referrerRegistered.registered) {
+            toast.error("Referrer not registered")
             setLoading(false)
             return
         }
@@ -91,7 +114,7 @@ export default function ConnectButton({ referrer }) {
         await executeContract({
             config,
             functionName: "approve",
-            args: [helperv2, packages[0].price*100],
+            args: [helperv2, packages[0].price * 100],
             onSuccess: () => handleRegister2(),
             onError: (err) => {
                 let reason = extractRevertReason(err)

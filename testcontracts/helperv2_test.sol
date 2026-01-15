@@ -152,7 +152,7 @@ contract Helperv2 is
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         paymentToken = IERC20(_paymentToken);
-        packageExpiry = 60 * 5; //60 * 24 * 15;
+        packageExpiry = 60 * 60; //60 * 24 * 15;
         packages.push(Package(0, 2 ether, packageExpiry * 1, 0, 1, 1, 0));
         packages.push(Package(1, 5 ether, packageExpiry * 1, 0, 3, 5, 2));
         packages.push(Package(2, 10 ether, packageExpiry * 2, 10, 7, 10, 3));
@@ -172,13 +172,15 @@ contract Helperv2 is
         uint amount = packages[0].price * rateHexa;
         Package memory tx1 = packages[0];
         userPackage[_user] = tx1;
+ 
+        require(users[_user].referrer == address(0), "zero address");
+        require(_referrer != _user, "self referrer");
+        require(users[_referrer].registered, "referrer not registered");
+        require(!helper.userRegistered(_user),"plz get your id migrated");
         require(
             paymentToken.allowance(msg.sender, address(this)) >= amount,
             "insufficient allowance"
         );
-        require(users[_user].referrer == address(0), "zero address");
-        require(_referrer != _user, "self referrer");
-        require(users[_referrer].registered, "referrer not registered");
         paymentToken.transferFrom(msg.sender, address(this), amount);
         address placement = findAvailableSlot(_referrer);
         users[_user].referrer = _referrer;
@@ -396,7 +398,10 @@ contract Helperv2 is
         address referrer = users[msg.sender].referrer == address(0)
             ? adminWallet
             : users[msg.sender].referrer;
+        if(incomeEligible(referrer)){
         paymentToken.transfer(referrer, (amount * 5) / 100);
+        }
+
         emit Incomes(block.timestamp, (amount * 5) / 100, 0, referrer, 0, 0);
         users[referrer].data.tradingReferralBonus += (amount * 5) / 100;
         users[msg.sender].data.userLimitUtilized++;
