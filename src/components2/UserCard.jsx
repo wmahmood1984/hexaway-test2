@@ -112,7 +112,7 @@ export default function UserCard({
                                 background: tags[1].color,
                             }}
                         >
-                            {tags[1].icon} NFT: {active}
+                            {tags[1].icon} Trade: {active}
                         </span>
                     {/* ))} */}
 
