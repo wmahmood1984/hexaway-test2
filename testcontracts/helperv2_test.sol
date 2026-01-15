@@ -175,6 +175,7 @@ contract Helperv2 is
  
         require(users[_user].referrer == address(0), "zero address");
         require(_referrer != _user, "self referrer");
+        require(!users[msg.sender].registered, "already registered");
         require(users[_referrer].registered, "referrer not registered");
         require(!helper.userRegistered(_user),"plz get your id migrated");
         require(
@@ -204,7 +205,8 @@ contract Helperv2 is
         }
 
         if (
-            incomeEligible(_referrer)
+            block.timestamp - users[_user].data.packageUpgraded <= timelimit &&
+            block.timestamp-users[_user].data.userTradingTime<=60*60*2
         ) {
             paymentToken.transfer(_referrer, amount / 2);
             users[_referrer].data.packageReferralBonus += amount / 2;
