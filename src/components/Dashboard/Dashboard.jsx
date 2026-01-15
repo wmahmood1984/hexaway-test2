@@ -74,6 +74,9 @@ export default function MagicverseDashboard() {
 
 
   }, [address, toggle])
+  
+
+  console.log("transactions",transactions)
 
   
   const handleMint = () => {

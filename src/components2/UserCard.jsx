@@ -1,5 +1,5 @@
 import { act, use, useEffect, useState } from "react";
-import { helperAbi, helperAddress, packageKeys, web3 } from "../config";
+import { helperAbi, helperAddress, helperv2, helperv2Abi, packageKeys, web3 } from "../config";
 import { formatAddress, formatDate } from "../utils/contractExecutor";
 
 export default function UserCard({
@@ -15,18 +15,18 @@ export default function UserCard({
     const [joiningTime, setJoiningTime] = useState(null);
     const [userPackage, setPackage] = useState(null);
     const [userTradingTime, setUserTradingTime] = useState(0);
-    const contract = new web3.eth.Contract(helperAbi, helperAddress)
+    const contract = new web3.eth.Contract(helperv2Abi, helperv2)
 
     useEffect(() => {
         const abc = async () => {
             try {
                 const res = await contract.methods.getUser(address).call();
-                const _joiningTime = await contract.methods.userJoiningTime(address).call();
+                // const _joiningTime = await contract.methods.userJoiningTime(address).call();
                 const _userpackage = await contract.methods.userPackage(address).call();
-                const _userTradingTime = await contract.methods.userTradingTime(address).call();
-                setUserTradingTime(_userTradingTime)
+                // const _userTradingTime = await contract.methods.userTradingTime(address).call();
+                setUserTradingTime(res.data.userTradingTime)
                 setPackage(_userpackage);
-                setJoiningTime(_joiningTime);
+                setJoiningTime(res.data.userJoiningTime);
                 setUser(res);
             } catch (err) {
                 console.error("Error fetching user data:", err);

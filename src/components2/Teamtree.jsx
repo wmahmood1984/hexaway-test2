@@ -100,7 +100,7 @@ export default function Teamtree() {
 
     const filteredLevels = selected === "direct" ? downlines.direct : levels1[selected] || [];
 
-
+    console.log("team view",filteredLevels)
 
     return (
         <main class="min-h-screen py-6 sm:py-8">
