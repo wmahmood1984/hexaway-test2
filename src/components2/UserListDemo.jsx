@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetcherAbi, fetcherAddress, helperAbi, helperAddress, packageKeys, web3 } from "../config";
+import { fetcherAbi, fetcherAddress, fetcherHelperv2, fetcherV2Abi, helperAbi, helperAddress, helperv2, helperv2Abi, packageKeys, web3 } from "../config";
 import { formatAddress, secondsToDMY } from "../utils/contractExecutor";
 import toast from "react-hot-toast";
 
@@ -13,8 +13,8 @@ export default function UserListDemo() {
     const [packageSelected, setPackageSelected] = useState("All")
     const [searchText, setSearchText] = useState("")
 
-    const fetcherContract = new web3.eth.Contract(fetcherAbi, fetcherAddress)
-    const helperContract = new web3.eth.Contract(helperAbi, helperAddress)
+    const fetcherContract = new web3.eth.Contract(fetcherV2Abi, fetcherHelperv2)
+    const helperContract = new web3.eth.Contract(helperv2Abi, helperv2)
 
     const pageSize = 50;
 
@@ -23,11 +23,12 @@ export default function UserListDemo() {
 
         const abc = async () => {
             const _users = await fetcherContract.methods.getUsers().call()
+          //  const _packages = helperContract.methods.getPackages().call()
             const now = Math.floor(Date.now() / 1000);
             const modifiedUsers = _users.map((v, e) => {
                 return ({
-                    ...v, packageName: packageKeys[v.packageId].name, packagePrice: packageKeys[v.packageId].dollar
-                    , active: Number(v.packageUpgraded) - now <= 60 * 60 * 24 * 45 ? "Active" : "Expired"
+                    ...v, packageName: packageKeys[v.data.packageId].name, packagePrice: packageKeys[v.packageId].dollar
+                    , active: Number(v.data.packageUpgraded) - now <= 60 * 60 * 24 * 45 ? "Active" : "Expired"
                 })
             })
             setUsers(modifiedUsers)
@@ -39,41 +40,41 @@ export default function UserListDemo() {
     }, [])
 
 
-    useEffect(() => {
-        const bringTransaction = async () => {
-            const latestBlock = await web3.eth.getBlockNumber();
-            const fromBlock = latestBlock - 200000;
-            const step = 5000; // or smaller if node still complains
-            let allEvents = [];
+    // useEffect(() => {
+    //     const bringTransaction = async () => {
+    //         const latestBlock = await web3.eth.getBlockNumber();
+    //         const fromBlock = latestBlock - 200000;
+    //         const step = 5000; // or smaller if node still complains
+    //         let allEvents = [];
 
-            for (let i = fromBlock; i <= latestBlock; i += step) {
-                const toBlock = Math.min(i + step - 1, latestBlock);
+    //         for (let i = fromBlock; i <= latestBlock; i += step) {
+    //             const toBlock = Math.min(i + step - 1, latestBlock);
 
-                try {
-                    const events = await helperContract.getPastEvents("Trades",
+    //             try {
+    //                 const events = await helperContract.getPastEvents("Trades",
 
-                        {
+    //                     {
 
-                            fromBlock: i,
-                            toBlock: toBlock,
-                        });
-                    allEvents = allEvents.concat(events);
-                    setTrades(allEvents)
-                    // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
-                } catch (error) {
-                    console.warn(`Error fetching from ${i} to ${toBlock}`, error);
-                }
-            }
+    //                         fromBlock: i,
+    //                         toBlock: toBlock,
+    //                     });
+    //                 allEvents = allEvents.concat(events);
+    //                 setTrades(allEvents)
+    //                 // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
+    //             } catch (error) {
+    //                 console.warn(`Error fetching from ${i} to ${toBlock}`, error);
+    //             }
+    //         }
 
-            // console.log("All events:", allEvents);
-        };
-
-
+    //         // console.log("All events:", allEvents);
+    //     };
 
 
-        bringTransaction();
 
-    }, []);
+
+    //     bringTransaction();
+
+    // }, []);
 
     const addressToValue = (address) => {
         if (Trades.length === 0) return "not found";
@@ -143,9 +144,9 @@ const filteredUsers = useMemo(() => {
     const totalpages = users && Math.ceil(filteredUsers.length / pageSize);
 
 
-    const isLoading = !users || !Trades;
+    const isLoading = !users ;
 
-
+console.log("users",users)
 
 
 

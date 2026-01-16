@@ -52,7 +52,7 @@ export default function Trade({ setCreateActive }) {
 
     const now = new Date().getTime() / 1000
 
-    console.log("object", tickets);
+    console.log("object", User);
     const revisedLimitUtilized =
         now - Number(User.data.userTradingLimitTime) > 60 * 60 * 24 ? 0 : User.data.userLimitUtilized;
 

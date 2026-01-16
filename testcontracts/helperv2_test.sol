@@ -121,7 +121,8 @@ contract Helperv2 is
     Package[] public packages;
     mapping(address => Package) public userPackage;
     mapping(address => User) public users;
-    address[] usersArray;
+    address[] public usersArray;
+
 
     uint public packageExpiry;
     uint public timelimit;
@@ -143,6 +144,8 @@ contract Helperv2 is
         uint level,
         uint id
     );
+
+    uint public usersArrayIndex;
 
     constructor() {
         _disableInitializers();
@@ -195,6 +198,7 @@ contract Helperv2 is
         users[_user].data.userJoiningTime = block.timestamp;
         users[_user].data.userTradingLimitTime = block.timestamp;
         usersArray.push(_user);
+        usersArrayIndex++;
         // Direct referral list
         users[_referrer].direct.push(_user);
 
@@ -300,7 +304,7 @@ contract Helperv2 is
             ) {
                 paymentToken.transfer(up, _amount / levelD);
                 if (_type == 1) {
-                    users[up].data.userLimitUtilized += (_amount * 60) / levelD;
+                    users[up].data.tradingLevelBonus += (_amount * 60) / levelD;
                 } else {
                     users[up].data.packageLevelBonus += _amount / levelD;
                 }
@@ -482,9 +486,7 @@ contract Helperv2 is
         return IERC721Receiver.onERC721Received.selector;
     }
 
-    function getUser(address _user) external view returns (User memory) {
-        return (users[_user]);
-    }
+
 
     function getPackages() public view returns (Package[] memory) {
         return packages;
@@ -534,7 +536,9 @@ contract Helperv2 is
         u.data.userJoiningTime = helper.userJoiningTime(_user); // 0
         u.data.userTradingTime = helper.userTradingTime(_user); // 1
         u.data.userTradingLimitTime = block.timestamp; // 2
-        u.data.packageUpgraded = block.timestamp; // 10;
+        u.data.packageUpgraded = block.timestamp;
+        usersArray.push(_user);
+        usersArrayIndex++; // 10;
     }
 
     function migrateBulk(address[] memory _users) public onlyOwner {
@@ -556,8 +560,38 @@ interface IHelperV2 {
         uint future2;
     }
 
+        struct UserDetails {
+        uint userJoiningTime;
+        uint userTradingTime;
+        uint userTradingLimitTime;
+        uint userLimitUtilized;
+        uint tradingLevelBonus;
+        uint packageLevelBonus;
+        uint tradeXHours;
+        uint tradingReferralBonus;
+        uint packageReferralBonus;
+        uint selfTradingProfit;
+        uint packageUpgraded;
+        uint future1;
+        uint future2;
+
+    }
+
+    struct User {
+        address referrer;
+        address parent;
+        address[] children;
+        address[] indirect;
+        address[] direct;
+        bool registered;
+        UserDetails data;
+    }
+
     function ticketIndex() external view returns (uint);
     function ticketMapping(uint) external view returns (ticket memory);
+        function userMapping(address) external view returns (User memory);
+function usersArray(uint) external view returns (address);
+function usersArrayIndex() external view returns (uint);
 }
 
 contract DataFetcherUpgradeable is
@@ -616,4 +650,13 @@ contract DataFetcherUpgradeable is
     }
 
     function _authorizeUpgrade(address newImpl) internal override onlyOwner {}
+
+    function getUsers() public view returns(IHelperV2.User[] memory users){
+       uint total = helper.usersArrayIndex();
+       users = new IHelperV2.User[](total);
+        for(uint i = 0; i < total; i++){
+            address add = helper.usersArray(i);
+            IHelperV2.User memory user = helper.userMapping(add);
+            users[i] = user; 
+    }}
 }

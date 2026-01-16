@@ -36,11 +36,10 @@ export default function Lists() {
                 </button> */}
                 <button
                     onClick={() => setActiveTab("users")}
-                    className={`px-5 py-2 rounded-lg font-semibold transition-all ${
-                        activeTab === "users"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-200 text-gray-700"
-                    }`}
+                    className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "users"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700"
+                        }`}
                 >
                     User List
                 </button>
@@ -56,18 +55,17 @@ export default function Lists() {
                     Burning
                 </button> */}
 
-                                <button
+                <button
                     onClick={() => setActiveTab("normal")}
-                    className={`px-5 py-2 rounded-lg font-semibold transition-all ${
-                        activeTab === "normal"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-200 text-gray-700"
-                    }`}
+                    className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "normal"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700"
+                        }`}
                 >
                     Normal List
                 </button>
 
-                                     {/* <button
+                {/* <button
                     onClick={() => setActiveTab("adminCreate")}
                     className={`px-5 py-2 rounded-lg font-semibold transition-all ${
                         activeTab === "adminCreate"
@@ -78,7 +76,7 @@ export default function Lists() {
                     Admin Create
                 </button> */}
 
-                                                     {/* <button
+                {/* <button
                     onClick={() => setActiveTab("tally")}
                     className={`px-5 py-2 rounded-lg font-semibold transition-all ${
                         activeTab === "tally"
@@ -88,7 +86,7 @@ export default function Lists() {
                 >
                     Tally
                 </button> */}
-                
+
             </div>
 
             {/* Tab Content */}
@@ -96,7 +94,7 @@ export default function Lists() {
                         {activeTab === "tally" && <Tally />}
                         {activeTab === "adminCreate" && <AdminCreation />}
                         {activeTab === "newlist" && <NewList />} */}
-                        {activeTab === "normal" && <NormalList />}
+            {activeTab === "normal" && <NormalList />}
             {activeTab === "users" && <UserListDemo />}
             {/* {activeTab === "burning" && <Burning />} */}
         </div>

@@ -65,30 +65,30 @@ export const packageKeys = [
 		class: "w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center",
 		svg: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
 	},
-	{dollar:"$ 15",
+	{dollar:"$ 5",
 		name: "DI",
 		class: "w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center",
 		svg: "w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center"
 	},
-	{dollar:"$ 20",
+	{dollar:"$ 10",
 		name: "TRI",
 
 		class: "w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center",
 		svg: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
 	},
-		{dollar:"$ 25",
+		{dollar:"$ 15",
 		name: "TETRA",
 
 		class: "w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center",
 		svg: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
 	},
-		{dollar:"$ 50",
+		{dollar:"$ 20",
 		name: "PENTA",
 
 		class: "w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center",
 		svg: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
 	},
-		{dollar:"$ 165",
+		{dollar:"$ 25",
 		name: "HEXA",
 
 		class: "w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center",
@@ -3124,92 +3124,6 @@ export const helperv2Abi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint8",
-				"name": "id",
-				"type": "uint8"
-			}
-		],
-		"name": "buyPackage",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"components": [
-					{
-						"internalType": "uint256",
-						"name": "id",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "price",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "time",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "team",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "limit",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "levelUnlock",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint8",
-						"name": "directrequired",
-						"type": "uint8"
-					}
-				],
-				"internalType": "struct Helperv2.Package",
-				"name": "_package",
-				"type": "tuple"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_packageExpiry",
-				"type": "uint256"
-			}
-		],
-		"name": "changePackages",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_adminWallet",
-				"type": "address"
-			}
-		],
-		"name": "changeWallet",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "address",
 				"name": "implementation",
 				"type": "address"
@@ -3227,24 +3141,6 @@ export const helperv2Abi = [
 		"inputs": [],
 		"name": "FailedCall",
 		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_paymentToken",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_helper",
-				"type": "address"
-			}
-		],
-		"name": "initialize",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -3351,32 +3247,6 @@ export const helperv2Abi = [
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			}
-		],
-		"name": "migrate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_users",
-				"type": "address[]"
-			}
-		],
-		"name": "migrateBulk",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -3394,59 +3264,6 @@ export const helperv2Abi = [
 		],
 		"name": "OwnershipTransferred",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_ref",
-				"type": "address"
-			}
-		],
-		"name": "register",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_ticket",
-				"type": "uint256"
-			}
-		],
-		"name": "settle",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "trade",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -3493,21 +3310,16 @@ export const helperv2Abi = [
 		"type": "event"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "UPGRADE_INTERFACE_VERSION",
+		"outputs": [
 			{
-				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
-		"name": "upgradeToAndCall",
-		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -3553,6 +3365,92 @@ export const helperv2Abi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint8",
+				"name": "id",
+				"type": "uint8"
+			}
+		],
+		"name": "buyPackage",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "time",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "team",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "limit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "levelUnlock",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "directrequired",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct Helperv2.Package",
+				"name": "_package",
+				"type": "tuple"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_packageExpiry",
+				"type": "uint256"
+			}
+		],
+		"name": "changePackages",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_adminWallet",
+				"type": "address"
+			}
+		],
+		"name": "changeWallet",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -3687,129 +3585,6 @@ export const helperv2Abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			}
-		],
-		"name": "getUser",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "address",
-						"name": "referrer",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "parent",
-						"type": "address"
-					},
-					{
-						"internalType": "address[]",
-						"name": "children",
-						"type": "address[]"
-					},
-					{
-						"internalType": "address[]",
-						"name": "indirect",
-						"type": "address[]"
-					},
-					{
-						"internalType": "address[]",
-						"name": "direct",
-						"type": "address[]"
-					},
-					{
-						"internalType": "bool",
-						"name": "registered",
-						"type": "bool"
-					},
-					{
-						"components": [
-							{
-								"internalType": "uint256",
-								"name": "userJoiningTime",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "userTradingTime",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "userTradingLimitTime",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "userLimitUtilized",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "tradingLevelBonus",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "packageLevelBonus",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "tradeXHours",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "tradingReferralBonus",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "packageReferralBonus",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "selfTradingProfit",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "packageUpgraded",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "future1",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "future2",
-								"type": "uint256"
-							}
-						],
-						"internalType": "struct Helperv2.UserDetails",
-						"name": "data",
-						"type": "tuple"
-					}
-				],
-				"internalType": "struct Helperv2.User",
-				"name": "",
-				"type": "tuple"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "helper",
 		"outputs": [
@@ -3839,6 +3614,50 @@ export const helperv2Abi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_paymentToken",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_helper",
+				"type": "address"
+			}
+		],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "migrate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_users",
+				"type": "address[]"
+			}
+		],
+		"name": "migrateBulk",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -3993,6 +3812,39 @@ export const helperv2Abi = [
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "_ref",
+				"type": "address"
+			}
+		],
+		"name": "register",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_ticket",
+				"type": "uint256"
+			}
+		],
+		"name": "settle",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "",
 				"type": "address"
 			}
@@ -4090,15 +3942,40 @@ export const helperv2Abi = [
 	},
 	{
 		"inputs": [],
-		"name": "UPGRADE_INTERFACE_VERSION",
-		"outputs": [
+		"name": "trade",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
 			}
 		],
-		"stateMutability": "view",
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newImplementation",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -4246,6 +4123,38 @@ export const helperv2Abi = [
 				"internalType": "struct Helperv2.UserDetails",
 				"name": "data",
 				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "usersArray",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "usersArrayIndex",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -4979,18 +4888,13 @@ export const fetcherV2Abi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "newImplementation",
+				"name": "_helper",
 				"type": "address"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
 			}
 		],
-		"name": "upgradeToAndCall",
+		"name": "updateHelper",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -5042,19 +4946,6 @@ export const fetcherV2Abi = [
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_helper",
-				"type": "address"
-			}
-		],
-		"name": "updateHelper",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -5066,6 +4957,24 @@ export const fetcherV2Abi = [
 		],
 		"name": "Upgraded",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newImplementation",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -5122,6 +5031,128 @@ export const fetcherV2Abi = [
 				],
 				"internalType": "struct IHelperV2.ticket[]",
 				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getUsers",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "referrer",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "parent",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "children",
+						"type": "address[]"
+					},
+					{
+						"internalType": "address[]",
+						"name": "indirect",
+						"type": "address[]"
+					},
+					{
+						"internalType": "address[]",
+						"name": "direct",
+						"type": "address[]"
+					},
+					{
+						"internalType": "bool",
+						"name": "registered",
+						"type": "bool"
+					},
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "userJoiningTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "userTradingTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "userTradingLimitTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "userLimitUtilized",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradingLevelBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "packageLevelBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradeXHours",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradingReferralBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "packageReferralBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "selfTradingProfit",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "packageUpgraded",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "packageId",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "future1",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "future2",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct DataFetcherUpgradeable.UserDetails",
+						"name": "data",
+						"type": "tuple"
+					}
+				],
+				"internalType": "struct DataFetcherUpgradeable.User[]",
+				"name": "users",
 				"type": "tuple[]"
 			}
 		],
