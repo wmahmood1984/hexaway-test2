@@ -166,7 +166,7 @@ const filteredUsers = useMemo(() => {
 
                 <div class="mb-6 md:mb-8 pb-4 md:pb-6 border-b-2" style={{ "border-color": "#2563eb" }}>
                     <h1 class="font-bold mb-2" style={{ "font-size": "28px", "color": "#0f172a", "letter-spacing": "-0.025em" }}>
-                        User List Demo
+                        User List
                     </h1>
                     <p style={{ "font-size": "14px", "color": "#64748b", "font-weight": 500 }}>
                         Active Users

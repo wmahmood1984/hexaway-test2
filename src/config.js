@@ -3762,7 +3762,7 @@ export const helperv2Abi = [
 							},
 							{
 								"internalType": "uint256",
-								"name": "userLevelIncomeBlockTime",
+								"name": "tradeXHours",
 								"type": "uint256"
 							},
 							{
@@ -3783,6 +3783,16 @@ export const helperv2Abi = [
 							{
 								"internalType": "uint256",
 								"name": "packageUpgraded",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "future1",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "future2",
 								"type": "uint256"
 							}
 						],
@@ -3807,6 +3817,25 @@ export const helperv2Abi = [
 				"internalType": "contract Ihelper",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "incomeEligible",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -4180,7 +4209,7 @@ export const helperv2Abi = [
 					},
 					{
 						"internalType": "uint256",
-						"name": "userLevelIncomeBlockTime",
+						"name": "tradeXHours",
 						"type": "uint256"
 					},
 					{
@@ -4201,6 +4230,16 @@ export const helperv2Abi = [
 					{
 						"internalType": "uint256",
 						"name": "packageUpgraded",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "future1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "future2",
 						"type": "uint256"
 					}
 				],
@@ -5173,9 +5212,9 @@ export const fetcherAddress = //"0x93e4A68CEDD7f7676C7e933eBE61F6416344D61E" // 
 "0x586712e122fDbF55CF55e75267F95F6DadA8d662"
 
 export const hexaTokenAdd = "0x94698793068F41367720042B4792185742D9DaD0"
-export const helperv2 = "0x0Bb109506E301B6b96534A26943A2e5573f0B61f"
+export const helperv2 = "0x6948C20D84099b55189e54a40C2db20Ff31B4556"
 export const P2PAdd = "0xD24a760aed23C450EE939F2d128Cc86C0AA4E3B8"
-export const fetcherHelperv2 = "0x6347179382aD01d2EF7C24D15D1058820F0fb233"
+export const fetcherHelperv2 = "0xAB0c2376F35805efE38E8F92ef6994bcFCC68100"
 
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";

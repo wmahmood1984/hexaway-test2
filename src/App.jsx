@@ -80,8 +80,8 @@ export default function App() {
                 <Route path="/createhistory" element={<CreateHistory />} />
                 <Route path="/nftcreationdetails" element={<NFTCreationDetails />} />
                 <Route path="/teamview" element={<Teamtree />} />
-                <Route path="/bulk" element={<Bulk />} />
-                <Route path="/admin" element={<MyForm />} />
+                {/* <Route path="/bulk" element={<Bulk />} /> */}
+                {/* <Route path="/admin" element={<MyForm />} /> */}
                                 <Route path="/p2p" element={<User />} />
                                 <Route path="/lists" element={<Lists />} />
             </Routes>

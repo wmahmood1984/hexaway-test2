@@ -8,13 +8,13 @@ import AdminCreation from "./AdminCreation";
 import Tally from "./Tally";
 
 export default function Lists() {
-    const [activeTab, setActiveTab] = useState("adminCreate");
+    const [activeTab, setActiveTab] = useState("users");
 
     return (
         <div>
             {/* Tabs */}
             <div className="flex gap-4 mb-6">
-                <button
+                {/* <button
                     onClick={() => setActiveTab("tradingQue")}
                     className={`px-5 py-2 rounded-lg font-semibold transition-all ${
                         activeTab === "tradingQue"
@@ -33,7 +33,7 @@ export default function Lists() {
                     }`}
                 >
                     New List
-                </button>
+                </button> */}
                 <button
                     onClick={() => setActiveTab("users")}
                     className={`px-5 py-2 rounded-lg font-semibold transition-all ${
@@ -45,7 +45,7 @@ export default function Lists() {
                     User List
                 </button>
 
-                <button
+                {/* <button
                     onClick={() => setActiveTab("burning")}
                     className={`px-5 py-2 rounded-lg font-semibold transition-all ${
                         activeTab === "burning"
@@ -54,7 +54,7 @@ export default function Lists() {
                     }`}
                 >
                     Burning
-                </button>
+                </button> */}
 
                                 <button
                     onClick={() => setActiveTab("normal")}
@@ -67,7 +67,7 @@ export default function Lists() {
                     Normal List
                 </button>
 
-                                     <button
+                                     {/* <button
                     onClick={() => setActiveTab("adminCreate")}
                     className={`px-5 py-2 rounded-lg font-semibold transition-all ${
                         activeTab === "adminCreate"
@@ -76,9 +76,9 @@ export default function Lists() {
                     }`}
                 >
                     Admin Create
-                </button>
+                </button> */}
 
-                                                     <button
+                                                     {/* <button
                     onClick={() => setActiveTab("tally")}
                     className={`px-5 py-2 rounded-lg font-semibold transition-all ${
                         activeTab === "tally"
@@ -87,18 +87,18 @@ export default function Lists() {
                     }`}
                 >
                     Tally
-                </button>
+                </button> */}
                 
             </div>
 
             {/* Tab Content */}
-            {activeTab === "tradingQue" && <TradingQue />}
+            {/* {activeTab === "tradingQue" && <TradingQue />}
                         {activeTab === "tally" && <Tally />}
                         {activeTab === "adminCreate" && <AdminCreation />}
-                        {activeTab === "newlist" && <NewList />}
+                        {activeTab === "newlist" && <NewList />} */}
                         {activeTab === "normal" && <NormalList />}
             {activeTab === "users" && <UserListDemo />}
-            {activeTab === "burning" && <Burning />}
+            {/* {activeTab === "burning" && <Burning />} */}
         </div>
     );
 }

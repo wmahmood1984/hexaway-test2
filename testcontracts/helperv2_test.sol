@@ -47,7 +47,7 @@ interface Ihelper {
     function userTradingTime(address user) external view returns (uint);
     function userTradingLimitTime(address user) external view returns (uint);
     function userLimitUtilized(address user) external view returns (uint);
-    function userLevelIncomeBlockTime(
+    function tradeXHours(
         address user
     ) external view returns (uint);
     function packageLevelBonus(address user) external view returns (uint);
@@ -86,11 +86,14 @@ contract Helperv2 is
         uint userLimitUtilized;
         uint tradingLevelBonus;
         uint packageLevelBonus;
-        uint userLevelIncomeBlockTime;
+        uint tradeXHours;
         uint tradingReferralBonus;
         uint packageReferralBonus;
         uint selfTradingProfit;
         uint packageUpgraded;
+        uint future1;
+        uint future2;
+
     }
 
     struct User {
@@ -159,7 +162,7 @@ contract Helperv2 is
         packages.push(Package(3, 15 ether, packageExpiry * 3, 12, 11, 15, 4));
         packages.push(Package(4, 20 ether, packageExpiry * 4, 14, 15, 20, 5)); //100 //90
         packages.push(Package(5, 25 ether, packageExpiry * 5, 16, 20, 24, 6));
-        timelimit = 60 * 45 ; //60 * 24 * 45;
+        timelimit = 60 * 60 * 24 * 45;
         helper = Ihelper(_helper);
         rateHexa = 100;
 
@@ -205,8 +208,8 @@ contract Helperv2 is
         }
 
         if (
-            block.timestamp - users[_user].data.packageUpgraded <= timelimit &&
-            block.timestamp-users[_user].data.userTradingTime<=60*60*2
+            block.timestamp - users[_referrer].data.packageUpgraded <= timelimit &&
+            block.timestamp-users[_referrer].data.userTradingTime<=60*60*2
         ) {
             paymentToken.transfer(_referrer, amount / 2);
             users[_referrer].data.packageReferralBonus += amount / 2;
@@ -408,6 +411,7 @@ contract Helperv2 is
         users[referrer].data.tradingReferralBonus += (amount * 5) / 100;
         users[msg.sender].data.userLimitUtilized++;
         users[msg.sender].data.userTradingTime = block.timestamp;
+        users[msg.sender].data.tradeXHours+=amount;
         require(
             users[msg.sender].data.userLimitUtilized <=
                 userPackage[msg.sender].limit,
@@ -421,6 +425,7 @@ contract Helperv2 is
             // Reset after 3 minutes
             users[msg.sender].data.userTradingLimitTime = block.timestamp;
             users[msg.sender].data.userLimitUtilized = 0;
+            users[msg.sender].data.tradeXHours = 0;
         }
         address[] memory _uplines = getUplines(msg.sender);
 
@@ -529,13 +534,6 @@ contract Helperv2 is
         u.data.userJoiningTime = helper.userJoiningTime(_user); // 0
         u.data.userTradingTime = helper.userTradingTime(_user); // 1
         u.data.userTradingLimitTime = block.timestamp; // 2
-        u.data.userLimitUtilized = 0; // 3
-        u.data.tradingLevelBonus = 0; // 4
-        u.data.packageLevelBonus = 0; // 5
-        u.data.userLevelIncomeBlockTime = 0; // 6
-        u.data.tradingReferralBonus = 0; // 7
-        u.data.packageReferralBonus = 0; // 8
-        u.data.selfTradingProfit = 0; // 9
         u.data.packageUpgraded = block.timestamp; // 10;
     }
 
