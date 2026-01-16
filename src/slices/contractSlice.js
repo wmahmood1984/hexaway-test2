@@ -51,7 +51,7 @@ export const readName = createAsyncThunk(
       const packages = await safeCall("getPackages", () => v2Contract.methods.getPackages().call());
       const admin = await safeCall("admin", () => contract.methods.owner().call());
       const NFTque = await safeCall("getNFTque", () => contract.methods.getNFTque().call());
-      const _registered =  await safeCall("userRegistered", () => v2Contract.methods.users(a.address).call());
+      const _registered =  await safeCall("userRegistered", () => v2Contract.methods.getUser(a.address).call());
       const registered = _registered.registered
       const NFTMayBeCreated = await safeCall("NFTMayBeCreated", () => contract.methods.NFTMayBeCreated().call());
       const nextTokenId = await safeCall("_nextTokenId", () => nftContract.methods._nextTokenId().call());
@@ -86,7 +86,7 @@ export const readName = createAsyncThunk(
       if (a.address && registered) {
         Package = await safeCall("userPackage", () => v2Contract.methods.userPackage(a.address).call());
         uplines = await safeCall("getUplines", () => v2Contract.methods.getUplines(a.address).call());
-        User = await safeCall("getUser", () => v2Contract.methods.users(a.address).call());
+        User = await safeCall("getUser", () => v2Contract.methods.getUser(a.address).call());
         allowance = await safeCall("allowance", () => uContract.methods.allowance(a.address, mlmcontractaddress).call());
         //      directReferrals = await safeCall("getDirectReferrals", () => contract.methods.getDirectReferrals(a.address).call());
         limitUtilized = await safeCall("userLimitUtilized", () => contract.methods.userLimitUtilized(a.address).call());
