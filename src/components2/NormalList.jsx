@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import "./TradingQue.css"
-import { fetcherAbi, fetcherAddress, web3 } from '../config'
+import { fetcherAbi, fetcherAddress, fetcherHelperv2, fetcherV2Abi, helperv2, helperv2Abi, web3 } from '../config'
 import { formatAddress, formatWithCommas, secondsToDHMSDiff, secondsToDMY } from '../utils/contractExecutor';
 import toast from 'react-hot-toast';
 
@@ -9,7 +9,7 @@ export default function NormalList() {
 
     const [nfts, setnfts] = useState()
 
-    const fetcherContract = new web3.eth.Contract(fetcherAbi, fetcherAddress);
+    const fetcherContract = new web3.eth.Contract(fetcherV2Abi, fetcherHelperv2);
     const [page, setPage] = useState(1);
     const [searchText, setSearchText] = useState("")
     const [sortOrder, setSortOrder] = useState("default")
@@ -20,7 +20,7 @@ export default function NormalList() {
 
     useEffect(() => {
         const abc = async () => {
-            const _nfts = await fetcherContract.methods.getNFTs().call()
+            const _nfts = await fetcherContract.methods.getTickets().call()
             setnfts(_nfts)
 
 
@@ -30,7 +30,7 @@ export default function NormalList() {
     }, [])
 
 
-    const totalValue = nfts && nfts.map((nft) => Number(web3.utils.fromWei(nft.price, 'ether')) * 1.07).reduce((a, b) => a + b, 0);
+    const totalValue = 0 //nfts && nfts.map((nft) => Number(web3.utils.fromWei(nft.price, 'ether')) * 1.07).reduce((a, b) => a + b, 0);
 
 
 
@@ -45,22 +45,22 @@ export default function NormalList() {
 
         return nfts.filter(u => {
             const ownerMatch =
-                u._owner?.toLowerCase().includes(search);
+                u.user?.toLowerCase().includes(search);
 
             const idMatch =
                 String(u.id).toLowerCase().includes(search);
 
             // Calculate price once
-            const priceWithFee =
-                Number(web3.utils.fromWei(u.price, "ether")) * 1.07;
+            const priceWithFee = 0
+            //                Number(web3.utils.fromWei(u.price, "ether")) * 1.07;
 
             // PRICE FILTER MODE
-if (priceSelected !== "default") {
-    return (
-        priceWithFee >= priceSelected.min &&
-        priceWithFee <= priceSelected.max
-    );
-}
+            if (priceSelected !== "default") {
+                return (
+                    priceWithFee >= priceSelected.min &&
+                    priceWithFee <= priceSelected.max
+                );
+            }
 
             // SEARCH MODE
             if (!search) return true;
@@ -80,8 +80,8 @@ if (priceSelected !== "default") {
         }
 
         return [...filteredUsers1].sort((a, b) => {
-            const timeA = Number(a.purchasedTime);
-            const timeB = Number(b.purchasedTime);
+            const timeA = Number(a.time);
+            const timeB = Number(b.time);
 
             if (sortOrder === "newest") {
                 return timeB - timeA; // newest first
@@ -125,16 +125,16 @@ if (priceSelected !== "default") {
 
 
 
-    const _5325 = nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 53.50 && Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) <= 57.24).length;
-    const _5724 = nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 57.24 && Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) <= 61.24).length;
-    const _6124 = nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 61.24 && Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) <= 65.04).length;
-    const _6504 = nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 65.04 && Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) <= 70.12).length;
-    const _7012 = nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 70.12 && Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) <= 75.03).length;
-    const _7528 = nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 75.03).length;
+    const _5325 = []//nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 53.50 && Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) <= 57.24).length;
+    const _5724 = []//nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 57.24 && Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) <= 61.24).length;
+    const _6124 = []//nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 61.24 && Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) <= 65.04).length;
+    const _6504 = []//nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 65.04 && Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) <= 70.12).length;
+    const _7012 = []//nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 70.12 && Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) <= 75.03).length;
+    const _7528 = []//nfts && nfts.filter(nft => Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2) >= 75.03).length;
     const totalpages = nfts && Math.ceil(filteredUsers.length / pageSize);
 
 
-    console.log("object", _6504);
+    console.log("object", nfts);
 
 
     const isLoading = !nfts;
@@ -161,10 +161,10 @@ if (priceSelected !== "default") {
 
                     <div class="mb-6 md:mb-8 text-center">
                         <h1 style={{ fontSize: "40px", color: "#0f172a", fontWeight: "900", marginBottom: "12px", textShadow: "0 4px 12px rgba(0,0,0,0.3)" }}>
-                            NFT Marketplace
+                            Trades Marketplace
                         </h1>
                         <p style={{ fontSize: "18px", color: "#0f172a", opacity: "0.8", fontWeight: "500" }}>
-                            Active NFT Listings
+                            Active Trades Listings
                         </p>
                     </div>
 
@@ -193,14 +193,14 @@ if (priceSelected !== "default") {
 
                     <div class="mb-8 rounded-2xl p-6" style={{ background: "linear-gradient(135deg, #3b82f6, #8b5cf6)", boxShadow: "0 10px 30px rgba(59, 130, 246, 0.4)" }}>
                         <div style={{ fontSize: "14px", color: "white", opacity: "0.9", marginBottom: "8px", fontWeight: "600" }}>
-                            🎨 Total NFTs in Marketplace
+                            🎨 Total Trades in Marketplace
                         </div>
                         <div style={{ fontSize: "48px", color: "white", fontWeight: "900" }}>
                             {nfts.length}
                         </div>
                     </div>
 
-                    <div class="mb-8">
+                    {/* <div class="mb-8">
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                             <div style={{ fontSize: "16px", color: "#0f172a", fontWeight: "700" }}>
                                 💰 Filter by Price
@@ -209,7 +209,7 @@ if (priceSelected !== "default") {
                         <div class="price-filter-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "12px" }}>
 
                             <div
-onClick={() => setPriceSelected({ min: 53.5, max: 57.24 })}
+                                onClick={() => setPriceSelected({ min: 53.5, max: 57.24 })}
 
                                 class="price-filter-card rounded-lg p-4 border-2 transition-all"
                                 style={{ background: "#ffffff", border: "3px solid #3b82f6", borderRadius: "12px", cursor: "pointer", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}>
@@ -279,7 +279,7 @@ onClick={() => setPriceSelected({ min: 75.00, max: 76.00 })}
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     <div class="rounded-2xl overflow-hidden" style={{ background: "#ffffff", boxShadow: "0 10px 40px rgba(0, 0, 0, 0.3)" }}>
                         <div class="table-container overflow-x-auto" style={{ webkitOverflowScrolling: "touch" }}>
@@ -309,20 +309,20 @@ onClick={() => setPriceSelected({ min: 75.00, max: 76.00 })}
                                                         </span>
                                                     </td>
                                                     <td class="table-cell" style={{ fontSize: "11px", color: "#0f172a", opacity: "0.8", whiteSpace: "nowrap" }}>
-                                                        {secondsToDMY(nft.purchasedTime)}
+                                                        {secondsToDMY(nft.time)}
                                                     </td>
                                                     <td class="table-cell">
                                                         <span class="time-badge">
-                                                            ⏱️ {secondsToDHMSDiff(now - nft.purchasedTime)}
+                                                            ⏱️ {secondsToDHMSDiff(now - nft.time)}
                                                         </span>
                                                     </td>
                                                     <td class="table-cell">
                                                         <div class="address-cell">
                                                             <span class="address-text">
-                                                                {formatAddress(nft._owner)}
+                                                                {formatAddress(nft.user)}
                                                             </span>
                                                             <button
-                                                                onClick={() => { copyToClipboard(nft._owner) }}
+                                                                onClick={() => { copyToClipboard(nft.user) }}
 
                                                                 class="copy-btn" data-address="0x7a3b9c8d1e2f4a5b6c7d8e9f0a">
                                                                 📋
@@ -330,7 +330,7 @@ onClick={() => setPriceSelected({ min: 75.00, max: 76.00 })}
                                                         </div>
                                                     </td>
                                                     <td class="table-cell" style={{ fontSize: "13px", color: "#10b981", fontWeight: "800", whiteSpace: "nowrap" }}>
-                                                        ${Number(web3.utils.fromWei(nft.price, 'ether') * 1.07).toFixed(2)}
+                                                        HEXA {600}
                                                     </td>
                                                 </tr>
 
