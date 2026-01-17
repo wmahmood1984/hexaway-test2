@@ -1,6 +1,50 @@
 import React from 'react'
 
 export default function Admin2() {
+
+        const [stake, setStake] = useState()
+
+            useEffect(() => {
+        
+        
+        
+                abc()
+            }, [address])
+        
+        
+            const abc = async () => {
+
+        
+                const _mystake = await stakinvV2ContractR.methods.getTicketsByUser(address).call()
+                const _myClaims = await stakinvV2ContractR.methods.getClaimsByUser(address).call()
+                setMyStake(_mystake)
+                setMyClaims(_myClaims)
+            }
+        
+        
+                
+        
+        
+            const isLoading = !stake;
+        
+        
+            const icon = '💰';
+        
+        
+        
+        
+        
+            if (isLoading) {
+                // show a waiting/loading screen
+                return (
+                    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center">
+                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
+                        <p className="text-gray-600 text-lg font-medium">Loading your data...</p>
+                    </div>
+                );
+            }
+        
+            console.log("staked", stake)
     return (
         <div>
             <div id="app" class="h-full w-full overflow-auto">

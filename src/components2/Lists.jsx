@@ -9,7 +9,7 @@ import Admin_staking_earning from "./Staking page/Admin_staking_earning";
 import ExchangeAdmin from "./reports/ExchangeAdmin";
 
 export default function Lists() {
-    const [activeTab, setActiveTab] = useState("admin1");
+    const [activeTab, setActiveTab] = useState("admin2");
 
     return (
         <div>
