@@ -3175,7 +3175,7 @@ export const helperv2Abi = [
 					},
 					{
 						"internalType": "uint8",
-						"name": "directrequired",
+						"name": "future",
 						"type": "uint8"
 					}
 				],
@@ -3601,6 +3601,25 @@ export const helperv2Abi = [
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "directLevelUnlock",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "_root",
 				"type": "address"
@@ -3655,7 +3674,7 @@ export const helperv2Abi = [
 					},
 					{
 						"internalType": "uint8",
-						"name": "directrequired",
+						"name": "future",
 						"type": "uint8"
 					}
 				],
@@ -3793,6 +3812,11 @@ export const helperv2Abi = [
 							{
 								"internalType": "uint256",
 								"name": "future2",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradeYHours",
 								"type": "uint256"
 							}
 						],
@@ -3943,7 +3967,7 @@ export const helperv2Abi = [
 			},
 			{
 				"internalType": "uint8",
-				"name": "directrequired",
+				"name": "future",
 				"type": "uint8"
 			}
 		],
@@ -4143,7 +4167,7 @@ export const helperv2Abi = [
 			},
 			{
 				"internalType": "uint8",
-				"name": "directrequired",
+				"name": "future",
 				"type": "uint8"
 			}
 		],
@@ -4240,6 +4264,11 @@ export const helperv2Abi = [
 					{
 						"internalType": "uint256",
 						"name": "future2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tradeYHours",
 						"type": "uint256"
 					}
 				],
@@ -4943,19 +4972,6 @@ export const fetcherV2Abi = [
 		"type": "error"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_helper",
-				"type": "address"
-			}
-		],
-		"name": "initialize",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "InvalidInitialization",
 		"type": "error"
@@ -4986,57 +5002,6 @@ export const fetcherV2Abi = [
 		],
 		"name": "OwnableUnauthorizedAccount",
 		"type": "error"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_helper",
-				"type": "address"
-			}
-		],
-		"name": "updateHelper",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
-			}
-		],
-		"name": "upgradeToAndCall",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -5098,6 +5063,19 @@ export const fetcherV2Abi = [
 		],
 		"name": "Upgraded",
 		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "UPGRADE_INTERFACE_VERSION",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -5322,6 +5300,11 @@ export const fetcherV2Abi = [
 								"internalType": "uint256",
 								"name": "future2",
 								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradeYHours",
+								"type": "uint256"
 							}
 						],
 						"internalType": "struct DataFetcherUpgradeable.UserDetails",
@@ -5348,6 +5331,19 @@ export const fetcherV2Abi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_helper",
+				"type": "address"
+			}
+		],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -5397,15 +5393,53 @@ export const fetcherV2Abi = [
 	},
 	{
 		"inputs": [],
-		"name": "UPGRADE_INTERFACE_VERSION",
-		"outputs": [
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
 			}
 		],
-		"stateMutability": "view",
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_helper",
+				"type": "address"
+			}
+		],
+		"name": "updateHelper",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newImplementation",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	}
 ]
@@ -5421,9 +5455,9 @@ export const fetcherAddress = //"0x93e4A68CEDD7f7676C7e933eBE61F6416344D61E" // 
 "0x586712e122fDbF55CF55e75267F95F6DadA8d662"
 
 export const hexaTokenAdd = "0x94698793068F41367720042B4792185742D9DaD0"
-export const helperv2 = "0x6948C20D84099b55189e54a40C2db20Ff31B4556"
+export const helperv2 = "0x7639Ea7933bA429C1ea14aCf6f3aC2CF2906d95A"
 export const P2PAdd = "0xD24a760aed23C450EE939F2d128Cc86C0AA4E3B8"
-export const fetcherHelperv2 = "0xAB0c2376F35805efE38E8F92ef6994bcFCC68100"
+export const fetcherHelperv2 = "0xbE68C45bEC969534f41B5F56d25Fe2F1cF5E7D09"
 
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";

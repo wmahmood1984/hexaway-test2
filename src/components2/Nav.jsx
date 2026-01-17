@@ -162,6 +162,7 @@ export default function Nav({ setCreateActive, createActive }) {
                 }
                 <Link to="/dashboard" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Dashboard</Link>
                 <Link to="/trade" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Auto Trade</Link>
+                       <Link to="/staking" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Staking</Link>
                 {/* {NFTMayBeCreated && (
                   <Link to="/create" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Create</Link>
                 )}
@@ -285,6 +286,14 @@ export default function Nav({ setCreateActive, createActive }) {
                   className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                 >
                  Auto Trade
+                </Link>
+
+                <Link
+                  to="/staking"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                >
+                 Staking
                 </Link>
                 {/* {NFTMayBeCreated && (
                   <Link

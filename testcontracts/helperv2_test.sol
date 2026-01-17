@@ -47,9 +47,7 @@ interface Ihelper {
     function userTradingTime(address user) external view returns (uint);
     function userTradingLimitTime(address user) external view returns (uint);
     function userLimitUtilized(address user) external view returns (uint);
-    function tradeXHours(
-        address user
-    ) external view returns (uint);
+    function tradeXHours(address user) external view returns (uint);
     function packageLevelBonus(address user) external view returns (uint);
     function tradingLevelBonus(address user) external view returns (uint);
     function tradingReferralBonus(address user) external view returns (uint);
@@ -93,7 +91,7 @@ contract Helperv2 is
         uint packageUpgraded;
         uint future1;
         uint future2;
-
+        uint tradeYHours;
     }
 
     struct User {
@@ -122,7 +120,6 @@ contract Helperv2 is
     mapping(address => Package) public userPackage;
     mapping(address => User) public users;
     address[] public usersArray;
-
 
     uint public packageExpiry;
     uint public timelimit;
@@ -158,7 +155,7 @@ contract Helperv2 is
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         paymentToken = IERC20(_paymentToken);
-        packageExpiry = 60 * 60; //60 * 24 * 15;
+        packageExpiry = 60 * 60 * 24 * 15;
         packages.push(Package(0, 2 ether, packageExpiry * 1, 0, 1, 1, 0));
         packages.push(Package(1, 5 ether, packageExpiry * 1, 0, 3, 5, 2));
         packages.push(Package(2, 10 ether, packageExpiry * 2, 10, 7, 10, 3));
@@ -178,12 +175,12 @@ contract Helperv2 is
         uint amount = packages[0].price * rateHexa;
         Package memory tx1 = packages[0];
         userPackage[_user] = tx1;
- 
+
         require(users[_user].referrer == address(0), "zero address");
         require(_referrer != _user, "self referrer");
         require(!users[msg.sender].registered, "already registered");
         require(users[_referrer].registered, "referrer not registered");
-        require(!helper.userRegistered(_user),"plz get your id migrated");
+        require(!helper.userRegistered(_user), "plz get your id migrated");
         require(
             paymentToken.allowance(msg.sender, address(this)) >= amount,
             "insufficient allowance"
@@ -212,8 +209,10 @@ contract Helperv2 is
         }
 
         if (
-            block.timestamp - users[_referrer].data.packageUpgraded <= timelimit &&
-            block.timestamp-users[_referrer].data.userTradingTime<=60*60*2
+            block.timestamp - users[_referrer].data.packageUpgraded <=
+                timelimit &&
+            block.timestamp - users[_referrer].data.userTradingTime <=
+                60 * 60 * 2
         ) {
             paymentToken.transfer(_referrer, amount / 2);
             users[_referrer].data.packageReferralBonus += amount / 2;
@@ -267,8 +266,7 @@ contract Helperv2 is
 
         address up = users[_user].referrer;
 
-        if (incomeEligible(up)
-        ) {
+        if (incomeEligible(up)) {
             paymentToken.transfer(up, (amount * 20) / 100);
             users[up].data.packageReferralBonus += amount / 2;
             emit Incomes(block.timestamp, (amount * 20) / 100, 1, up, 0, 0);
@@ -292,16 +290,12 @@ contract Helperv2 is
         for (uint i = 0; i < _uplines.length; i++) {
             address up = _uplines[i];
             bool cond = _type == 2 // Package Buy
-                ? users[up].direct.length >= 2
-                : // trade 
-                userPackage[up].levelUnlock >= i &&
+                ? users[up].direct.length >= 2 // trade
+                : userPackage[up].levelUnlock >= i &&
                     checkActive(users[up].direct) >=
                         userPackage[up].directrequired;
             uint transactionType = _type == 1 ? 2 : 3;
-            if (
-                cond &&
-                incomeEligible(up)
-            ) {
+            if (cond && incomeEligible(up)) {
                 paymentToken.transfer(up, _amount / levelD);
                 if (_type == 1) {
                     users[up].data.tradingLevelBonus += (_amount * 60) / levelD;
@@ -341,9 +335,11 @@ contract Helperv2 is
         }
     }
 
-    function incomeEligible(address _user) public view returns(bool){
-        return block.timestamp - users[_user].data.packageUpgraded <= timelimit &&
-                userPackage[_user].id > 0 && block.timestamp-users[_user].data.userTradingTime<=60*60*2;
+    function incomeEligible(address _user) public view returns (bool) {
+        return
+            block.timestamp - users[_user].data.packageUpgraded <= timelimit &&
+            userPackage[_user].id > 0 &&
+            block.timestamp - users[_user].data.userTradingTime <= 60 * 60 * 2;
     }
 
     function getUplines(address user) public view returns (address[] memory) {
@@ -407,15 +403,15 @@ contract Helperv2 is
         address referrer = users[msg.sender].referrer == address(0)
             ? adminWallet
             : users[msg.sender].referrer;
-        if(incomeEligible(referrer)){
-        paymentToken.transfer(referrer, (amount * 5) / 100);
+        if (incomeEligible(referrer)) {
+            paymentToken.transfer(referrer, (amount * 5) / 100);
         }
 
         emit Incomes(block.timestamp, (amount * 5) / 100, 0, referrer, 0, 0);
         users[referrer].data.tradingReferralBonus += (amount * 5) / 100;
         users[msg.sender].data.userLimitUtilized++;
         users[msg.sender].data.userTradingTime = block.timestamp;
-        users[msg.sender].data.tradeXHours+=amount;
+        users[msg.sender].data.tradeXHours += amount;
         require(
             users[msg.sender].data.userLimitUtilized <=
                 userPackage[msg.sender].limit,
@@ -429,6 +425,7 @@ contract Helperv2 is
             // Reset after 3 minutes
             users[msg.sender].data.userTradingLimitTime = block.timestamp;
             users[msg.sender].data.userLimitUtilized = 0;
+            users[msg.sender].data.tradeYHours = users[msg.sender].data.tradeXHours;
             users[msg.sender].data.tradeXHours = 0;
         }
         address[] memory _uplines = getUplines(msg.sender);
@@ -486,14 +483,16 @@ contract Helperv2 is
         return IERC721Receiver.onERC721Received.selector;
     }
 
-
-
     function getPackages() public view returns (Package[] memory) {
         return packages;
     }
 
     function changeWallet(address _adminWallet) public onlyOwner {
         adminWallet = _adminWallet;
+    }
+
+    function getUser(address _user) public view returns(User memory){
+        return users[_user];
     }
 
     function migrate(address _user) public onlyOwner {
@@ -560,7 +559,19 @@ interface IHelperV2 {
         uint future2;
     }
 
-        struct UserDetails {
+    struct Package {
+        uint id;
+        uint price;
+        uint time;
+        uint team;
+        uint limit;
+        uint purchaseTime;
+        uint levelUnlock;
+        uint8 directrequired;
+        uint packageUpgraded;
+    }
+
+    struct UserDetails {
         uint userJoiningTime;
         uint userTradingTime;
         uint userTradingLimitTime;
@@ -574,7 +585,7 @@ interface IHelperV2 {
         uint packageUpgraded;
         uint future1;
         uint future2;
-
+        uint tradeYHours;
     }
 
     struct User {
@@ -589,9 +600,10 @@ interface IHelperV2 {
 
     function ticketIndex() external view returns (uint);
     function ticketMapping(uint) external view returns (ticket memory);
-        function userMapping(address) external view returns (User memory);
-function usersArray(uint) external view returns (address);
-function usersArrayIndex() external view returns (uint);
+    function userMapping(address) external view returns (User memory);
+    function usersArray(uint) external view returns (address);
+    function usersArrayIndex() external view returns (uint);
+    function userPackage(address) external view returns (Package memory);
 }
 
 contract DataFetcherUpgradeable is
@@ -602,6 +614,34 @@ contract DataFetcherUpgradeable is
     IHelperV2 public helper;
 
     address[] public oldUsers;
+
+    struct UserDetails {
+        uint userJoiningTime;
+        uint userTradingTime;
+        uint userTradingLimitTime;
+        uint userLimitUtilized;
+        uint tradingLevelBonus;
+        uint packageLevelBonus;
+        uint tradeXHours;
+        uint tradingReferralBonus;
+        uint packageReferralBonus;
+        uint selfTradingProfit;
+        uint packageUpgraded;
+        uint packageId;
+        uint future1;
+        uint future2;
+        uint tradeYHours;
+    }
+
+    struct User {
+        address referrer;
+        address parent;
+        address[] children;
+        address[] indirect;
+        address[] direct;
+        bool registered;
+        UserDetails data;
+    }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -651,12 +691,60 @@ contract DataFetcherUpgradeable is
 
     function _authorizeUpgrade(address newImpl) internal override onlyOwner {}
 
-    function getUsers() public view returns(IHelperV2.User[] memory users){
-       uint total = helper.usersArrayIndex();
-       users = new IHelperV2.User[](total);
-        for(uint i = 0; i < total; i++){
-            address add = helper.usersArray(i);
-            IHelperV2.User memory user = helper.userMapping(add);
-            users[i] = user; 
-    }}
+    function getUsers() public view returns (User[] memory users) {
+        uint total = helper.usersArrayIndex();
+        users = new User[](total);
+
+        for (uint i = 0; i < total; i++) {
+            address userAddress = helper.usersArray(i);
+            IHelperV2.User memory u = helper.userMapping(userAddress);
+
+            users[i] = User({
+                referrer: u.referrer,
+                parent: u.parent,
+                children: u.children,
+                indirect: u.indirect,
+                direct: u.direct,
+                registered: u.registered,
+                data: UserDetails({
+                    userJoiningTime: u.data.userJoiningTime,
+                    userTradingTime: u.data.userTradingTime,
+                    userTradingLimitTime: u.data.userTradingLimitTime,
+                    userLimitUtilized: u.data.userLimitUtilized,
+                    tradingLevelBonus: u.data.tradingLevelBonus,
+                    packageLevelBonus: u.data.packageLevelBonus,
+                    tradeXHours: u.data.tradeXHours,
+                    tradingReferralBonus: u.data.tradingReferralBonus,
+                    packageReferralBonus: u.data.packageReferralBonus,
+                    selfTradingProfit: u.data.selfTradingProfit,
+                    packageUpgraded: u.data.packageUpgraded,
+                    packageId: helper.userPackage(userAddress).id,
+                    future1: u.data.future1,
+                    future2: u.data.future2,
+                    tradeYHours:u.data.tradeYHours
+                })
+            });
+        }
+    }
+
+
+    function getTickets(
+        
+    ) public view returns (IHelperV2.ticket[] memory) {
+        uint totalTickets = helper.ticketIndex();
+
+        // First pass: count matching tickets
+                // Allocate exact-sized array
+        IHelperV2.ticket[] memory Tickets = new IHelperV2.ticket[](totalTickets);
+
+        // Second pass: fill array
+        for (uint i = 0; i < totalTickets; i++) {
+            IHelperV2.ticket memory tx1 = helper.ticketMapping(i);
+
+                Tickets[i] = tx1;
+            }
+        
+
+        return Tickets;
+    }
 }

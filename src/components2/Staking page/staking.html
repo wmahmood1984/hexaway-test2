@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HEXA Staking Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    
+    .stake-card {
+      transition: all 0.3s ease;
+    }
+    
+    .stake-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 50px rgba(139, 92, 246, 0.5);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .slide-up {
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes priceChange {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .price-update {
+      animation: priceChange 0.3s ease;
+    }
+
+    /* Mobile responsive styles */
+    @media (max-width: 640px) {
+      .mobile-responsive-grid {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .mobile-responsive-flex {
+        flex-direction: column !important;
+      }
+      
+      .mobile-responsive-text {
+        font-size: 14px !important;
+      }
+      
+      .mobile-responsive-padding {
+        padding: 12px !important;
+      }
+      
+      .mobile-responsive-margin {
+        margin: 8px 0 !important;
+      }
+      
+      .mobile-responsive-image {
+        max-width: 200px !important;
+        height: auto !important;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .tablet-responsive-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+      }
+    }
+  </style>
+</head>
+<body class="h-full w-full m-0 p-0" style="background: linear-gradient(135deg, #f8fafc, #ddd6fe);">
+  <div id="app" class="h-full w-full overflow-auto">
+    <!-- Main Staking Page -->
+    <div class="min-h-full w-full p-4 md:p-8">
+      <div class="max-w-6xl mx-auto">
+        
+        <!-- Header -->
+        <div class="mb-6 md:mb-8 text-center">
+          <h1 style="font-size: clamp(24px, 5vw, 32px); color: #0f172a; font-weight: 900; margin-bottom: 6px; text-shadow: 0 4px 20px #8b5cf6;">
+            HEXA Staking Platform
+          </h1>
+          <p style="font-size: clamp(14px, 3vw, 16px); color: #0f172a; opacity: 0.8;">
+            Earn passive rewards by staking your HEXA Coins
+          </p>
+        </div>
+
+        <!-- Today Stake Board with Live Price & Balance -->
+        <div style="background: linear-gradient(135deg, #ffffff, rgba(6, 182, 212, 0.3)); padding: 16px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); border: 3px solid #06b6d4;">
+          
+          <div style="display: flex; align-items: stretch; justify-content: space-between; gap: 16px; flex-direction: column;">
+            
+            <!-- Today Stake Board (centered) -->
+            <div style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0;">
+              <div style="font-size: clamp(12px, 3vw, 14px); color: #0f172a; opacity: 0.7; margin-bottom: 6px; font-weight: 600;">
+                Today Stake Board
+              </div>
+              <div id="todayStakeBoard" style="font-size: clamp(48px, 15vw, 96px); color: #8b5cf6; font-weight: 900; line-height: 1;">
+                10
+              </div>
+              <div style="font-size: clamp(10px, 2.5vw, 12px); color: #0f172a; opacity: 0.6; margin-top: 6px; font-weight: 500;">
+                Pending Stakers
+              </div>
+            </div>
+
+            <!-- Live Price & Balance -->
+            <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;" class="mobile-responsive-flex">
+              <div style="flex: 1; min-width: 140px;">
+                <div style="font-size: clamp(11px, 2.5vw, 12px); color: #0f172a; opacity: 0.7; margin-bottom: 4px; font-weight: 600;">
+                  📊 HEXA Live Price
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <div id="liveHexaPrice" style="font-size: clamp(16px, 4vw, 24px); color: #0f172a; font-weight: 900;">
+                    $6500.00
+                  </div>
+                  <div id="priceChangeIndicator" style="font-size: clamp(14px, 3.5vw, 20px); font-weight: 900;">
+                    →
+                  </div>
+                </div>
+              </div>
+              
+              <div style="flex: 1; min-width: 140px; text-align: right;">
+                <div style="font-size: clamp(11px, 2.5vw, 12px); color: #0f172a; opacity: 0.7; margin-bottom: 4px; font-weight: 600;">
+                  💼 wallet balance
+                </div>
+                <div id="walletBalanceDisplay" style="font-size: clamp(16px, 4vw, 24px); color: #8b5cf6; font-weight: 900;">
+                  6000.00 HEXA
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px;" class="mobile-responsive-grid tablet-responsive-grid">
+          <div style="background: #ffffff; padding: 16px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 2px solid rgba(139, 92, 246, 0.4);">
+            <div style="font-size: clamp(11px, 2.5vw, 12px); color: #0f172a; opacity: 0.7; margin-bottom: 6px; font-weight: 600;">
+              🔒 Total Staked
+            </div>
+            <div id="totalStakedDisplay" style="font-size: clamp(16px, 4vw, 24px); color: #8b5cf6; font-weight: 900;">
+              0.00 HEXA
+            </div>
+          </div>
+
+          <div style="background: #ffffff; padding: 16px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 2px solid rgba(6, 182, 212, 0.4);">
+            <div style="font-size: clamp(11px, 2.5vw, 12px); color: #0f172a; opacity: 0.7; margin-bottom: 6px; font-weight: 600;">
+              💰 Total Earned
+            </div>
+            <div id="totalEarnedDisplay" style="font-size: clamp(16px, 4vw, 24px); color: #06b6d4; font-weight: 900;">
+              0.00 HEXA
+            </div>
+          </div>
+
+          <div style="background: #ffffff; padding: 16px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 2px solid rgba(16, 185, 129, 0.4);">
+            <div style="font-size: clamp(11px, 2.5vw, 12px); color: #0f172a; opacity: 0.7; margin-bottom: 6px; font-weight: 600;">
+              💵 Wallet Balance in (USDT)
+            </div>
+            <div id="walletBalanceUsdt" style="font-size: clamp(16px, 4vw, 24px); color: #10b981; font-weight: 900;">
+              $39000000.00
+            </div>
+          </div>
+        </div>
+
+        <!-- Staking Tier -->
+        <div style="background: #ffffff; padding: 16px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin-bottom: 16px;">
+          <h2 style="font-size: clamp(18px, 4vw, 20px); color: #0f172a; font-weight: 900; text-align: center; margin-bottom: 16px;">
+            🎯 Staking
+          </h2>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; max-width: 600px; margin: 0 auto;">
+            <div class="stake-card" style="background: linear-gradient(135deg, #f8fafc, rgba(139, 92, 246, 0.2)); padding: 20px; border-radius: 16px; border: 3px solid rgba(139, 92, 246, 0.4);">
+              
+              <div style="text-align: center; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+                  <img width="200" src="image.png" alt="Hexa Coin" style="max-width: 100%; height: auto;" class="mobile-responsive-image">
+                </div>
+
+                <h3 style="font-size: clamp(16px, 3.5vw, 18px); color: #0f172a; font-weight: 900; margin-bottom: 6px;">
+                  HEXA
+                </h3>
+                <div style="font-size: clamp(16px, 4vw, 24px); color: #8b5cf6; font-weight: 900; margin-bottom: 4px;">
+                  Staking
+                </div>
+                <div style="font-size: clamp(16px, 4vw, 24px); color: #8b5cf6; font-weight: 900; margin-bottom: 4px;">
+                  $50 (USDT)
+                </div>
+              </div>
+
+              <div style="background: #ffffff; padding: 12px; border-radius: 12px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span style="font-size: clamp(11px, 2.5vw, 12px); color: #0f172a; opacity: 0.7;">Stake:</span>
+                  <span style="font-size: clamp(12px, 3vw, 14px); color: #0f172a; font-weight: 700;">5000 HEXA</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span style="font-size: clamp(11px, 2.5vw, 12px); color: #0f172a; opacity: 0.7;">Duration:</span>
+                  <span style="font-size: clamp(12px, 3vw, 14px); color: #0f172a; font-weight: 700;">150 Days</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="font-size: clamp(11px, 2.5vw, 12px); color: #0f172a; opacity: 0.7;">Est. Reward:</span>
+                  <span style="font-size: clamp(12px, 3vw, 14px); color: #06b6d4; font-weight: 900;">+2500 HEXA</span>
+                </div>
+              </div>
+
+              <button id="stakeNowBtn" style="width: 100%; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-size: clamp(14px, 3.5vw, 16px); font-weight: 700; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);">
+                Stake Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Staking History & Rewards Buttons -->
+        <div style="text-align: center; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button id="viewHistoryBtn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 14px 24px; border-radius: 12px; cursor: pointer; font-size: clamp(14px, 3vw, 16px); font-weight: 700; box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4); min-width: 180px;">
+            View Staking History
+          </button>
+          <button id="viewRewardsBtn" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; border: none; padding: 14px 24px; border-radius: 12px; cursor: pointer; font-size: clamp(14px, 3vw, 16px); font-weight: 700; box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4); min-width: 180px;">
+            Staking Reward
+          </button>
+        </div>
+
+        <!-- Staking History (Hidden by default) -->
+        <div id="stakingHistory" style="background: #ffffff; padding: 16px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin-top: 16px; display: none;">
+          <h2 style="font-size: clamp(18px, 4vw, 20px); color: #0f172a; font-weight: 900; text-align: center; margin-bottom: 16px;">
+            Your Staking History
+          </h2>
+          <div id="historyContent">
+            <!-- History will be dynamically inserted here -->
+          </div>
+        </div>
+
+        <!-- Staking Rewards (Hidden by default) -->
+        <div id="stakingRewards" style="background: #ffffff; padding: 16px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin-top: 16px; display: none;">
+          <h2 style="font-size: clamp(18px, 4vw, 20px); color: #0f172a; font-weight: 900; text-align: center; margin-bottom: 16px;">
+            💰 Staking Earnings History
+          </h2>
+          
+          <!-- Claim Button Section -->
+          <div style="text-align: center; margin-bottom: 24px;">
+            <button id="claimRewardsBtn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px 32px; border-radius: 12px; cursor: pointer; font-size: clamp(16px, 3.5vw, 18px); font-weight: 900; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4); min-width: 240px; margin-bottom: 8px;">
+              🎁 Claim All Rewards
+            </button>
+            <div id="claimableAmount" style="font-size: clamp(14px, 3vw, 16px); color: #0f172a; opacity: 0.8; margin-top: 8px;">
+              Available to claim: <span style="color: #10b981; font-weight: 700;">0 HEXA</span>
+            </div>
+          </div>
+          
+          <div id="rewardsContent">
+            <!-- Rewards will be dynamically inserted here -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Message Overlay (hidden by default) -->
+  <div id="messageOverlay" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #3b82f6; color: white; padding: 12px 24px; border-radius: 12px; font-weight: bold; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.3); display: none; animation: slideUp 0.3s ease; max-width: 90vw; text-align: center; font-size: clamp(12px, 3vw, 14px);">
+  </div>
+
+  <script>
+    // Staking Configuration
+    const stakingTiers = [
+      { id: 1, name: "HEXA", duration: "150 Days",  minAmount: 5000, icon: "🎨", isNFT: true }
+    ];
+
+    // Game State
+    let liveHexaPrice = 6500.00;
+    let priceDirection = 'neutral';
+    let countdownDays = 150;
+    let countdownHours = 0;
+    let countdownMinutes = 0;
+    let countdownSeconds = 0;
+    let userData = {
+      wallet_balance: 6000,
+      staked_amount: 0,
+      total_earned: 0,
+      stake_history: "",
+      stake_count: 10,
+      claimable_rewards: 0
+    };
+
+    // DOM Elements
+    const messageOverlay = document.getElementById('messageOverlay');
+
+    // Initialize the staking platform
+    function initStakingPlatform() {
+      // Update displays
+      updateAllDisplays();
+      
+      // Start countdown
+      setInterval(updateCountdown, 1000);
+      
+      // Start price updates
+      setInterval(updateHexaPrice, 3000);
+      
+      // Set up event listeners
+      setupEventListeners();
+    }
+
+    // Update countdown every second
+    function updateCountdown() {
+      if (countdownSeconds > 0) {
+        countdownSeconds--;
+      } else if (countdownMinutes > 0) {
+        countdownMinutes--;
+        countdownSeconds = 59;
+      } else if (countdownHours > 0) {
+        countdownHours--;
+        countdownMinutes = 59;
+        countdownSeconds = 59;
+      } else if (countdownDays > 0) {
+        countdownDays--;
+        countdownHours = 23;
+        countdownMinutes = 59;
+        countdownSeconds = 59;
+      }
+
+      updateHistoryCountdowns();
+    }
+
+    // Update countdowns in history
+    function updateHistoryCountdowns() {
+      const entries = userData.stake_history ? userData.stake_history.split(',').filter(e => e.trim()) : [];
+      entries.reverse().forEach((entry, index) => {
+        const parts = entry.split(':');
+        const timestamp = parts[4];
+        const status = parts[5] || 'active';
+
+        if (status === 'active' && timestamp) {
+          const stakeDate = new Date(timestamp);
+          const durationDays = 150; // Fixed 150 days for HEXA staking
+          const endDate = new Date(stakeDate.getTime() + (durationDays * 24 * 60 * 60 * 1000));
+          const now = new Date();
+          const timeLeft = endDate - now;
+
+          const countdownEl = document.getElementById(`countdown-${index}`);
+          if (countdownEl && timeLeft > 0) {
+            const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            countdownEl.textContent = `⏱️ ${daysLeft}d ${hoursLeft}h ${minutesLeft}m ${secondsLeft}s remaining`;
+          }
+        }
+      });
+    }
+
+    // Format numbers with commas
+    function formatNumber(num) {
+      return Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Update live HEXA price with fluctuation
+    function updateHexaPrice() {
+      const previousPrice = liveHexaPrice;
+      const change = (Math.random() - 0.5) * 150;
+      liveHexaPrice = Math.max(500, Math.min(13000, liveHexaPrice + change));
+      
+      if (liveHexaPrice > previousPrice) {
+        priceDirection = 'up';
+      } else if (liveHexaPrice < previousPrice) {
+        priceDirection = 'down';
+      } else {
+        priceDirection = 'neutral';
+      }
+
+      updatePriceDisplay();
+      updateAllDisplays();
+    }
+
+    // Update price display in UI
+    function updatePriceDisplay() {
+      const priceElement = document.getElementById('liveHexaPrice');
+      const priceChangeElement = document.getElementById('priceChangeIndicator');
+      
+      if (priceElement) {
+        priceElement.textContent = `$${liveHexaPrice.toFixed(2)}`;
+        priceElement.classList.add('price-update');
+        setTimeout(() => {
+          priceElement.classList.remove('price-update');
+        }, 300);
+
+        if (priceDirection === 'up') {
+          priceElement.style.color = '#10b981';
+        } else if (priceDirection === 'down') {
+          priceElement.style.color = '#ef4444';
+        } else {
+          priceElement.style.color = '#0f172a';
+        }
+      }
+
+      if (priceChangeElement) {
+        if (priceDirection === 'up') {
+          priceChangeElement.textContent = '↗';
+          priceChangeElement.style.color = '#10b981';
+        } else if (priceDirection === 'down') {
+          priceChangeElement.textContent = '↘';
+          priceChangeElement.style.color = '#ef4444';
+        } else {
+          priceChangeElement.textContent = '→';
+          priceChangeElement.style.color = '#0f172a';
+        }
+      }
+    }
+
+    // Update all displays
+    function updateAllDisplays() {
+      // Update wallet balance
+      const walletBalance = document.getElementById('walletBalanceDisplay');
+      if (walletBalance) {
+        walletBalance.textContent = `${userData.wallet_balance.toFixed(2)} HEXA`;
+      }
+
+      // Update total staked
+      const totalStaked = document.getElementById('totalStakedDisplay');
+      if (totalStaked) {
+        totalStaked.textContent = `${userData.staked_amount.toFixed(2)} HEXA`;
+      }
+
+      // Update total earned
+      const totalEarned = document.getElementById('totalEarnedDisplay');
+      if (totalEarned) {
+        totalEarned.textContent = `${userData.total_earned.toFixed(2)} HEXA`;
+      }
+
+      // Update wallet balance in USDT
+      const walletUsdt = document.getElementById('walletBalanceUsdt');
+      if (walletUsdt) {
+        const usdtValue = userData.wallet_balance * liveHexaPrice;
+        walletUsdt.textContent = `$${formatNumber(usdtValue)}`;
+      }
+
+      // Update stake count
+      const stakeBoard = document.getElementById('todayStakeBoard');
+      if (stakeBoard) {
+        stakeBoard.textContent = userData.stake_count;
+      }
+
+      // Update claimable amount
+      const claimableAmount = document.getElementById('claimableAmount');
+      if (claimableAmount) {
+        const span = claimableAmount.querySelector('span');
+        if (span) {
+          span.textContent = `${userData.claimable_rewards} HEXA`;
+        }
+      }
+
+      // Update stake button state
+      updateStakeButtonState();
+    }
+
+    // Update stake button state
+    function updateStakeButtonState() {
+      const stakeBtn = document.getElementById('stakeNowBtn');
+      if (stakeBtn) {
+        const canStake = userData.wallet_balance >= 5000 && userData.stake_count > 0;
+        if (canStake) {
+          stakeBtn.style.background = 'linear-gradient(135deg, #8b5cf6, #7c3aed)';
+          stakeBtn.style.cursor = 'pointer';
+          stakeBtn.style.opacity = '1';
+          stakeBtn.textContent = 'Stake Now';
+        } else {
+          stakeBtn.style.background = 'rgba(15, 23, 42, 0.4)';
+          stakeBtn.style.cursor = 'not-allowed';
+          stakeBtn.style.opacity = '0.6';
+          stakeBtn.textContent = 'Confirm';
+        }
+      }
+    }
+
+    // Show message
+    function showMessage(text, type) {
+      const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
+      messageOverlay.style.background = bgColor;
+      messageOverlay.textContent = text;
+      messageOverlay.style.display = 'block';
+      
+      setTimeout(() => {
+        messageOverlay.style.display = 'none';
+      }, 3000);
+    }
+
+    // Execute staking
+    function executeStake() {
+      const tier = stakingTiers[0]; // HEXA tier
+      const amount = tier.minAmount;
+      
+      if (userData.wallet_balance < amount) {
+        showMessage("Insufficient balance!", "error");
+        return;
+      }
+
+      if (userData.stake_count <= 0) {
+        showMessage("No staking slots available today!", "error");
+        return;
+      }
+
+      // Update user data
+      const stakeEntry = `${tier.name}:${amount}:${tier.apy}:${tier.duration}:${new Date().toISOString()}:active`;
+      userData.wallet_balance -= amount;
+      userData.staked_amount += amount;
+      userData.stake_history = userData.stake_history 
+        ? `${userData.stake_history},${stakeEntry}` 
+        : stakeEntry;
+      userData.stake_count = Math.max(0, userData.stake_count - 1);
+
+      // Show success message
+      showMessage(`✅ Successfully staked ${amount} HEXA in ${tier.name} tier!`, "success");
+      
+      // Update displays
+      updateAllDisplays();
+      
+      // Update history and rewards displays
+      if (document.getElementById('stakingHistory').style.display !== 'none') {
+        renderStakeHistory();
+      }
+      if (document.getElementById('stakingRewards').style.display !== 'none') {
+        renderStakeRewards();
+      }
+    }
+
+    // Claim rewards function
+    function claimRewards() {
+      if (userData.claimable_rewards <= 0) {
+        showMessage("No rewards available to claim!", "error");
+        return;
+      }
+
+      const claimAmount = userData.claimable_rewards;
+      userData.wallet_balance += claimAmount;
+      userData.claimable_rewards = 0;
+      
+      showMessage(`✅ Successfully claimed ${claimAmount} HEXA rewards!`, "success");
+      updateAllDisplays();
+      
+      // Update rewards display if visible
+      if (document.getElementById('stakingRewards').style.display !== 'none') {
+        renderStakeRewards();
+      }
+    }
+
+    // Render stake history
+    function renderStakeHistory() {
+      const container = document.getElementById('historyContent');
+      if (!container) return;
+
+      if (!userData.stake_history) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 24px; font-size: 14px; color: #0f172a; opacity: 0.6;">
+            No staking history yet. Start staking to earn rewards!
+          </div>
+        `;
+        return;
+      }
+
+      const entries = userData.stake_history.split(',').filter(e => e.trim());
+      if (entries.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 24px; font-size: 14px; color: #0f172a; opacity: 0.6;">
+            No staking history yet. Start staking to earn rewards!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          ${entries.reverse().map((entry, index) => {
+            const parts = entry.split(':');
+            const tierName = parts[0];
+            const amount = parts[1];
+            const apy = parts[2];
+            const duration = parts[3];
+            const timestamp = parts[4] ? new Date(parts[4]).toLocaleString() : 'Unknown';
+            const status = parts[5] || 'active';
+            
+            const tier = stakingTiers.find(t => t.name === tierName);
+            const icon = tier ? tier.icon : '💰';
+            const statusColor = status === 'active' ? '#10b981' : '#6b7280';
+            const statusText = status === 'active' ? 'Active' : 'Completed';
+            
+            // Calculate time remaining if active
+            let timeRemaining = '';
+            if (status === 'active' && timestamp !== 'Unknown') {
+              const stakeDate = new Date(parts[4]);
+              const durationDays = parseInt(duration);
+              const endDate = new Date(stakeDate.getTime() + (durationDays * 24 * 60 * 60 * 1000));
+              const now = new Date();
+              const timeLeft = endDate - now;
+              
+              if (timeLeft > 0) {
+                const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                timeRemaining = `${daysLeft}d ${hoursLeft}h ${minutesLeft}m ${secondsLeft}s remaining`;
+              } else {
+                timeRemaining = 'Completed';
+              }
+            }
+            
+            return `
+              <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border-left: 4px solid #8b5cf6;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 32px;">${icon}</span>
+                    <div>
+                      <div style="font-size: 16px; color: #0f172a; font-weight: 900;">
+                        ${tierName} Staking
+                      </div>
+                      <div style="font-size: 12px; color: #0f172a; opacity: 0.7;">
+                        ${duration} • ${apy}% APY
+                      </div>
+                    </div>
+                  </div>
+                  <div style="text-align: right; margin-top: 8px;">
+                    <div style="font-size: 18px; color: #8b5cf6; font-weight: 900;">
+                      ${amount} HEXA
+                    </div>
+                    <div style="font-size: 12px; color: ${statusColor}; font-weight: 700;">
+                      ${statusText}
+                    </div>
+                  </div>
+                </div>
+                ${timeRemaining ? `
+                  <div style="background: rgba(139, 92, 246, 0.2); padding: 8px 12px; border-radius: 8px; margin-bottom: 8px;">
+                    <div id="countdown-${index}" style="font-size: 12px; color: #8b5cf6; font-weight: 700; text-align: center;">
+                      ⏱️ ${timeRemaining}
+                    </div>
+                  </div>
+                ` : ''}
+                <div style="font-size: 10px; color: #0f172a; opacity: 0.6;">
+                  Staked on: ${timestamp}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Render stake rewards
+    function renderStakeRewards() {
+      const container = document.getElementById('rewardsContent');
+      if (!container) return;
+
+      if (!userData.stake_history) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 24px; font-size: 14px; color: #0f172a; opacity: 0.6;">
+            No earnings yet. Start staking to earn rewards!
+          </div>
+        `;
+        return;
+      }
+
+      const entries = userData.stake_history.split(',').filter(e => e.trim());
+      if (entries.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 24px; font-size: 14px; color: #0f172a; opacity: 0.6;">
+            No earnings yet. Start staking to earn rewards!
+          </div>
+        `;
+        return;
+      }
+
+      // Calculate total projected earnings and claimable rewards
+      const totalEarnings = entries.length * 2500;
+      userData.total_earned = totalEarnings;
+      
+      // Calculate claimable rewards (completed stakes only)
+      let claimable = 0;
+      const earningsRows = entries.reverse().map((entry, index) => {
+        const parts = entry.split(':');
+        const tierName = parts[0];
+        const amount = parseFloat(parts[1]);
+        const apy = parseFloat(parts[2]);
+        const duration = parts[3];
+        const timestamp = parts[4] ? new Date(parts[4]).toLocaleString() : 'Unknown';
+        const status = parts[5] || 'active';
+        
+        const tier = stakingTiers.find(t => t.name === tierName);
+        const icon = tier ? tier.icon : '💰';
+        
+        // Fixed earnings of 2500 per stake
+        const earningsNum = 2500;
+        
+        const statusColor = status === 'active' ? '#10b981' : '#6b7280';
+        const statusText = status === 'active' ? 'Earning' : 'Completed';
+        
+        // If stake is completed, add to claimable rewards
+        if (status === 'completed') {
+          claimable += earningsNum;
+        }
+        
+        return `
+          <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border-left: 4px solid #06b6d4;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 32px;">${icon}</span>
+                <div>
+                  <div style="font-size: 16px; color: #0f172a; font-weight: 900;">
+                    ${tierName} Staking
+                  </div>
+                  <div style="font-size: 12px; color: #0f172a; opacity: 0.7;">
+                    5000 HEXA staked •
+                  </div>
+                </div>
+              </div>
+              <div style="text-align: right; margin-top: 8px;">
+                <div style="font-size: 18px; color: #06b6d4; font-weight: 900;">
+                  +${earningsNum} HEXA
+                </div>
+                <div style="font-size: 12px; color: ${statusColor}; font-weight: 700;">
+                  ${statusText}
+                </div>
+              </div>
+            </div>
+            <div style="font-size: 10px; color: #0f172a; opacity: 0.6;">
+              Started: ${timestamp}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      userData.claimable_rewards = claimable;
+
+      container.innerHTML = `
+        <div style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(6, 182, 212, 0.1)); padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid rgba(6, 182, 212, 0.4);">
+          <div style="text-align: center;">
+            <div style="font-size: 14px; color: #0f172a; opacity: 0.7; margin-bottom: 8px; font-weight: 600;">
+              Total Projected Earnings
+            </div>
+            <div style="font-size: 32px; color: #06b6d4; font-weight: 900;">
+              ${totalEarnings.toFixed(0)} HEXA
+            </div>
+            <div style="font-size: 12px; color: #0f172a; opacity: 0.6; margin-top: 4px;">
+              ≈ $${(totalEarnings * liveHexaPrice).toFixed(0)} USDT
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          ${earningsRows}
+        </div>
+      `;
+
+      // Update claimable amount display
+      updateAllDisplays();
+    }
+
+    // Toggle staking history visibility
+    function toggleHistory() {
+      const historySection = document.getElementById('stakingHistory');
+      const rewardsSection = document.getElementById('stakingRewards');
+      const historyButton = document.getElementById('viewHistoryBtn');
+      
+      if (historySection && historyButton) {
+        if (historySection.style.display === 'none') {
+          historySection.style.display = 'block';
+          historyButton.textContent = 'Hide Staking History';
+          // Hide rewards section when showing history
+          if (rewardsSection) {
+            rewardsSection.style.display = 'none';
+            const rewardsButton = document.getElementById('viewRewardsBtn');
+            if (rewardsButton) rewardsButton.textContent = 'Staking Reward';
+          }
+          // Render history
+          renderStakeHistory();
+        } else {
+          historySection.style.display = 'none';
+          historyButton.textContent = 'View Staking History';
+        }
+      }
+    }
+
+    // Toggle staking rewards visibility
+    function toggleRewards() {
+      const rewardsSection = document.getElementById('stakingRewards');
+      const historySection = document.getElementById('stakingHistory');
+      const rewardsButton = document.getElementById('viewRewardsBtn');
+      
+      if (rewardsSection && rewardsButton) {
+        if (rewardsSection.style.display === 'none') {
+          rewardsSection.style.display = 'block';
+          rewardsButton.textContent = 'Hide Rewards';
+          // Hide history section when showing rewards
+          if (historySection) {
+            historySection.style.display = 'none';
+            const historyButton = document.getElementById('viewHistoryBtn');
+            if (historyButton) historyButton.textContent = 'View Staking History';
+          }
+          // Render rewards
+          renderStakeRewards();
+        } else {
+          rewardsSection.style.display = 'none';
+          rewardsButton.textContent = 'Staking Reward';
+        }
+      }
+    }
+
+    // Set up event listeners
+    function setupEventListeners() {
+      // Stake button
+      document.getElementById('stakeNowBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        const canStake = userData.wallet_balance >= 5000 && userData.stake_count > 0;
+        if (canStake) {
+          executeStake();
+        } else {
+          showMessage("Cannot stake right now!", "error");
+        }
+      });
+
+      // History button
+      document.getElementById('viewHistoryBtn').addEventListener('click', toggleHistory);
+
+      // Rewards button
+      document.getElementById('viewRewardsBtn').addEventListener('click', toggleRewards);
+
+      // Claim rewards button
+      document.getElementById('claimRewardsBtn').addEventListener('click', claimRewards);
+    }
+
+    // Initialize the staking platform when page loads
+    window.addEventListener('DOMContentLoaded', initStakingPlatform);
+  </script>
+</body>
+</html>

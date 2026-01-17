@@ -22,13 +22,14 @@ import NoteMarquee from './components2/Note'
 import MyForm from './components2/Admin'
 import Lists from './components2/Lists'
 import User from './components2/p2p Trade/User'
+import Staking from './components2/Staking page/Staking'
 
 export default function App() {
 
     const dispatch = useDispatch()
     const { address } = useAppKitAccount();
     const navigate = useNavigate()
-        const [createActive, setCreateActive] = useState(false)
+    const [createActive, setCreateActive] = useState(false)
 
     const {
         status,
@@ -63,7 +64,7 @@ export default function App() {
         <div>
             <Toaster position="top-right" reverseOrder={false} />
             <Nav createActive={createActive} setCreateActive={setCreateActive} />
-            <NoteMarquee/>
+            <NoteMarquee />
 
 
             <Routes>
@@ -72,7 +73,7 @@ export default function App() {
                 <Route path="/auth/:id" element={<Auth />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/tree" element={<Tree />} />
-                <Route path="/trade" element={<Trade createActive={createActive} setCreateActive={setCreateActive}/>} />
+                <Route path="/trade" element={<Trade createActive={createActive} setCreateActive={setCreateActive} />} />
                 <Route path="/create" element={<Create />} />
                 <Route path="/asset" element={<Asset />} />
                 <Route path="/history" element={<History />} />
@@ -82,8 +83,9 @@ export default function App() {
                 <Route path="/teamview" element={<Teamtree />} />
                 {/* <Route path="/bulk" element={<Bulk />} /> */}
                 {/* <Route path="/admin" element={<MyForm />} /> */}
-                                <Route path="/p2p" element={<User />} />
-                                <Route path="/lists" element={<Lists />} />
+                <Route path="/p2p" element={<User />} />
+                <Route path="/lists" element={<Lists />} />
+                <Route path="/staking" element={<Staking/>} />
             </Routes>
 
 
