@@ -1,6 +1,112 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { stakinvV2ContractR, USDTContractR } from '../../config'
+import { useSelector } from 'react-redux'
+import { formatWithCommas, secondsToDHMSDiff, secondsToDMY } from '../../utils/contractExecutor'
+import { formatEther, parseEther } from 'ethers'
+import { useAppKitAccount } from '@reown/appkit/react'
+import { useStake } from './Stakehook'
+import toast from 'react-hot-toast'
+
+
 
 export default function Staking() {
+
+    const [todayStaked, setTodayStaked] = useState(0)
+    const [hexaPrice, setHexaPrice] = useState(0.01)
+    const [totalStaked, setTotalStaked] = useState(0)
+    const [totalEarned, setTotalEarned] = useState(0)
+    const [mystake, setMyStake] = useState()
+
+    const [myClaims, setMyClaims] = useState()
+    const [USDTBalance, setUSDTBalance] = useState(0)
+    const [show, setShow] = useState("history")
+    const { walletBalance } = useSelector((state) => state.contract);
+    const { address } = useAppKitAccount();
+
+    useEffect(() => {
+
+
+
+        abc()
+    }, [address])
+
+
+    const abc = async () => {
+        const _todayStaked = await stakinvV2ContractR.methods.stakeDone().call()
+        setTodayStaked(_todayStaked)
+        const _totalStaked = await stakinvV2ContractR.methods.totalStaked().call()
+        setTotalStaked(formatWithCommas(formatEther(_totalStaked)))
+        const _totalEarned = await stakinvV2ContractR.methods.totalEarned().call()
+        setTotalEarned(formatWithCommas(formatEther(_totalEarned)))
+        const _usdtBalance = await USDTContractR.methods.balanceOf(address).call()
+        setUSDTBalance(formatWithCommas(formatEther(_usdtBalance)))
+
+        const _mystake = await stakinvV2ContractR.methods.getTicketsByUser(address).call()
+        const _myClaims = await stakinvV2ContractR.methods.getClaimsByUser(address).call()
+        setMyStake(_mystake)
+        setMyClaims(_myClaims)
+    }
+
+
+    const { stake, stakeSimError } = useStake(parseEther("50"))
+
+    const onStakeClick = async () => {
+        try {
+            await stake()
+            toast.success("Stake successful")
+            abc()
+        } catch (err) {
+            toast.error(err.shortMessage || err.message || stakeSimError)
+        }
+    }
+
+
+    const handleClaim = async (id, price) => {
+            console.log("object", price);
+            await executeContract({
+                config,
+                functionName: "buyPackage",
+                args: [id],
+                onSuccess: (txHash, receipt) => {
+                    console.log("🎉 Tx Hash:", txHash);
+                    console.log("🚀 Tx Receipt:", receipt);
+                    toast.success("Package Bought Succes")
+                    dispatch(readName({ address: receipt.from }));
+                    setLoading(false)
+                },
+                contract: helperContractV2,
+                onError: (err) => {
+                    console.error("🔥 Error in register:", err);
+                    let reason = extractRevertReason(err)
+                    toast.error("Transaction failed:", reason)
+                    setLoading(false)
+                },
+            });
+        };
+
+
+
+    const isLoading = !mystake || !myClaims;
+
+
+    const icon = '💰';
+
+
+
+
+
+    if (isLoading) {
+        // show a waiting/loading screen
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
+                <p className="text-gray-600 text-lg font-medium">Loading your data...</p>
+            </div>
+        );
+    }
+
+    console.log("staked", mystake)
+
     return (
         <div>
 
@@ -30,7 +136,7 @@ export default function Staking() {
                                         Today Stake Board
                                     </div>
                                     <div id="todayStakeBoard" style={{ fontSize: "clamp(48px, 15vw, 96px)", color: "#8b5cf6", fontWeight: 900, lineHeight: 1 }}>
-                                        10
+                                        {10 - Number(todayStaked)}
                                     </div>
                                     <div style={{ fontSize: "clamp(10px, 2.5vw, 12px)", color: "#0f172a", opacity: 0.6, marginTop: "6px", fontWeight: 500 }}>
                                         Pending Stakers
@@ -45,7 +151,7 @@ export default function Staking() {
                                         </div>
                                         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                                             <div id="liveHexaPrice" style={{ fontSize: "clamp(16px, 4vw, 24px)", color: "#0f172a", fontWeight: 900 }}>
-                                                $6500.00
+                                                ${hexaPrice}
                                             </div>
                                             <div id="priceChangeIndicator" style={{ fontSize: "clamp(14px, 3.5vw, 20px)", fontWeight: 900 }}>
                                                 →
@@ -58,7 +164,7 @@ export default function Staking() {
                                             💼 wallet balance
                                         </div>
                                         <div id="walletBalanceDisplay" style={{ fontSize: "clamp(16px, 4vw, 24px)", color: "#8b5cf6", fontWeight: 900 }}>
-                                            6000.00 HEXA
+                                            {formatWithCommas(walletBalance)} HEXA
                                         </div>
                                     </div>
                                 </div>
@@ -73,7 +179,7 @@ export default function Staking() {
                                     🔒 Total Staked
                                 </div>
                                 <div id="totalStakedDisplay" style={{ fontSize: "clamp(16px, 4vw, 24px)", color: "#8b5cf6", fontWeight: 900 }}>
-                                    0.00 HEXA
+                                    {totalStaked} HEXA
                                 </div>
                             </div>
 
@@ -82,7 +188,7 @@ export default function Staking() {
                                     💰 Total Earned
                                 </div>
                                 <div id="totalEarnedDisplay" style={{ fontSize: "clamp(16px, 4vw, 24px)", color: "#06b6d4", fontWeight: 900 }}>
-                                    0.00 HEXA
+                                    {totalEarned} HEXA
                                 </div>
                             </div>
 
@@ -91,7 +197,7 @@ export default function Staking() {
                                     💵 Wallet Balance in (USDT)
                                 </div>
                                 <div id="walletBalanceUsdt" style={{ fontSize: "clamp(16px, 4vw, 24px)", color: "#10b981", fontWeight: 900 }}>
-                                    $39000000.00
+                                    ${USDTBalance}
                                 </div>
                             </div>
                         </div>
@@ -126,17 +232,19 @@ export default function Staking() {
                                             <span style={{ fontSize: "clamp(11px, 2.5vw, 12px)", color: "#0f172a", opacity: 0.7 }}>Stake:</span>
                                             <span style={{ fontSize: "clamp(12px, 3vw, 14px)", color: "#0f172a", fontWeight: 700 }}>5000 HEXA</span>
                                         </div>
-                                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                                        {/* <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                                             <span style={{ fontSize: "clamp(11px, 2.5vw, 12px)", color: "#0f172a", opacity: 0.7 }}>Duration:</span>
                                             <span style={{ fontSize: "clamp(12px, 3vw, 14px)", color: "#0f172a", fontWeight: 700 }}>150 Days</span>
-                                        </div>
+                                        </div> */}
                                         <div style={{ display: "flex", justifyContent: "space-between" }}>
                                             <span style={{ fontSize: "clamp(11px, 2.5vw, 12px)", color: "#0f172a", opacity: 0.7 }}>Est. Reward:</span>
-                                            <span style={{ fontSize: "clamp(12px, 3vw, 14px)", color: "#06b6d4", fontWeight: 900 }}>+2500 HEXA</span>
+                                            <span style={{ fontSize: "clamp(12px, 3vw, 14px)", color: "#06b6d4", fontWeight: 900 }}>50%</span>
                                         </div>
                                     </div>
 
-                                    <button id="stakeNowBtn" style={{ width: "100%", background: "linear-gradient(135deg, #8b5cf6, #7c3aed)", color: "white", border: "none", padding: "14px", borderRadius: "10px", cursor: "pointer", fontSize: "clamp(14px, 3.5vw, 16px)", fontWeight: 700, boxShadow: "0 4px 12px rgba(139, 92, 246, 0.4)" }}>
+                                    <button
+                                        onClick={onStakeClick}
+                                        id="stakeNowBtn" style={{ width: "100%", background: "linear-gradient(135deg, #8b5cf6, #7c3aed)", color: "white", border: "none", padding: "14px", borderRadius: "10px", cursor: "pointer", fontSize: "clamp(14px, 3.5vw, 16px)", fontWeight: 700, boxShadow: "0 4px 12px rgba(139, 92, 246, 0.4)" }}>
                                         Stake Now
                                     </button>
                                 </div>
@@ -145,44 +253,90 @@ export default function Staking() {
 
 
                         <div style={{ textAlign: "center", display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-                            <button id="viewHistoryBtn" style={{ background: "linear-gradient(135deg, #8b5cf6, #7c3aed)", color: "white", border: "none", padding: "14px 24px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(14px, 3vw, 16px)", fontWeight: 700, boxShadow: "0 8px 20px rgba(139, 92, 246, 0.4)", minWidth: "180px" }}>
+                            <button
+                                onClick={() => { setShow("history") }}
+                                id="viewHistoryBtn" style={{ background: "linear-gradient(135deg, #8b5cf6, #7c3aed)", color: "white", border: "none", padding: "14px 24px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(14px, 3vw, 16px)", fontWeight: 700, boxShadow: "0 8px 20px rgba(139, 92, 246, 0.4)", minWidth: "180px" }}>
                                 View Staking History
                             </button>
-                            <button id="viewRewardsBtn" style={{ background: "linear-gradient(135deg, #06b6d4, #0891b2)", color: "white", border: "none", padding: "14px 24px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(14px, 3vw, 16px)", fontWeight: 700, boxShadow: "0 8px 20px rgba(6, 182, 212, 0.4)", minWidth: "180px" }}>
+                            <button
+                                onClick={() => { setShow("reward") }}
+                                id="viewRewardsBtn" style={{ background: "linear-gradient(135deg, #06b6d4, #0891b2)", color: "white", border: "none", padding: "14px 24px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(14px, 3vw, 16px)", fontWeight: 700, boxShadow: "0 8px 20px rgba(6, 182, 212, 0.4)", minWidth: "180px" }}>
                                 Staking Reward
                             </button>
                         </div>
 
+                        {show == "history" ?
 
-                        <div id="stakingHistory" style={{ background: "#ffffff", padding: "16px", borderRadius: "20px", boxShadow: "0 10px 40px rgba(0,0,0,0.4)", marginTop: "16px", display: "none" }}>
-                            <h2 style={{ fontSize: "clamp(18px, 4vw, 20px)", color: "#0f172a", fontWeight: 900, textAlign: "center", marginBottom: "16px" }}>
-                                Your Staking History
-                            </h2>
-                            <div id="historyContent">
+                            <div id="stakingHistory" style={{ background: "#ffffff", padding: "16px", borderRadius: "20px", boxShadow: "0 10px 40px rgba(0,0,0,0.4)", marginTop: "16px" }}>
+                                <h2 style={{ fontSize: "clamp(18px, 4vw, 20px)", color: "#0f172a", fontWeight: 900, textAlign: "center", marginBottom: "16px" }}>
+                                    Your Staking History
+                                </h2>
+
+                                {mystake.map((v, e) => {
+                                    return (
+                                        <div id="historyContent">
+                                            <div style={{ background: "#f8fafc", padding: "16px", borderRadius: "12px", borderLeft: "4px solid #8b5cf6" }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap" }}>
+                                                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                                        <span style={{ fontSize: "32px" }}>${icon}</span>
+                                                        <div>
+                                                            <div style={{ fontSize: "16px", color: "#0f172a", fontWeight: "900" }}>
+                                                                ${"50"} Staking
+                                                            </div>
+                                                            <div style={{ fontSize: "12px", color: "#0f172a", opacity: "0.7" }}>
+                                                                150 days • 365% APY
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ textAlign: "right", marginTop: "8px;" }}>
+                                                        <div style={{ fontSize: "18px", color: "#8b5cf6", fontWeight: "900" }}>
+                                                            {"5000"} HEXA
+                                                        </div>
+                                                        <div style={{ fontSize: "12px", color: "red", fontWeight: "700" }}>
+                                                            ${"statusText"}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ background: "rgba(139, 92, 246, 0.2)", padding: "8px 12px", borderRadius: "8px", marginBottom: "8px" }}>
+                                                    <div id="countdown-" style={{ fontSize: "12px", color: "#8b5cf6", fontWeight: "700", textAlign: "center" }}>
+                                                        ⏱️ {secondsToDHMSDiff(Number(v.time)+(60*60*24*150)- new Date().getTime()/1000)}
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ fontSize: "10px", color: "#0f172a", opacity: "0.6" }}>
+                                                    Staked on: ${secondsToDMY(v.time)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
 
                             </div>
-                        </div>
+
+                            :
+                            <div id="stakingRewards" style={{ background: "#ffffff", padding: "16px", borderRadius: "20px", boxShadow: "0 10px 40px rgba(0,0,0,0.4)", marginTop: "16px" }}>
+                                <h2 style={{ fontSize: "clamp(18px, 4vw, 20px)", color: "#0f172a", fontWeight: 900, textAlign: "center", marginBottom: "16px" }}>
+                                    💰 Staking Earnings History
+                                </h2>
 
 
-                        <div id="stakingRewards" style={{ background: "#ffffff", padding: "16px", borderRadius: "20px", boxShadow: "0 10px 40px rgba(0,0,0,0.4)", marginTop: "16px", display: "none" }}>
-                            <h2 style={{ fontSize: "clamp(18px, 4vw, 20px)", color: "#0f172a", fontWeight: 900, textAlign: "center", marginBottom: "16px" }}>
-                                💰 Staking Earnings History
-                            </h2>
-
-
-                            <div style={{ textAlign: "center", marginBottom: "24px" }}>
-                                <button id="claimRewardsBtn" style={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", border: "none", padding: "16px 32px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(16px, 3.5vw, 18px)", fontWeight: 900, boxShadow: "0 8px 20px rgba(16, 185, 129, 0.4)", minWidth: "240px", marginBottom: "8px" }}>
-                                    🎁 Claim All Rewards
-                                </button>
-                                <div id="claimableAmount" style={{ fontSize: "clamp(14px, 3vw, 16px)", color: "#0f172a", opacity: 0.8, marginTop: "8px" }}>
-                                    Available to claim: <span style={{ color: "#10b981", fontWeight: 700 }}>0 HEXA</span>
+                                <div style={{ textAlign: "center", marginBottom: "24px" }}>
+                                    <button
+                                    onClick={handleClaim}
+                                    id="claimRewardsBtn" style={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", border: "none", padding: "16px 32px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(16px, 3.5vw, 18px)", fontWeight: 900, boxShadow: "0 8px 20px rgba(16, 185, 129, 0.4)", minWidth: "240px", marginBottom: "8px" }}>
+                                        🎁 Claim All Rewards
+                                    </button>
+                                    <div id="claimableAmount" style={{ fontSize: "clamp(14px, 3vw, 16px)", color: "#0f172a", opacity: 0.8, marginTop: "8px" }}>
+                                        Available to claim: <span style={{ color: "#10b981", fontWeight: 700 }}>0 HEXA</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div id="rewardsContent">
+                                <div id="rewardsContent">
 
-                            </div>
-                        </div>
+                                </div>
+                            </div>}
+
 
                     </div>
                 </div>

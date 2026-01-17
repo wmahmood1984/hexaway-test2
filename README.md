@@ -7,6 +7,8 @@ to make fetcher contract
 admin distribution contracts 
 
 
-1) Price inclusion. 
+1) embed price for sale in p2p. 
+
+2) correct the hexa amount 
 
 

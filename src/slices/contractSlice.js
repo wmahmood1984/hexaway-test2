@@ -9,7 +9,7 @@ export const init = createAsyncThunk("contract/init", async (_, thunkApi) => {
 
     const uContract = new web3.eth.Contract(erc20abi, hexaTokenAdd);
 
-    const v2Contract = new web3.eth.Contract(helperv2Abi,helperv2)
+    const v2Contract = new web3.eth.Contract(helperv2Abi, helperv2)
 
 
     thunkApi.dispatch(setContract(rContract));
@@ -30,7 +30,7 @@ export const readName = createAsyncThunk(
     const state = thunkApi.getState();
     const contract = state.contract.contract;
     const uContract = state.contract.usdtContract;
-    const v2Contract  = state.contract.v2Contract;
+    const v2Contract = state.contract.v2Contract;
 
     const nftContract = new web3.eth.Contract(mlmabi, mlmcontractaddress);
 
@@ -46,41 +46,41 @@ export const readName = createAsyncThunk(
         }
       };
 
-      const name = await safeCall("name", () => nftContract.methods.name().call());
+      // const name = await safeCall("name", () => nftContract.methods.name().call());
       // const nfts = await safeCall("getNFTs", () => contract.methods.getNFTs().call());
       const packages = await safeCall("getPackages", () => v2Contract.methods.getPackages().call());
       const admin = await safeCall("admin", () => contract.methods.owner().call());
-      const NFTque = await safeCall("getNFTque", () => contract.methods.getNFTque().call());
-      const _registered =  await safeCall("userRegistered", () => v2Contract.methods.getUser(a.address).call());
+      // const NFTque = await safeCall("getNFTque", () => contract.methods.getNFTque().call());
+      const _registered = await safeCall("userRegistered", () => v2Contract.methods.getUser(a.address).call());
       const registered = _registered.registered
-      const NFTMayBeCreated = await safeCall("NFTMayBeCreated", () => contract.methods.NFTMayBeCreated().call());
-      const nextTokenId = await safeCall("_nextTokenId", () => nftContract.methods._nextTokenId().call());
-      const timeLimit = await safeCall("timelimit", () => contract.methods.timelimit().call());
+      // const NFTMayBeCreated = await safeCall("NFTMayBeCreated", () => contract.methods.NFTMayBeCreated().call());
+      // const nextTokenId = await safeCall("_nextTokenId", () => nftContract.methods._nextTokenId().call());
+      // const timeLimit = await safeCall("timelimit", () => contract.methods.timelimit().call());
       const packageExpiryLimit = await safeCall("packageExpiry", () => v2Contract.methods.packageExpiry().call());
-      const nftQueIndex = await safeCall("nftQueIndex", ()=>contract.methods.nftQueIndex().call())
+      // const nftQueIndex = await safeCall("nftQueIndex", ()=>contract.methods.nftQueIndex().call())
 
 
       //      const nftused = await safeCall("nftused(0)", () => contract.methods.getNFTused().call());
 
 
-      let Package = null;
+      let Package = null;  //used
       let uplines = [];
-      let User = null;
+      let User = null; // used
       let allowance = 0;
-      let directReferrals = [];
-      let limitUtilized = 0;
-      let myNFTs = [];
-      let NFTQueBalance = 0
-      let tradingReferralBonus = 0
-      let packageReferralBonus = 0
-      let tradingLevelBonus = 0
-      let packageLevelBonus = 0
-      let selfTradingProfit = 0
+      // let directReferrals = [];
+      // let limitUtilized = 0;
+      // let myNFTs = [];
+      // let NFTQueBalance = 0
+      // let tradingReferralBonus = 0
+      // let packageReferralBonus = 0
+      // let tradingLevelBonus = 0
+      // let packageLevelBonus = 0
+      // let selfTradingProfit = 0
       let walletBalance = 0
-      let nftListed = []
-      let nftPurchaseTime = 0
-      let incomeBlockTime = 0
-      let userTradingTime = 0
+      // let nftListed = []
+      // let nftPurchaseTime = 0
+      // let incomeBlockTime = 0
+      // let userTradingTime = 0
 
 
       if (a.address && registered) {
@@ -89,20 +89,20 @@ export const readName = createAsyncThunk(
         User = await safeCall("getUser", () => v2Contract.methods.getUser(a.address).call());
         allowance = await safeCall("allowance", () => uContract.methods.allowance(a.address, mlmcontractaddress).call());
         //      directReferrals = await safeCall("getDirectReferrals", () => contract.methods.getDirectReferrals(a.address).call());
-        limitUtilized = await safeCall("userLimitUtilized", () => contract.methods.userLimitUtilized(a.address).call());
-        myNFTs = await safeCall("getNFTs(address)", () => contract.methods.getNFTs(a.address).call());
-        NFTQueBalance = await safeCall("NFTQueBalance", () => contract.methods.NFTQueBalance(a.address).call());
-        tradingReferralBonus = await safeCall("levelIncome", () => contract.methods.tradingReferralBonus(a.address).call());
-        packageReferralBonus = await safeCall("referralIncome", () => contract.methods.packageReferralBonus(a.address).call());
-        tradingLevelBonus = await safeCall("tradingIncome", () => contract.methods.tradingLevelBonus(a.address).call());
-        packageLevelBonus = await safeCall("tradingIncome", () => contract.methods.packageLevelBonus(a.address).call());
-        selfTradingProfit = await safeCall("tradingIncome", () => contract.methods.selfTradingProfit(a.address).call());
+        // limitUtilized = await safeCall("userLimitUtilized", () => contract.methods.userLimitUtilized(a.address).call());
+        // myNFTs = await safeCall("getNFTs(address)", () => contract.methods.getNFTs(a.address).call());
+        // NFTQueBalance = await safeCall("NFTQueBalance", () => contract.methods.NFTQueBalance(a.address).call());
+        // tradingReferralBonus = await safeCall("levelIncome", () => contract.methods.tradingReferralBonus(a.address).call());
+        // packageReferralBonus = await safeCall("referralIncome", () => contract.methods.packageReferralBonus(a.address).call());
+        // tradingLevelBonus = await safeCall("tradingIncome", () => contract.methods.tradingLevelBonus(a.address).call());
+        // packageLevelBonus = await safeCall("tradingIncome", () => contract.methods.packageLevelBonus(a.address).call());
+        // selfTradingProfit = await safeCall("tradingIncome", () => contract.methods.selfTradingProfit(a.address).call());
         walletBalance = await safeCall("walletbalance", () => uContract.methods.balanceOf(a.address).call());
-        nftListed = await safeCall("nftlisted", () => contract.methods.getNFTListed(a.address).call());
-        nftPurchaseTime = await safeCall("nftPurchaseTime", () => contract.methods.userTradingTime(a.address).call());
-        incomeBlockTime = await safeCall("userLevelIncomeBlockTime", () => contract.methods.userLevelIncomeBlockTime(a.address).call());
-        userTradingTime = await safeCall("userTradingTime", () => contract.methods.userTradingTime(a.address).call());
-        
+        // nftListed = await safeCall("nftlisted", () => contract.methods.getNFTListed(a.address).call());
+        // nftPurchaseTime = await safeCall("nftPurchaseTime", () => contract.methods.userTradingTime(a.address).call());
+        // incomeBlockTime = await safeCall("userLevelIncomeBlockTime", () => contract.methods.userLevelIncomeBlockTime(a.address).call());
+        // userTradingTime = await safeCall("userTradingTime", () => contract.methods.userTradingTime(a.address).call());
+
       }
 
 
@@ -110,7 +110,6 @@ export const readName = createAsyncThunk(
       console.log("✅ [readName] All calls succeeded", User);
 
       return {
-        name,
         // nfts,
         Package,
         packages,
@@ -119,31 +118,31 @@ export const readName = createAsyncThunk(
         registered,
         admin,
         allowance,
-        directReferrals,
+        // directReferrals,
 
-        limitUtilized: Number(formatEther(limitUtilized)).toFixed(4),
-        NFTque,
-        NFTQueBalance: Number(formatEther(NFTQueBalance)).toFixed(4),
-        myNFTs,
-        NFTMayBeCreated,
-        nextTokenId,
-        timeLimit,
-        packageExpiryLimit,
-userTradingTime,
-        tradingReferralBonus: Number(formatEther(tradingReferralBonus)).toFixed(4),
-        packageReferralBonus: Number(formatEther(packageReferralBonus)).toFixed(4),
-        tradingLevelBonus: Number(formatEther(tradingLevelBonus)).toFixed(4),
-        packageLevelBonus: Number(formatEther(packageLevelBonus)).toFixed(4),
-        selfTradingProfit: Number(formatEther(selfTradingProfit)).toFixed(4),
+        // limitUtilized: Number(formatEther(limitUtilized)).toFixed(4),
+        // NFTque,
+        // NFTQueBalance: Number(formatEther(NFTQueBalance)).toFixed(4),
+        // myNFTs,
+        // NFTMayBeCreated,
+        // nextTokenId,
+        // timeLimit,
+        // packageExpiryLimit,
+        // userTradingTime,
+        // tradingReferralBonus: Number(formatEther(tradingReferralBonus)).toFixed(4),
+        // packageReferralBonus: Number(formatEther(packageReferralBonus)).toFixed(4),
+        // tradingLevelBonus: Number(formatEther(tradingLevelBonus)).toFixed(4),
+        // packageLevelBonus: Number(formatEther(packageLevelBonus)).toFixed(4),
+        // selfTradingProfit: Number(formatEther(selfTradingProfit)).toFixed(4),
         walletBalance: Number(formatEther(walletBalance)).toFixed(4),
-        totalIncome: (
-          Number(formatEther(tradingReferralBonus)) +
-          Number(formatEther(packageReferralBonus)) +
-          Number(formatEther(tradingLevelBonus)) +
-          Number(formatEther(packageLevelBonus)) +
-          Number(formatEther(selfTradingProfit))
-        ).toFixed(4), nftListed,
-        nftPurchaseTime,incomeBlockTime,nftQueIndex
+        // totalIncome: (
+        //   Number(formatEther(tradingReferralBonus)) +
+        //   Number(formatEther(packageReferralBonus)) +
+        //   Number(formatEther(tradingLevelBonus)) +
+        //   Number(formatEther(packageLevelBonus)) +
+        //   Number(formatEther(selfTradingProfit))
+        // ).toFixed(4), nftListed,
+        // nftPurchaseTime, incomeBlockTime, nftQueIndex
 
 
         //      nftused,
@@ -186,11 +185,11 @@ const contractSlice = createSlice({
     walletBalance: 0,
     totalIncome: 0,
     nftPurchaseTime: 0,
-    incomeBlockTime:0,
-    timeLimit:0,
-    packageExpiryLimit:0,
-    userTradingTime:0,
-    nftQueIndex:0,
+    incomeBlockTime: 0,
+    timeLimit: 0,
+    packageExpiryLimit: 0,
+    userTradingTime: 0,
+    nftQueIndex: 0,
     //nftused: null,
     status: "idle",
     error: null,
@@ -205,7 +204,7 @@ const contractSlice = createSlice({
     setV2contract: (state, action) => {
       state.v2Contract = action.payload;
     },
-     setRegisteredFalse: (state) => {
+    setRegisteredFalse: (state) => {
       state.registered = false;
     },
   },
@@ -226,5 +225,5 @@ const contractSlice = createSlice({
   },
 });
 
-export const { setContract, setUSDTContract,setRegisteredFalse,setV2contract } = contractSlice.actions;
+export const { setContract, setUSDTContract, setRegisteredFalse, setV2contract } = contractSlice.actions;
 export default contractSlice.reducer;

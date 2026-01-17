@@ -105,7 +105,7 @@ export function secondsToHMSDiff(seconds) {
         return (
           String(d).padStart(2, "0") + " days : " +
             String(h).padStart(2, "0") + " hrs : " +
-            String(m).padStart(2, "0") + " min ago"
+            String(m).padStart(2, "0") + " min"
             // +
             // String(s).padStart(2, "0") + " seconds ago"
         );

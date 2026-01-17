@@ -43,7 +43,7 @@ export default function Lists() {
                         : "bg-gray-200 text-gray-700"
                         }`}
                 >
-                    Admin Staking
+                    Staking Report
                 </button>
 
                 <button
@@ -53,7 +53,7 @@ export default function Lists() {
                         : "bg-gray-200 text-gray-700"
                         }`}
                 >
-                    Admin Staking Earning
+                    Staking Earning Report
                 </button>
 
 
