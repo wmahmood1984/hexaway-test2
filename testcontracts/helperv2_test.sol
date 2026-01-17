@@ -158,11 +158,11 @@ contract Helperv2 is
         paymentToken = IERC20(_paymentToken);
         packageExpiry = 60 * 60 * 24 * 15;
         packages.push(Package(0, 2 ether, packageExpiry * 1, 0, 1, 1, 0));
-        packages.push(Package(1, 5 ether, packageExpiry * 1, 0, 3, 5, 0));
-        packages.push(Package(2, 10 ether, packageExpiry * 2, 10, 7, 10, 0));
-        packages.push(Package(3, 15 ether, packageExpiry * 3, 12, 11, 15, 0));
-        packages.push(Package(4, 20 ether, packageExpiry * 4, 14, 15, 20, 0)); //100 //90
-        packages.push(Package(5, 25 ether, packageExpiry * 5, 16, 20, 24, 0));
+        packages.push(Package(1, 5 ether, packageExpiry * 1, 0, 3, 5, 2));
+        packages.push(Package(2, 10 ether, packageExpiry * 2, 10, 7, 10, 3));
+        packages.push(Package(3, 15 ether, packageExpiry * 3, 12, 11, 15, 4));
+        packages.push(Package(4, 20 ether, packageExpiry * 4, 14, 15, 20, 5)); //100 //90
+        packages.push(Package(5, 25 ether, packageExpiry * 5, 16, 20, 24, 6));
         directLevelUnlock[2]=5;
         directLevelUnlock[3]=10;
         directLevelUnlock[4]=15;
@@ -296,11 +296,16 @@ contract Helperv2 is
 
         for (uint i = 0; i < _uplines.length; i++) {
             address up = _uplines[i];
+            uint levelUnlock = checkActive(users[up].direct) >=6? 24 :
+                               checkActive(users[up].direct) >=5? 20 :
+                               checkActive(users[up].direct) >=5? 15 :
+                               checkActive(users[up].direct) >=3? 10 :
+                                5; 
 
             bool cond = _type == 2 // Package Buy
                 ? users[up].direct.length >= 2 // trade
                 : userPackage[up].levelUnlock >= i && 
-                  directLevelUnlock[(checkActive(users[up].direct))] >= i;
+                  levelUnlock>=i;
                  
 
             uint transactionType = _type == 1 ? 2 : 3;
@@ -421,11 +426,7 @@ contract Helperv2 is
         users[msg.sender].data.userLimitUtilized++;
         users[msg.sender].data.userTradingTime = block.timestamp;
         users[msg.sender].data.tradeXHours += amount;
-        require(
-            users[msg.sender].data.userLimitUtilized <=
-                userPackage[msg.sender].limit,
-            "2"
-        );
+        
 
         if (
             block.timestamp - users[msg.sender].data.userTradingLimitTime >
@@ -437,6 +438,12 @@ contract Helperv2 is
             users[msg.sender].data.tradeYHours = users[msg.sender].data.tradeXHours;
             users[msg.sender].data.tradeXHours = 0;
         }
+
+        require(
+            users[msg.sender].data.userLimitUtilized <=
+                userPackage[msg.sender].limit,
+            "2"
+        );
         address[] memory _uplines = getUplines(msg.sender);
 
         if (_uplines.length == 25) {

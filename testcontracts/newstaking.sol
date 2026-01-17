@@ -6,14 +6,13 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-
-
 contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     IERC20 public HEXA;
     IERC20 public USDT;
     uint public APR;
     uint public stakeAmount;
-
+    uint public stakeDone;
+    uint public stakeDoneTime;
 
     struct Stake {
         uint id;
@@ -35,6 +34,8 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     uint public stakeIndex;
     mapping(uint => Claim) public claimMapping;
     uint public claimIndex;
+    uint public totalStaked;
+    uint public totalEarned;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -48,7 +49,6 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         USDT = IERC20(_usdt);
         stakeAmount = 50 ether;
         APR = 100;
-
     }
 
     function _authorizeUpgrade(
@@ -60,7 +60,18 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         stakeAmount = _stakeAmount;
     }
 
+    
+
     function stake() public {
+        if (block.timestamp > stakeDoneTime + 24 hours) {
+            stakeDone = 0;
+            stakeDoneTime = block.timestamp;
+        }
+
+        require(stakeDone < 10, "You can't stake more than 10 times in a day");
+
+        stakeDone++;
+
         require(
             USDT.allowance(msg.sender, address(this)) >= stakeAmount,
             "Invalid stake amount"
@@ -77,11 +88,13 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         });
 
         stakeIndex++;
+        totalStaked+=stakeAmount;
     }
 
     function getAmounts(uint _id) public view returns (uint claimable) {
         uint amount = stakeMapping[_id].amount;
         uint daysPassed = (block.timestamp - stakeMapping[_id].time) /
+            (60 * 60 * 24) > 150 ? 150 : (block.timestamp - stakeMapping[_id].time) /
             (60 * 60 * 24);
         claimable = (amount * APR * daysPassed) / 100;
     }
@@ -102,6 +115,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         claimMapping[claimIndex] = (Claim(block.timestamp, user, claimable));
         stakeMapping[_id].lastClaimTime = block.timestamp;
         claimIndex++;
+        totalEarned+=amount;
     }
 
     function getTicketsByUser(
@@ -141,7 +155,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         uint count = 0;
         for (uint i = 0; i < claimIndex; i++) {
             Claim memory tx2 = claimMapping[i];
-            if (_user == address(0) ||tx2.user == _user) {
+            if (_user == address(0) || tx2.user == _user) {
                 count++;
             }
         }
