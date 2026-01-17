@@ -1,6 +1,59 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { stakinvV2ContractR } from '../../config'
+import { formatEther } from 'ethers'
+import { copyToClipboard, formatAddress, formatWithCommas, secondsToDMY } from '../../utils/contractExecutor'
 
 export default function Admin_staking_earning() {
+        const [stake, setStake] = useState()
+    
+        useEffect(() => {
+    
+    
+    
+            abc()
+        }, [])
+    
+    
+        const abc = async () => {
+    
+    
+            const _mystake = await stakinvV2ContractR.methods.getClaimsByUser("0x0000000000000000000000000000000000000000").call()
+         
+  
+            setStake(_mystake)
+        }
+    
+    
+    
+    
+    
+        const isLoading = !stake;
+    
+            console.log("claim",stake)
+        const icon = '💰';
+    
+    
+    
+    
+    
+        if (isLoading) {
+            // show a waiting/loading screen
+            return (
+                <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
+                    <p className="text-gray-600 text-lg font-medium">Loading your data...</p>
+                </div>
+            );
+        }
+    
+    
+        const now = new Date().getTime() / 1000
+        const totalVolume = stake.reduce(
+            (acc, t) => acc + Number(formatEther(t.amountClaimed)), 0
+        )
+
+     
+    
     return (
         <div>
 
@@ -46,7 +99,7 @@ export default function Admin_staking_earning() {
                                 Total Transaction
                             </div>
                             <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "40px", color: "#6366f1", fontWeight: 700 }}>
-                                3,321
+                                {stake.length}
                             </div>
                         </div>
 
@@ -57,7 +110,7 @@ export default function Admin_staking_earning() {
                                 Earned HEXA
                             </div>
                             <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "40px", color: "#8b5cf6", fontWeight: 700 }}>
-                                $24,150.00
+                                {totalVolume}
                             </div>
                         </div>
                     </div>
@@ -85,85 +138,28 @@ export default function Admin_staking_earning() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    {stake.map((v,e)=>
+                                <tr>
                                         <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                <span>1</span>
+                                                <span>{e+1}</span>
                                                 <button class="copy-btn" onclick="copyAddress('0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb', event)" style={{ color: "#6366f1" }} title="Copy full address">
                                                     📋
                                                 </button>
                                             </div>
                                         </td>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>0x742d...bEb</td>
+                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>{formatAddress(v.user)}</td>
 
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#8b5cf6", fontWeight: 600 }}>1,250</td>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>Jan 15, 2024</td>
-
-                                    </tr>
-                                    <tr>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                <span>2</span>
-                                                <button class="copy-btn" onclick="copyAddress('0x8a90f4e29c2a75a7c8d9b6e4f3c2a1b0d8e7f6a5', event)" style={{ color: "#6366f1" }} title="Copy full address">
-                                                    📋
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>0x8a90...f6a5</td>
-
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#8b5cf6", fontWeight: 600 }}>1,580</td>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>Jan 18, 2024</td>
+                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#8b5cf6", fontWeight: 600 }}>{formatWithCommas(formatEther(v.amountClaimed))}</td>
+                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>{secondsToDMY(v.time)}</td>
 
                                     </tr>
-                                    <tr>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                <span>3</span>
-                                                <button class="copy-btn" onclick="copyAddress('0x1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c', event)" style={{ color: "#6366f1" }} title="Copy full address">
-                                                    📋
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>0x1b2c...b0c</td>
+                                      
+                                
+                                )
 
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#8b5cf6", fontWeight: 600 }}>1,580</td>
-
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>Jan 28, 2024</td>
-
-                                    </tr>
-                                    <tr>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                <span>4</span>
-                                                <button class="copy-btn" onclick="copyAddress('0x5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d', event)" style={{ color: "#6366f1" }} title="Copy full address">
-                                                    📋
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>0x5e4d...f7e6d</td>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#8b5cf6", fontWeight: 600 }}>1,580</td>
-
-
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>Jan 10, 2024</td>
-
-                                    </tr>
-                                    <tr>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                <span>5</span>
-                                                <button class="copy-btn" onclick="copyAddress('0x9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e', event)" style={{ color: "#6366f1" }} title="Copy full address">
-                                                    📋
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>0x9f8e...f0e</td>
-
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#8b5cf6", fontWeight: 600 }}>1,580</td>
-
-                                        <td style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#1e293b" }}>Feb 1, 2024</td>
-
-
-                                    </tr>
+                                    }
+                                     
                                 </tbody>
                             </table>
                         </div>
