@@ -4515,6 +4515,37 @@ export const P2PAbi = [
 			{
 				"indexed": false,
 				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "_type",
+				"type": "bool"
+			}
+		],
+		"name": "Settle",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "originalAmount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
 				"name": "tradeAmount",
 				"type": "uint256"
 			},
@@ -6087,6 +6118,8 @@ export const erc20Add = "0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9"; //op bnb
 //export const erc20Add = "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3"; //op bnb mainnet
 
 export const admin = "0xB066Ce4653576C310e9A8502e269fc54E32B28ab"  //bulk / lists / admin / suck 
+
+export const p2pContractR = new web3.eth.Contract(P2PAbi,P2PAdd)
 
 export const mlmContract = {
 	address: mlmcontractaddress,

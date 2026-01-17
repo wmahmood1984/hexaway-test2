@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import UserListDemo from "./UserListDemo";
-import Burning from "./Burning";
-import TradingQue from "./TradingQue";
+
 import NormalList from "./NormalList";
-import NewList from "./NewList";
-import AdminCreation from "./AdminCreation";
-import Tally from "./Tally";
-import Admin1 from "./reports/Admin1";
-import Admin2 from "./reports/Admin2";
-import Admin3 from "./reports/Admin3";
+
+
+import Admin_staking from "./Staking page/Admin_staking";
+import Admin_staking_earning from "./Staking page/Admin_staking_earning";
+import ExchangeAdmin from "./reports/ExchangeAdmin";
 
 export default function Lists() {
     const [activeTab, setActiveTab] = useState("admin1");
@@ -38,14 +36,14 @@ export default function Lists() {
                     Exchange
                 </button>
 
-                {/* <button
+                <button
                     onClick={() => setActiveTab("admin2")}
                     className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "admin2"
                         ? "bg-blue-600 text-white"
                         : "bg-gray-200 text-gray-700"
                         }`}
                 >
-                    Admin 2
+                    Admin Staking
                 </button>
 
                 <button
@@ -55,8 +53,8 @@ export default function Lists() {
                         : "bg-gray-200 text-gray-700"
                         }`}
                 >
-                    Admin 3
-                </button> */}
+                    Admin Staking Earning
+                </button>
 
 
                 <button
@@ -77,9 +75,9 @@ export default function Lists() {
 
             {activeTab === "normal" && <NormalList />}
             {activeTab === "users" && <UserListDemo />}
-            {activeTab === "admin1" && <Admin1 />}
-            {activeTab === "admin2" && <Admin2 />}
-            {activeTab === "admin3" && <Admin3 />}
+            {activeTab === "admin1" && <ExchangeAdmin />}
+            {activeTab === "admin2" && <Admin_staking />}
+            {activeTab === "admin3" && <Admin_staking_earning />}
 
         </div>
     );

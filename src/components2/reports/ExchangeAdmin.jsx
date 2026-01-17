@@ -1,6 +1,160 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { p2pContractR, web3 } from '../../config';
+import { useAppKitAccount } from '@reown/appkit/react';
+import { formatEther } from 'ethers';
+import { copyToClipboard, formatAddress, secondsToDHMSDiff } from '../../utils/contractExecutor';
 
-export default function Admin1() {
+export default function ExchangeAdmin() {
+
+    const { address } = useAppKitAccount();
+
+    const [transactions, setTransaction] = useState()
+    const [settlements, setSettlements] = useState()
+    const [buyOrders, setBuyOrders] = useState()
+    const [saleOrders, setSaleOrders] = useState()
+
+    useEffect(() => {
+
+
+        const bringTransaction = async () => {
+            if (!address) return;
+
+
+            const latestBlock = await web3.eth.getBlockNumber();
+            const fromBlock = latestBlock - 50000;
+            const step = 5000; // or smaller if node still complains
+            let allEvents = [];
+
+            for (let i = fromBlock; i <= latestBlock; i += step) {
+                const toBlock = Math.min(i + step - 1, latestBlock);
+
+                try {
+                    const events = await p2pContractR.getPastEvents("Trades",
+
+                        {
+
+                            fromBlock: i,
+                            toBlock: toBlock,
+                        });
+                    allEvents = allEvents.concat(events);
+                    setTransaction(allEvents)
+                    // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
+                } catch (error) {
+                    console.warn(`Error fetching from ${i} to ${toBlock}`, error);
+                }
+            }
+
+            console.log("All events:", allEvents);
+        };
+
+
+
+        bringTransaction();
+
+    }, [address]);
+
+
+    useEffect(() => {
+
+
+        const bringSettlements = async () => {
+            if (!address) return;
+
+
+            const latestBlock = await web3.eth.getBlockNumber();
+            const fromBlock = latestBlock - 50000;
+            const step = 5000; // or smaller if node still complains
+            let allEvents = [];
+
+            for (let i = fromBlock; i <= latestBlock; i += step) {
+                const toBlock = Math.min(i + step - 1, latestBlock);
+
+                try {
+                    const events = await p2pContractR.getPastEvents("Settle",
+
+                        {
+
+                            fromBlock: i,
+                            toBlock: toBlock,
+                        });
+                    allEvents = allEvents.concat(events);
+                    setSettlements(allEvents)
+                    // console.log(`Fetched ${events.length} events from ${i} to ${toBlock}`);
+                } catch (error) {
+                    console.warn(`Error fetching from ${i} to ${toBlock}`, error);
+                }
+            }
+
+            console.log("All settlements:", allEvents);
+        };
+
+
+
+        bringSettlements();
+
+    }, [address]);
+
+
+    useEffect(() => {
+        const abc = async () => {
+            const _buyOrders = await p2pContractR.methods.getOrders(false).call()
+            setBuyOrders(_buyOrders)
+
+            const _saleOrders = await p2pContractR.methods.getOrders(true).call()
+            setSaleOrders(_saleOrders)
+        }
+
+        abc()
+    }, [])
+
+
+
+    const isLoading = !transactions || !saleOrders || !buyOrders || !settlements;
+
+
+
+    function formatVolumeChange(today, yesterday) {
+        if (yesterday === 0 || yesterday == null) {
+            return "— from yesterday";
+        }
+
+        const change = ((today - yesterday) / yesterday) * 100;
+        const arrow = change > 0 ? "↑" : change < 0 ? "↓" : "→";
+        const percentage = Math.abs(change).toFixed(2);
+
+        return `${arrow} ${percentage}% from yesterday`;
+    }
+
+
+
+
+    if (isLoading) {
+        // show a waiting/loading screen
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
+                <p className="text-gray-600 text-lg font-medium">Loading your data...</p>
+            </div>
+        );
+    }
+
+    const now = new Date().getTime() / 1000
+
+
+    const todaysVolume = transactions.filter(t => now - Number(t.time) <= 60 * 60 * 24).reduce(
+        (acc, t) => acc + Number(formatEther(t.tradeAmount)), 0
+    )
+
+    const yesterdayVolume = transactions.filter(t => now - Number(t.time) > 60 * 60 * 24 && now - Number(t.time) <= 60 * 60 * 48).reduce(
+        (acc, t) => acc + Number(formatEther(t.tradeAmount)), 0
+    )
+
+    const todaysSettlementCount = settlements.filter(t => now - Number(t.time) <= 60 * 60 * 24).length
+
+    const combinedOrders = [...buyOrders, ...saleOrders].filter(t => Number(formatEther(t.amount)) > Number(formatEther(t.amountFilled)))
+    const combinedOrdersFilled = [...buyOrders, ...saleOrders].filter(t => Number(formatEther(t.amount)) == Number(formatEther(t.amountFilled)))
+    console.log({ combinedOrders })
+
     return (
         <div>
             <div class="min-h-full w-full" style={{ background: "#f8fafc" }}>
@@ -21,7 +175,7 @@ export default function Admin1() {
                                     </p>
                                 </div>
                             </div>
-                            <div class="header-stats" style={{ display: "flex", gap: "32px", flexWrap: "wrap" }}>
+                            {/* <div class="header-stats" style={{ display: "flex", gap: "32px", flexWrap: "wrap" }}>
                                 <div style={{ textAlign: "right" }}>
                                     <div style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", opacity: 0.6, marginBottom: "4px", fontWeight: 600, textTransform: "uppercase" }}>
                                         Total Buy HEXA
@@ -46,7 +200,7 @@ export default function Admin1() {
                                         2:45 PM
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
@@ -59,10 +213,10 @@ export default function Admin1() {
                                 Today's Volume
                             </div>
                             <div style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "28px", color: "#3b82f6", fontWeight: 900, marginBottom: "8px", wordWrap: "break-word", overflowWrap: "break-word" }}>
-                                $70,900.00
+                                HEXA {todaysVolume}
                             </div>
                             <div style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "11px", color: "#10b981", fontWeight: 600, wordWrap: "break-word" }}>
-                                ↑ 40.49% from yesterday
+                                {formatVolumeChange(todaysVolume, yesterdayVolume)}
                             </div>
                         </div>
 
@@ -73,7 +227,7 @@ export default function Admin1() {
                                 Yesterday's Volume
                             </div>
                             <div style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "28px", color: "#10b981", fontWeight: 900, marginBottom: "8px", wordWrap: "break-word", overflowWrap: "break-word" }}>
-                                $50,500.00
+                                HEXA {yesterdayVolume}
                             </div>
                             <div style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "11px", color: "#0f172a", opacity: 0.6, fontWeight: 600, wordWrap: "break-word" }}>
                                 Previous day total
@@ -87,7 +241,7 @@ export default function Admin1() {
                                 Live Orders
                             </div>
                             <div style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "28px", color: "#f59e0b", fontWeight: 900, marginBottom: "8px" }}>
-                                4
+                                {buyOrders.length + saleOrders.length}
                             </div>
                             <div style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "11px", color: "#0f172a", opacity: 0.6, fontWeight: 600, wordWrap: "break-word" }}>
                                 <span class="status-badge" style={{ display: "inline-block", width: "8px", height: "8px", background: "#f59e0b", borderRadius: "50%", marginRight: "6px" }}></span>
@@ -102,7 +256,7 @@ export default function Admin1() {
                                 Completed Today
                             </div>
                             <div style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "28px", color: "#8b5cf6", fontWeight: 900, marginBottom: "8px" }}>
-                                5
+                                {todaysSettlementCount}
                             </div>
                             <div style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "11px", color: "#0f172a", opacity: 0.6, fontWeight: 600, wordWrap: "break-word" }}>
                                 Successfully executed
@@ -114,7 +268,7 @@ export default function Admin1() {
                     <div class="fade-in" style={{ background: "#ffffff", padding: "28px", borderRadius: "16px", border: "2px solid #3b82f6", boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)", marginBottom: "32px" }}>
                         <h2 style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "24px", color: "#0f172a", fontWeight: 800, marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
                             <span style={{ fontSize: "28px" }}>👥</span>
-                            User Trading Activity
+                            User Trading Activity - Development pending
                         </h2>
 
                         <div class="mobile-scroll" style={{ overflowX: "auto" }}>
@@ -126,7 +280,7 @@ export default function Admin1() {
                                         <th style={{ padding: "16px", textAlign: "center", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Total Trades</th>
                                         <th style={{ padding: "16px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Today</th>
                                         <th style={{ padding: "16px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Yesterday</th>
-                                        <th style={{ padding: "16px", textAlign: "center", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Status</th>
+                                        {/* <th style={{ padding: "16px", textAlign: "center", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Status</th> */}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -173,7 +327,7 @@ export default function Admin1() {
                                         </td>
                                     </tr>
 
-                                    <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                    {/* <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                                         <td style={{ padding: "16px", textAlign: "center" }}>
                                             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "40px", height: "40px", background: "linear-gradient(135deg, #3b82f6, #10b981)", borderRadius: "10px", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "18px", color: "white", fontWeight: 800 }}>
                                                 2
@@ -339,7 +493,7 @@ export default function Admin1() {
                                                 active
                                             </span>
                                         </td>
-                                    </tr>
+                                    </tr> */}
                                 </tbody>
                             </table>
                         </div>
@@ -367,54 +521,57 @@ export default function Admin1() {
                                     </tr>
                                 </thead>
                                 <tbody>
-
-                                    <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                                        <td style={{ padding: "16px" }}>
-                                            <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#f59e0b", fontWeight: 700 }}>
-                                                ORD-001
-                                            </code>
-                                        </td>
-                                        <td style={{ padding: "16px" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#3b82f6", background: "#f8fafc", padding: "4px 8px", borderRadius: "4px" }}>
-                                                    0x742d...bEb1
+                                    {combinedOrders.map((v, e) =>
+                                        <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                            <td style={{ padding: "16px" }}>
+                                                <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#f59e0b", fontWeight: 700 }}>
+                                                    ORD-{v.id}
                                                 </code>
-                                                <button
-                                                    class="copy-btn"
-                                                    style={{ background: "#3b82f6", color: "white", border: "none", width: "28px", height: "28px", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
-                                                >
-                                                    📋
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: "16px", textAlign: "center" }}>
-                                            <span style={{ background: "#10b981", color: "white", padding: "6px 16px", borderRadius: "6px", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
-                                                buy
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "16px", textAlign: "right" }}>
-                                            <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#0f172a", fontWeight: 700 }}>
-                                                1,500
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "16px", textAlign: "right" }}>
-                                            <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#0f172a", fontWeight: 600 }}>
-                                                $0.0098
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "16px", textAlign: "right" }}>
-                                            <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#10b981", fontWeight: 700 }}>
-                                                $14.70
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "16px", textAlign: "right" }}>
-                                            <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#0f172a", opacity: 0.6, fontWeight: 600 }}>
-                                                2m ago
-                                            </span>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                            <td style={{ padding: "16px" }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                                    <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#3b82f6", background: "#f8fafc", padding: "4px 8px", borderRadius: "4px" }}>
+                                                        {formatAddress(v.user)}
+                                                    </code>
+                                                    <button
+                                                        onClick={() => { copyToClipboard(v.user) }}
+                                                        class="copy-btn"
+                                                        style={{ background: "#3b82f6", color: "white", border: "none", width: "28px", height: "28px", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
+                                                    >
+                                                        📋
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: "16px", textAlign: "center" }}>
+                                                <span style={{ background: !v._type ? "#10b981" : "#ef4444", color: "white", padding: "6px 16px", borderRadius: "6px", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
+                                                    {v._type ? "Sell" : "Buy"}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: "16px", textAlign: "right" }}>
+                                                <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#0f172a", fontWeight: 700 }}>
+                                                    {Number(formatEther(v.amount)) - Number(formatEther(v.amountFilled))}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: "16px", textAlign: "right" }}>
+                                                <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#0f172a", fontWeight: 600 }}>
+                                                    ${formatEther(v.price)}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: "16px", textAlign: "right" }}>
+                                                <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#10b981", fontWeight: 700 }}>
+                                                    ${(Number(formatEther(v.amount)) - Number(formatEther(v.amountFilled))) * Number(formatEther(v.price))}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: "16px", textAlign: "right" }}>
+                                                <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#0f172a", opacity: 0.6, fontWeight: 600 }}>
+                                                    {secondsToDHMSDiff(v.time)}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    )}
 
-                                    <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+
+                                    {/* <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                                         <td style={{ padding: "16px" }}>
                                             <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#f59e0b", fontWeight: 700 }}>
                                                 ORD-002
@@ -550,7 +707,7 @@ export default function Admin1() {
                                                 10m ago
                                             </span>
                                         </td>
-                                    </tr>
+                                    </tr> */}
                                 </tbody>
                             </table>
                         </div>
@@ -578,53 +735,56 @@ export default function Admin1() {
                                 </thead>
                                 <tbody>
 
-                                    <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                                        <td style={{ padding: "16px" }}>
-                                            <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#8b5cf6", fontWeight: 700 }}>
-                                                ORD-COMP-001
-                                            </code>
-                                        </td>
-                                        <td style={{ padding: "16px" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#3b82f6", background: "#f8fafc", padding: "4px 8px", borderRadius: "4px" }}>
-                                                    0x5F4E...F6E
+                                    {combinedOrdersFilled.map((v, e) =>
+                                        <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                            <td style={{ padding: "16px" }}>
+                                                <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#f59e0b", fontWeight: 700 }}>
+                                                    ORD-{v.id}
                                                 </code>
-                                                <button
-                                                    class="copy-btn"
-                                                    style={{ background: "#3b82f6", color: "white", border: "none", width: "28px", height: "28px", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
-                                                >
-                                                    📋
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: "16px", textAlign: "center" }}>
-                                            <span style={{ background: "#ef4444", color: "white", padding: "6px 16px", borderRadius: "6px", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
-                                                sell
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "16px", textAlign: "right" }}>
-                                            <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#0f172a", fontWeight: 700 }}>
-                                                3,200
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "16px", textAlign: "right" }}>
-                                            <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#0f172a", fontWeight: 600 }}>
-                                                $0.0101
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "16px", textAlign: "right" }}>
-                                            <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#10b981", fontWeight: 700 }}>
-                                                $32.32
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "16px", textAlign: "right" }}>
-                                            <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#0f172a", opacity: 0.6, fontWeight: 600 }}>
-                                                1h ago
-                                            </span>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                            <td style={{ padding: "16px" }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                                    <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#3b82f6", background: "#f8fafc", padding: "4px 8px", borderRadius: "4px" }}>
+                                                        {formatAddress(v.user)}
+                                                    </code>
+                                                    <button
+                                                        onClick={() => { copyToClipboard(v.user) }}
+                                                        class="copy-btn"
+                                                        style={{ background: "#3b82f6", color: "white", border: "none", width: "28px", height: "28px", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
+                                                    >
+                                                        📋
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: "16px", textAlign: "center" }}>
+                                                <span style={{ background: !v._type ? "#10b981" : "#ef4444", color: "white", padding: "6px 16px", borderRadius: "6px", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
+                                                    {v._type ? "Sell" : "Buy"}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: "16px", textAlign: "right" }}>
+                                                <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#0f172a", fontWeight: 700 }}>
+                                                    {Number(formatEther(v.amount))}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: "16px", textAlign: "right" }}>
+                                                <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#0f172a", fontWeight: 600 }}>
+                                                    ${formatEther(v.price)}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: "16px", textAlign: "right" }}>
+                                                <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#10b981", fontWeight: 700 }}>
+                                                    ${(Number(formatEther(v.amount)) ) * Number(formatEther(v.price))}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: "16px", textAlign: "right" }}>
+                                                <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#0f172a", opacity: 0.6, fontWeight: 600 }}>
+                                                    {secondsToDHMSDiff(v.time)}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    )}
 
-                                    <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                    {/* <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                                         <td style={{ padding: "16px" }}>
                                             <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#8b5cf6", fontWeight: 700 }}>
                                                 ORD-COMP-002
@@ -806,7 +966,7 @@ export default function Admin1() {
                                                 5h ago
                                             </span>
                                         </td>
-                                    </tr>
+                                    </tr> */}
                                 </tbody>
                             </table>
                         </div>

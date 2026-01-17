@@ -68,13 +68,13 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
                 // Transfer USDT from buyer to seller
                 require(
-                    USDT.transferFrom(buy.user, sale.user, totalUSDT),
+                    USDT.transfer(sale.user, totalUSDT),
                     "USDT transfer failed"
                 );
 
                 // Transfer HEXA from seller to buyer
                 require(
-                    HEXA.transferFrom(sale.user, buy.user, settleAmount),
+                    HEXA.transfer(buy.user, settleAmount),
                     "HEXA transfer failed"
                 );
 
@@ -99,6 +99,8 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             "insufficient allowance"
         );
 
+        USDT.transferFrom(msg.sender,address(this), requiredUSDT);
+
         UserBuyOrders.push(
             Order({
                 id: UserBuyOrders.length,
@@ -122,6 +124,8 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             HEXA.allowance(msg.sender, address(this)) >= _amount,
             "insufficient allowance"
         );
+
+                HEXA.transferFrom(msg.sender,address(this), _amount);
 
         UserSaleOrders.push(
             Order({

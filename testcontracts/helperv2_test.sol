@@ -74,7 +74,7 @@ contract Helperv2 is
         uint team;
         uint limit;
         uint levelUnlock;
-        uint8 directrequired;
+        uint8 future;
     }
 
     struct UserDetails {
@@ -143,6 +143,7 @@ contract Helperv2 is
     );
 
     uint public usersArrayIndex;
+    mapping(uint=>uint) public directLevelUnlock;
 
     constructor() {
         _disableInitializers();
@@ -157,11 +158,17 @@ contract Helperv2 is
         paymentToken = IERC20(_paymentToken);
         packageExpiry = 60 * 60 * 24 * 15;
         packages.push(Package(0, 2 ether, packageExpiry * 1, 0, 1, 1, 0));
-        packages.push(Package(1, 5 ether, packageExpiry * 1, 0, 3, 5, 2));
-        packages.push(Package(2, 10 ether, packageExpiry * 2, 10, 7, 10, 3));
-        packages.push(Package(3, 15 ether, packageExpiry * 3, 12, 11, 15, 4));
-        packages.push(Package(4, 20 ether, packageExpiry * 4, 14, 15, 20, 5)); //100 //90
-        packages.push(Package(5, 25 ether, packageExpiry * 5, 16, 20, 24, 6));
+        packages.push(Package(1, 5 ether, packageExpiry * 1, 0, 3, 5, 0));
+        packages.push(Package(2, 10 ether, packageExpiry * 2, 10, 7, 10, 0));
+        packages.push(Package(3, 15 ether, packageExpiry * 3, 12, 11, 15, 0));
+        packages.push(Package(4, 20 ether, packageExpiry * 4, 14, 15, 20, 0)); //100 //90
+        packages.push(Package(5, 25 ether, packageExpiry * 5, 16, 20, 24, 0));
+        directLevelUnlock[2]=5;
+        directLevelUnlock[3]=10;
+        directLevelUnlock[4]=15;
+        directLevelUnlock[5]=20;
+        directLevelUnlock[6]=24;
+
         timelimit = 60 * 60 * 24 * 45;
         helper = Ihelper(_helper);
         rateHexa = 100;
@@ -289,11 +296,13 @@ contract Helperv2 is
 
         for (uint i = 0; i < _uplines.length; i++) {
             address up = _uplines[i];
+
             bool cond = _type == 2 // Package Buy
                 ? users[up].direct.length >= 2 // trade
-                : userPackage[up].levelUnlock >= i &&
-                    checkActive(users[up].direct) >=
-                        userPackage[up].directrequired;
+                : userPackage[up].levelUnlock >= i && 
+                  directLevelUnlock[(checkActive(users[up].direct))] >= i;
+                 
+
             uint transactionType = _type == 1 ? 2 : 3;
             if (cond && incomeEligible(up)) {
                 paymentToken.transfer(up, _amount / levelD);
@@ -512,7 +521,7 @@ contract Helperv2 is
             packages[_package.id].team,
             packages[_package.id].limit,
             packages[_package.id].levelUnlock,
-            packages[_package.id].directrequired
+            packages[_package.id].future
         );
 
         // Storage pointer
