@@ -76,7 +76,7 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
                 // Calculate total USDT to transfer
                 uint totalUSDT = (settleAmount * sale.price) / 1e18;
-                uint _fee = totalUSDT * fee /100;
+                uint _fee = (totalUSDT * fee) / 100;
                 uint remaining = totalUSDT - _fee;
                 // Transfer USDT from buyer to seller
                 require(
@@ -141,6 +141,8 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function setBuyOrder(uint _amount) public {
         uint requiredUSDT = (_amount * price) / 1e18;
 
+        require(requiredUSDT >= 5 ether, "min order is $5");
+
         require(
             USDT.allowance(msg.sender, address(this)) >= requiredUSDT,
             "insufficient allowance"
@@ -167,6 +169,10 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function setSaleOrder(uint _amount) public {
+        uint usdValue = (_amount * price) / 1e18;
+
+        require(usdValue >= 5 ether, "min order is $5");
+
         require(
             HEXA.allowance(msg.sender, address(this)) >= _amount,
             "insufficient allowance"

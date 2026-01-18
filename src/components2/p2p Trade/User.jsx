@@ -187,13 +187,6 @@ export default function User() {
 
         try {
             setLoading(true);
-
-
-
-
-
-
-
             await executeContract({
                 config,
                 functionName: "approve",
