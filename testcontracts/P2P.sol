@@ -252,5 +252,10 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         orders.pop();
     }
 
+    function changeWallet(address _adminWallet, address _paymentToken) public onlyOwner {
+        adminWallet = _adminWallet;
+        HEXA = IERC20(_paymentToken);
+    }
+
     function _authorizeUpgrade(address newImpl) internal override onlyOwner {}
 }
