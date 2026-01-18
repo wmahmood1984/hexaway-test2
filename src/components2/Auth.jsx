@@ -1,7 +1,7 @@
 import { useAppKitAccount } from '@reown/appkit/react'
 import React, { useEffect, useState } from 'react'
 import ConnectButton from './ConnectButton';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { init, readName } from '../slices/contractSlice';
 import { helperAbi, helperAddress, web3 } from '../config';
@@ -14,7 +14,8 @@ export default function Auth({ setCreateActive, createActive }) {
 
     const [referrer, setReferrer] = useState(id)
 
-    const { User } = useSelector((state) => state.contract);
+
+    const { User,walletBalance } = useSelector((state) => state.contract);
 
     const dispatch = useDispatch()
 
@@ -45,72 +46,10 @@ export default function Auth({ setCreateActive, createActive }) {
         if (address) {
 
             const abc = async () => {
-
-
-                // const _package = await helperContract.methods.userPackage(address).call();
-
-                // let CreateList = await helperContract.methods.getNFTListed(address).call()
-
-
-                // let lastCreateTime
-                // if (CreateList.length === 0) {
-
-                //     lastCreateTime = await helperContract.methods.userJoiningTime(address).call();
-                // } else {
-                //     let lastCreate = CreateList[CreateList.length - 1];
-                //     lastCreateTime = await helperContract.methods.idPurchasedtime(lastCreate.id).call();
-                // }
-
-
-
-                // const currentTime = Math.floor(Date.now() / 1000);
-                // const timeDiff = currentTime - lastCreateTime;
-                // let requiredDiff;
-
-
-
-
-
-                // switch (_package.id) {   // <-- The condition goes here
-                //     case "1":         // checks if option === 1
-                //         requiredDiff = 9 * 24 * 60 * 60; // 7 days in seconds
-                //         break;
-                //     case "2":         // checks if option === 2
-                //         requiredDiff = 6 * 24 * 60 * 60; // 7 days in seconds
-                //         break;
-                //     case "3":         // checks if option === 3
-                //         requiredDiff = 5 * 24 * 60 * 60; // 7 days in seconds
-                //         break;
-                //     case "4":         // checks if option === 3
-                //         requiredDiff = 2 * 24 * 60 * 60; // 7 days in seconds
-                //         break;
-                //     case "5":         // checks if option === 3
-                //         requiredDiff = 1 * 24 * 60 * 60; // 7 days in seconds
-                //         break;
-                //     default:        // runs if none of the above match
-                //         console.log("Invalid option");
-                // }
-
-                // if (registered && isConnected && timeDiff >= requiredDiff) {
-                //     setCreateActive(true);
-                //     navigate("/create");
-                //     toast.success("Please create an NFT before proceeding.");
-                // }
-                // else 
-                    
-                    if (User?.registered && isConnected) {
+                if (User?.registered && isConnected) {
                     navigate("/");
                 }
-
-              //  console.log("nav", timeDiff);
-
-
-
-
-
             }
-
-
             abc()
 
         }
@@ -194,6 +133,14 @@ export default function Auth({ setCreateActive, createActive }) {
                                             class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-base"> 
                                             🔗 Connect Wallet </button> */}
                                         <ConnectButton referrer={referrer} />
+                             
+                                        {isConnected && <button
+                                        onClick={()=>{navigate("/p2p")}}
+                                        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-base"
+                                        
+                                        >
+                                        Buy Hexa</button>}
+                            
                                         <div class="relative">
                                             <div class="absolute inset-0 flex items-center">
                                                 <div class="w-full border-t border-gray-300"></div>
