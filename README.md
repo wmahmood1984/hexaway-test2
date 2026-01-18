@@ -20,7 +20,9 @@ admin distribution contracts
 10) p2p trade is being failed.
 11) show fee deuction in sale orders. 
 12) User list not working. 
-13) normalize the user trading activity in exchange admin. 
 
+
+done) normalize the user trading activity in exchange admin. 
+done) supply is 51 crore.
 
 

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetcherAbi, fetcherAddress, fetcherHelperv2, fetcherV2Abi, helperAbi, helperAddress, helperv2, helperv2Abi, packageKeys, web3 } from "../config";
-import { formatAddress, secondsToDMY } from "../utils/contractExecutor";
+import { formatAddress, formatWithCommas, secondsToDMY } from "../utils/contractExecutor";
 import toast from "react-hot-toast";
+import { formatEther } from "ethers";
 
 
 
@@ -9,7 +10,7 @@ import toast from "react-hot-toast";
 export default function UserListDemo() {
     const [users, setUsers] = useState();
     const [page, setPage] = useState(1);
-    const [Trades, setTrades] = useState(0)
+    const [Trades, setTrades] = useState()
     const [packageSelected, setPackageSelected] = useState("All")
     const [searchText, setSearchText] = useState("")
 
@@ -23,11 +24,11 @@ export default function UserListDemo() {
 
         const abc = async () => {
             const _users = await fetcherContract.methods.getUsers().call()
-          //  const _packages = helperContract.methods.getPackages().call()
+            console.log("user", _users)
             const now = Math.floor(Date.now() / 1000);
             const modifiedUsers = _users.map((v, e) => {
                 return ({
-                    ...v, packageName: packageKeys[v.data.packageId].name, packagePrice: packageKeys[v.packageId].dollar
+                    ...v, packageName: packageKeys[v.data.packageId].name, packagePrice: packageKeys[v.data.packageId].dollar
                     , active: Number(v.data.packageUpgraded) - now <= 60 * 60 * 24 * 45 ? "Active" : "Expired"
                 })
             })
@@ -76,15 +77,15 @@ export default function UserListDemo() {
 
     // }, []);
 
-    const addressToValue = (address) => {
-        if (Trades.length === 0) return "not found";
+    // const addressToValue = (address) => {
+    //     if (Trades.length === 0) return "not found";
 
-        const trade = Trades.filter(trade => trade.returnValues._user.toLowerCase() === address.toLowerCase());
-        const totalVolume = trade.reduce((acc, curr) => acc + Number(web3.utils.fromWei(curr.returnValues.amount, 'ether')), 0);
-        return Number(totalVolume).toFixed(4);
+    //     const trade = Trades.filter(trade => trade.returnValues._user.toLowerCase() === address.toLowerCase());
+    //     const totalVolume = trade.reduce((acc, curr) => acc + Number(web3.utils.fromWei(curr.returnValues.amount, 'ether')), 0);
+    //     return Number(totalVolume).toFixed(4);
 
 
-    }
+    // }
 
 
 
@@ -124,21 +125,21 @@ export default function UserListDemo() {
 
 
 
-const filteredUsers = useMemo(() => {
-    if (!users) return [];
+    const filteredUsers = useMemo(() => {
+        if (!users) return [];
 
-    const search = searchText?.toLowerCase().trim();
+        const search = searchText?.toLowerCase().trim();
 
-    return users.filter(u => {
-        const matchPackage =
-            packageSelected === "All" || u.packageName === packageSelected;
+        return users.filter(u => {
+            const matchPackage =
+                packageSelected === "All" || u.packageName === packageSelected;
 
-        const matchAddress =
-            !search || u._address?.toLowerCase().includes(search);
+            const matchAddress =
+                !search || u._address?.toLowerCase().includes(search);
 
-        return matchPackage && matchAddress;
-    });
-}, [users, packageSelected, searchText]);
+            return matchPackage && matchAddress;
+        });
+    }, [users, packageSelected, searchText]);
 
 
     const totalpages = users && Math.ceil(filteredUsers.length / pageSize);
@@ -146,7 +147,7 @@ const filteredUsers = useMemo(() => {
 
     const isLoading = !users ;
 
-console.log("users",users)
+    console.log("users", users)
 
 
 
@@ -180,7 +181,7 @@ console.log("users",users)
                         <input
                             type="text"
                             id="searchInput"
-                            onChange={(e)=>setSearchText(e.target.value)}
+                            onChange={(e) => setSearchText(e.target.value)}
                             placeholder="🔍 Search by address..."
                             class="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl border-2 transition-all focus:outline-none"
                             style={{ "border-color": "rgba(37, 99, 235, 0.2)", "background": "#ffffff", "color": "#0f172a", "padding-right": "80px" }}
@@ -392,7 +393,7 @@ console.log("users",users)
                                                     </span>
                                                 </td>
                                                 <td class="px-6 py-5" style={{ "font-size": "12.8px", "color": "#475569", "font-weight": "500", "white-space": "nowrap" }}>{secondsToDMY(user.joiningDate)}</td>
-                                                <td class="px-6 py-5 font-bold" style={{ "font-size": "14px", "color": "#10b981", "white-space": "nowrap" }}>${addressToValue(user._address)}</td>
+                                                <td class="px-6 py-5 font-bold" style={{ "font-size": "14px", "color": "#10b981", "white-space": "nowrap" }}>${formatWithCommas(formatEther(user.data.tradeXHours))}</td>
                                                 <td class="px-6 py-5">
                                                     <span class="px-4 py-2 rounded-lg font-bold inline-flex items-center gap-2" style={{ "background": user.active === "Active" ? "#10b981" : "#f87171", "color": "#ffffff", "box-shadow": "0 2px 8px rgba(16, 185, 129, 0.3)", "font-size": "12px", "white-space": "nowrap" }}>
                                                         <span style={{ "width": "5px", "height": "5px", "border-radius": "50%", "background": "#ffffff" }}></span>

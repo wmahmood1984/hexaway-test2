@@ -28,8 +28,17 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     IERC20 public USDT;
     IERC20 public HEXA;
     uint public price;
+    uint public fee;
+    address public adminWallet;
 
-    event Trades(address user, uint originalAmount, uint tradeAmount, uint time, bool _type);
+    event Trades(
+        address user,
+        uint originalAmount,
+        uint tradeAmount,
+        uint time,
+        bool _type
+    );
+    event Settle(address user, uint originalAmount, uint time, bool _type);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -40,8 +49,10 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         USDT = IERC20(0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9);
-        HEXA = IERC20(0x94698793068F41367720042B4792185742D9DaD0);
+        HEXA = IERC20(0x309D64381Ea67edbe9E09e719b398f0060AD4FCf);
         price = 0.01 ether;
+        fee = 5;
+        adminWallet = 0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF;
     }
 
     function settle() public {
@@ -65,10 +76,11 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
                 // Calculate total USDT to transfer
                 uint totalUSDT = (settleAmount * sale.price) / 1e18;
-
+                uint _fee = totalUSDT * fee /100;
+                uint remaining = totalUSDT - _fee;
                 // Transfer USDT from buyer to seller
                 require(
-                    USDT.transfer(sale.user, totalUSDT),
+                    USDT.transfer(sale.user, remaining),
                     "USDT transfer failed"
                 );
 
@@ -78,15 +90,50 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                     "HEXA transfer failed"
                 );
 
-                emit Trades(buy.user,buy.amount,settleAmount,block.timestamp,false);
-                emit Trades(sale.user,sale.amount,settleAmount,block.timestamp,true);
+                emit Trades(
+                    buy.user,
+                    buy.amount,
+                    settleAmount,
+                    block.timestamp,
+                    false
+                );
+                emit Trades(
+                    sale.user,
+                    sale.amount,
+                    settleAmount,
+                    block.timestamp,
+                    true
+                );
 
+                // Update filled amounts
                 // Update filled amounts
                 buy.amountFilled += settleAmount;
                 sale.amountFilled += settleAmount;
 
-                // If buy order fully filled, break inner loop
-                if (buy.amountFilled >= buy.amount) break;
+                // Emit Settle event if BUY order is fully filled
+                if (buy.amountFilled == buy.amount) {
+                    emit Settle(
+                        buy.user,
+                        buy.amount,
+                        block.timestamp,
+                        false // buy order
+                    );
+                }
+
+                // Emit Settle event if SALE order is fully filled
+                if (sale.amountFilled == sale.amount) {
+                    emit Settle(
+                        sale.user,
+                        sale.amount,
+                        block.timestamp,
+                        true // sale order
+                    );
+                }
+
+                // Stop matching if buy order is fully filled
+                if (buy.amountFilled >= buy.amount) {
+                    break;
+                }
             }
         }
     }
@@ -99,7 +146,7 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             "insufficient allowance"
         );
 
-        USDT.transferFrom(msg.sender,address(this), requiredUSDT);
+        USDT.transferFrom(msg.sender, address(this), requiredUSDT);
 
         UserBuyOrders.push(
             Order({
@@ -125,7 +172,7 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             "insufficient allowance"
         );
 
-                HEXA.transferFrom(msg.sender,address(this), _amount);
+        HEXA.transferFrom(msg.sender, address(this), _amount);
 
         UserSaleOrders.push(
             Order({

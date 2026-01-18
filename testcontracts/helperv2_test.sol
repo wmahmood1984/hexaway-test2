@@ -582,8 +582,9 @@ contract Helperv2 is
         return packages;
     }
 
-    function changeWallet(address _adminWallet) public onlyOwner {
+    function changeWallet(address _adminWallet, address _paymentToken) public onlyOwner {
         adminWallet = _adminWallet;
+        paymentToken = IERC20(_paymentToken);
     }
 
     function getUser(address _user) public view returns (User memory) {
@@ -695,7 +696,7 @@ interface IHelperV2 {
 
     function ticketIndex() external view returns (uint);
     function ticketMapping(uint) external view returns (ticket memory);
-    function userMapping(address) external view returns (User memory);
+    function getUser(address) external view returns (User memory);
     function usersArray(uint) external view returns (address);
     function usersArrayIndex() external view returns (uint);
     function userPackage(address) external view returns (Package memory);
@@ -708,7 +709,7 @@ contract DataFetcherUpgradeable is
 {
     IHelperV2 public helper;
 
-    address[] public oldUsers;
+    // address[] public oldUsers;
 
     struct UserDetails {
         uint userJoiningTime;
@@ -792,7 +793,7 @@ contract DataFetcherUpgradeable is
 
         for (uint i = 0; i < total; i++) {
             address userAddress = helper.usersArray(i);
-            IHelperV2.User memory u = helper.userMapping(userAddress);
+            IHelperV2.User memory u = helper.getUser(userAddress);
 
             users[i] = User({
                 referrer: u.referrer,
@@ -813,7 +814,7 @@ contract DataFetcherUpgradeable is
                     packageReferralBonus: u.data.packageReferralBonus,
                     selfTradingProfit: u.data.selfTradingProfit,
                     packageUpgraded: u.data.packageUpgraded,
-                    packageId: helper.userPackage(userAddress).id,
+                    packageId: 0,//helper.userPackage(userAddress).id,
                     future1: u.data.future1,
                     future2: u.data.future2,
                     tradeYHours: u.data.tradeYHours
