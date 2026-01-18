@@ -282,10 +282,10 @@ export default function Staking() {
                                                         <span style={{ fontSize: "32px" }}>{icon}</span>
                                                         <div>
                                                             <div style={{ fontSize: "16px", color: "#0f172a", fontWeight: "900" }}>
-                                                                {formatWithCommas(formatEther(v.amount))} Staking
+                                                                $ {formatWithCommas(formatEther(v.amount))} Staking
                                                             </div>
                                                             <div style={{ fontSize: "12px", color: "#0f172a", opacity: "0.7" }}>
-                                                                {150} days • {100}% APY
+                                                                {150} days 
                                                             </div>
                                                         </div>
                                                     </div>
@@ -293,9 +293,7 @@ export default function Staking() {
                                                         <div style={{ fontSize: "18px", color: "#8b5cf6", fontWeight: "900" }}>
                                                             {formatWithCommas(formatEther(v.amount))} HEXA
                                                         </div>
-                                                        <div style={{ fontSize: "12px", color: "red", fontWeight: "700" }}>
-                                                            {"statusText"}
-                                                        </div>
+
                                                     </div>
                                                 </div>
 

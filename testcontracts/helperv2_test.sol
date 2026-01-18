@@ -143,7 +143,7 @@ contract Helperv2 is
     );
 
     uint public usersArrayIndex;
-    mapping(uint=>uint) public directLevelUnlock;
+    mapping(uint => uint) public directLevelUnlock;
 
     constructor() {
         _disableInitializers();
@@ -163,11 +163,11 @@ contract Helperv2 is
         packages.push(Package(3, 15 ether, packageExpiry * 3, 12, 11, 15, 4));
         packages.push(Package(4, 20 ether, packageExpiry * 4, 14, 15, 20, 5)); //100 //90
         packages.push(Package(5, 25 ether, packageExpiry * 5, 16, 20, 24, 6));
-        directLevelUnlock[2]=5;
-        directLevelUnlock[3]=10;
-        directLevelUnlock[4]=15;
-        directLevelUnlock[5]=20;
-        directLevelUnlock[6]=24;
+        directLevelUnlock[2] = 5;
+        directLevelUnlock[3] = 10;
+        directLevelUnlock[4] = 15;
+        directLevelUnlock[5] = 20;
+        directLevelUnlock[6] = 24;
 
         timelimit = 60 * 60 * 24 * 45;
         helper = Ihelper(_helper);
@@ -285,6 +285,56 @@ contract Helperv2 is
         emit Upgrades(block.timestamp, amount, id, _user);
     }
 
+    // function processLevelIncome(
+    //     address[] memory _uplines,
+    //     uint _amount,
+    //     uint8 levelD,
+    //     uint8 _type,
+    //     uint _id
+    //  ) internal {
+    //     uint leftOver = 0;
+
+    //     for (uint i = 0; i < _uplines.length; i++) {
+    //         address up = _uplines[i];
+    //         uint levelUnlock = checkActive(users[up].direct) >=6? 24 :
+    //                            checkActive(users[up].direct) >=5? 20 :
+    //                            checkActive(users[up].direct) >=4? 15 :
+    //                            checkActive(users[up].direct) >=3? 10 :
+    //                             checkActive(users[up].direct) >=2? 5: 0;
+
+    //         bool cond = _type == 2 // Package Buy
+    //             ? users[up].direct.length >= 2 // trade
+    //             : userPackage[up].levelUnlock >= i &&
+    //               levelUnlock>=i;
+
+    //         uint transactionType = _type == 1 ? 2 : 3;
+    //         if (cond && incomeEligible(up)) {
+    //             paymentToken.transfer(up, _amount / levelD);
+    //             if (_type == 1) {
+    //                 users[up].data.tradingLevelBonus += (_amount * 60) / levelD;
+    //             } else {
+    //                 users[up].data.packageLevelBonus += _amount / levelD;
+    //             }
+
+    //             emit Incomes(
+    //                 block.timestamp,
+    //                 _amount / levelD,
+    //                 transactionType,
+    //                 up,
+    //                 i + 1,
+    //                 _id
+    //             );
+    //             leftOver++;
+    //         }
+    //     }
+
+    //     uint validLeftOver = leftOver > levelD ? levelD : leftOver;
+    //     paymentToken.transfer(
+    //         adminWallet,
+    //         (_amount * (levelD - validLeftOver)) / levelD
+    //     );
+    // }
+
     function processLevelIncome(
         address[] memory _uplines,
         uint _amount,
@@ -292,48 +342,76 @@ contract Helperv2 is
         uint8 _type,
         uint _id
     ) internal {
-        uint leftOver = 0;
+        uint paidCount = 0;
+        uint perLevelAmount = _amount / levelD;
 
         for (uint i = 0; i < _uplines.length; i++) {
             address up = _uplines[i];
-            uint levelUnlock = checkActive(users[up].direct) >=6? 24 :
-                               checkActive(users[up].direct) >=5? 20 :
-                               checkActive(users[up].direct) >=5? 15 :
-                               checkActive(users[up].direct) >=3? 10 :
-                                5; 
 
-            bool cond = _type == 2 // Package Buy
-                ? users[up].direct.length >= 2 // trade
-                : userPackage[up].levelUnlock >= i && 
-                  levelUnlock>=i;
-                 
+            // Level number is 1-based
+            uint currentLevel = i + 1;
 
-            uint transactionType = _type == 1 ? 2 : 3;
-            if (cond && incomeEligible(up)) {
-                paymentToken.transfer(up, _amount / levelD);
+            // Cache active directs (important for gas + correctness)
+            uint activeDirects = checkActive(users[up].direct);
+
+            // Level unlocked via active directs
+            uint directLevelUnlock1 = activeDirects >= 6
+                ? 24
+                : activeDirects >= 5
+                    ? 20
+                    : activeDirects >= 4
+                        ? 15
+                        : activeDirects >= 3
+                            ? 10
+                            : activeDirects >= 2
+                                ? 5
+                                : 0;
+
+            bool eligible;
+
+            if (_type == 2) {
+                // =========================
+                // PACKAGE BUY LEVEL INCOME
+                // =========================
+                eligible = users[up].direct.length >= 2;
+            } else {
+                // =========================
+                // TRADING LEVEL INCOME
+                // =========================
+                eligible =
+                    userPackage[up].levelUnlock >= currentLevel && // package-based
+                    directLevelUnlock1 >= currentLevel; // direct-based
+            }
+
+            if (eligible && incomeEligible(up)) {
+                paymentToken.transfer(up, perLevelAmount);
+
                 if (_type == 1) {
-                    users[up].data.tradingLevelBonus += (_amount * 60) / levelD;
+                    users[up].data.tradingLevelBonus += perLevelAmount;
                 } else {
-                    users[up].data.packageLevelBonus += _amount / levelD;
+                    users[up].data.packageLevelBonus += perLevelAmount;
                 }
 
                 emit Incomes(
                     block.timestamp,
-                    _amount / levelD,
-                    transactionType,
+                    perLevelAmount,
+                    _type == 1 ? 2 : 3,
                     up,
-                    i + 1,
+                    currentLevel,
                     _id
                 );
-                leftOver++;
+
+                paidCount++;
             }
         }
 
-        uint validLeftOver = leftOver > levelD ? levelD : leftOver;
-        paymentToken.transfer(
-            adminWallet,
-            (_amount * (levelD - validLeftOver)) / levelD
-        );
+        // Remaining amount goes to admin
+        uint validPaid = paidCount > levelD ? levelD : paidCount;
+        uint adminAmount = _amount - (perLevelAmount * validPaid);
+
+        if (adminAmount > 0) {
+            paymentToken.transfer(adminWallet, adminAmount);
+        }
     }
 
     function checkActive(
@@ -426,7 +504,6 @@ contract Helperv2 is
         users[msg.sender].data.userLimitUtilized++;
         users[msg.sender].data.userTradingTime = block.timestamp;
         users[msg.sender].data.tradeXHours += amount;
-        
 
         if (
             block.timestamp - users[msg.sender].data.userTradingLimitTime >
@@ -435,7 +512,9 @@ contract Helperv2 is
             // Reset after 3 minutes
             users[msg.sender].data.userTradingLimitTime = block.timestamp;
             users[msg.sender].data.userLimitUtilized = 0;
-            users[msg.sender].data.tradeYHours = users[msg.sender].data.tradeXHours;
+            users[msg.sender].data.tradeYHours = users[msg.sender]
+                .data
+                .tradeXHours;
             users[msg.sender].data.tradeXHours = 0;
         }
 
@@ -507,7 +586,7 @@ contract Helperv2 is
         adminWallet = _adminWallet;
     }
 
-    function getUser(address _user) public view returns(User memory){
+    function getUser(address _user) public view returns (User memory) {
         return users[_user];
     }
 
@@ -737,29 +816,27 @@ contract DataFetcherUpgradeable is
                     packageId: helper.userPackage(userAddress).id,
                     future1: u.data.future1,
                     future2: u.data.future2,
-                    tradeYHours:u.data.tradeYHours
+                    tradeYHours: u.data.tradeYHours
                 })
             });
         }
     }
 
-
-    function getTickets(
-        
-    ) public view returns (IHelperV2.ticket[] memory) {
+    function getTickets() public view returns (IHelperV2.ticket[] memory) {
         uint totalTickets = helper.ticketIndex();
 
         // First pass: count matching tickets
-                // Allocate exact-sized array
-        IHelperV2.ticket[] memory Tickets = new IHelperV2.ticket[](totalTickets);
+        // Allocate exact-sized array
+        IHelperV2.ticket[] memory Tickets = new IHelperV2.ticket[](
+            totalTickets
+        );
 
         // Second pass: fill array
         for (uint i = 0; i < totalTickets; i++) {
             IHelperV2.ticket memory tx1 = helper.ticketMapping(i);
 
-                Tickets[i] = tx1;
-            }
-        
+            Tickets[i] = tx1;
+        }
 
         return Tickets;
     }

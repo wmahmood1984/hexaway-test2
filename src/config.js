@@ -6071,9 +6071,9 @@ export const fetcherAddress = //"0x93e4A68CEDD7f7676C7e933eBE61F6416344D61E" // 
 "0x586712e122fDbF55CF55e75267F95F6DadA8d662"
 
 export const hexaTokenAdd = "0x94698793068F41367720042B4792185742D9DaD0"
-export const helperv2 = "0x7639Ea7933bA429C1ea14aCf6f3aC2CF2906d95A"
+export const helperv2 = "0xE1aaF570D9dAd51Dc43bee67B169810AD2B48c46"
 export const P2PAdd = "0xD24a760aed23C450EE939F2d128Cc86C0AA4E3B8"
-export const fetcherHelperv2 = "0xbE68C45bEC969534f41B5F56d25Fe2F1cF5E7D09"
+export const fetcherHelperv2 = "0x726F1C74202DAaD403F4aFE4747A2726Aa631448"
 export const stakingV2Add = "0x3cAd49255dcD8933A309d771A0Abad9D07003601"
 
 export const mlmcontractaddressImplementation =
