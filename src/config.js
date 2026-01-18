@@ -6309,9 +6309,9 @@ export const fetcherAddress = //"0x93e4A68CEDD7f7676C7e933eBE61F6416344D61E" // 
 
 export const hexaTokenAdd = 
 "0x309D64381Ea67edbe9E09e719b398f0060AD4FCf"//"0x94698793068F41367720042B4792185742D9DaD0"
-export const helperv2 = "0xE1aaF570D9dAd51Dc43bee67B169810AD2B48c46"
+export const helperv2 = "0xd3120EF4eFA25ABE521761D3aEC8c7D87bAc5d5f"
 export const P2PAdd = "0x0115b19f4B9Cc29065E4ce5D3dF086F340413018"
-export const fetcherHelperv2 = "0xeC1b4ceC43a00134Ea571B146d3f2fcc24A7704a"
+export const fetcherHelperv2 = "0xF89D8125a94ed0eb30C837d978a8Af2a54e61F2a"
 export const stakingV2Add = "0x3cAd49255dcD8933A309d771A0Abad9D07003601"
 export const priceOracleAdd = "0x6176417d8Ab5232175FFEa27b26b2dCeDf09376B"
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { executeContract, formatWithCommas, secondsToDMY } from '../utils/contractExecutor';
 import { formatEther, parseEther } from 'ethers';
-import { bulkAddAbi, bulkContractAdd, fetcherAbi, fetcherAddress, fetcherHelperv2, fetcherV2Abi, helperAbi, helperAddress, helperContractV2, helperv2, helperv2Abi, HexaContract, testweb3, web3 } from '../config';
+import { bulkAddAbi, bulkContractAdd, fetcherAbi, fetcherAddress, fetcherHelperv2, fetcherV2Abi, helperAbi, helperAddress, helperContractV2, helperv2, helperv2Abi, HexaContract, priceOracleContractR, testweb3, web3 } from '../config';
 import { NFT } from './NFT';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppKitAccount } from '@reown/appkit/react';
@@ -28,10 +28,11 @@ export default function Trade({ setCreateActive }) {
     const [showMessage, setShowMessage] = useState(false)
     const [loading, setLoading] = useState(false)
     const [ticketIndex, setTicketIndex] = useState()
+    const [price, setPrice] = useState(0)
 
     const helperContract = new web3.eth.Contract(helperv2Abi, helperv2)
     const fetcherContract = new web3.eth.Contract(fetcherV2Abi, fetcherHelperv2)
-    const saveContract = new testweb3.eth.Contract(bulkAddAbi, bulkContractAdd);
+
 
     useEffect(() => {
 
@@ -48,15 +49,19 @@ export default function Trade({ setCreateActive }) {
 
         const _index = await helperContract.methods.ticketIndex().call()
         setTicketIndex(_index)
+
+        const _price = await priceOracleContractR.methods.price().call()
+
+        setPrice(formatEther(_price))
     }
 
     const now = new Date().getTime() / 1000
 
-    console.log("object", User);
+
     const revisedLimitUtilized =
         now - Number(User.data.userTradingLimitTime) > 60 * 30 ? 0 : User.data.userLimitUtilized;
 
-
+            console.log("object", price);
     const canBuy = () => {
         const nowSec = Math.floor(Date.now() / 1000); // current time in seconds
 
@@ -67,7 +72,7 @@ export default function Trade({ setCreateActive }) {
         const remainingLimit = Number(Package.limit) - Number(revisedLimitUtilized);
 
         // 3️⃣ Calculate NFT total cost (price + 7%)
-        const nftValue = 600
+        const nftValue = 6 * 1 / Number(price)
 
         // 4️⃣ Now check both conditions sequentially
         if (!packageValid) {
@@ -76,12 +81,9 @@ export default function Trade({ setCreateActive }) {
                 msg: "Your package is expired.",
             };
         }
-        console.log("object", walletBalance, nftValue);
+        console.log("object", walletBalance, nftValue, price);
 
-        console.log({
-            "package limit": Number(formatEther(Package.limit))
-            , "limit utilized": revisedLimitUtilized, "nft value": nftValue + 50
-        });
+
 
         if (remainingLimit == 0) {
             return {
@@ -145,14 +147,14 @@ export default function Trade({ setCreateActive }) {
             return
         }
 
-        const value = "600"
+        const value = 6 * 1 / Number(price)
 
         try {
             setLoading(true);
             await executeContract({
                 config,
                 functionName: "approve",
-                args: [helperv2, parseEther(value)],
+                args: [helperv2, parseEther(value.toString())],
                 contract: HexaContract,
                 onSuccess: () => handleTrade2(trade, id),
                 onError: () => {
@@ -320,7 +322,7 @@ export default function Trade({ setCreateActive }) {
                         <main style={{ maxWidth: "1600px", margin: "0 auto", padding: "40px 24px" }}>
 
                             <header
-                                disabled={tradeDisabled} 
+                                disabled={tradeDisabled}
                                 onClick={() => handleTrade("trade", null)}
                                 style={{
                                     fontSize: "50px",
@@ -330,7 +332,7 @@ export default function Trade({ setCreateActive }) {
                                     margin: "0 auto 50px auto",   // 👈 centers horizontally
                                     padding: "10px 10px",
                                     borderRadius: "24px",
-                                    background: !tradeDisabled ? "linear-gradient(135deg, #6366f1, #10b981)":"grey",
+                                    background: !tradeDisabled ? "linear-gradient(135deg, #6366f1, #10b981)" : "grey",
                                     boxShadow: "0 20px 60px rgba(99, 102, 241, 0.3)",
                                     animation: "slideUp 0.5s ease-out",
                                     cursor: "pointer"
@@ -392,8 +394,9 @@ export default function Trade({ setCreateActive }) {
                             <div class="list-container">
                                 {pendingTrades.map((v, e) =>
                                     <div class="token-card token-row" style={{
-                                        marginBottom:"20px",
-                                        background: "#ffffff", border: "2px solid rgba(99, 102, 241, 0.3)", borderRadius: "16px", padding: "20px 28px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", animationDelay: "0s", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
+                                        marginBottom: "20px",
+                                        background: "#ffffff", border: "2px solid rgba(99, 102, 241, 0.3)", borderRadius: "16px", padding: "20px 28px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", animationDelay: "0s", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px"
+                                    }}>
 
                                         <div style={{ flex: "0 0 120px", minWidth: 0 }}>
                                             <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Token ID</div>

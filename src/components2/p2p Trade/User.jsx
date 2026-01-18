@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import "./User.css"
 import { useAppKitAccount } from '@reown/appkit/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { erc20abi, erc20Add, HexaContract, P2PAbi, P2PAdd, P2PContract, usdtContract, web3 } from '../../config';
+import { erc20abi, erc20Add, HexaContract, P2PAbi, P2PAdd, P2PContract, priceOracleContractR, usdtContract, web3 } from '../../config';
 import { executeContract, formatWithCommas, secondsToDMY } from '../../utils/contractExecutor';
 import { formatEther, parseEther } from 'ethers';
 import { useConfig } from 'wagmi';
@@ -46,6 +46,9 @@ export default function User() {
             const _fee = await P2PContract1.methods.fee().call()
             console.log("fee", _fee)
             setFee(_fee)
+
+            const _price = await priceOracleContractR.methods.price().call()
+            setPrice(formatEther(_price))
 
         }
 
@@ -129,7 +132,7 @@ export default function User() {
 
 
 
-            const price = "0.01"; // must match contract price
+            ; // must match contract price
             const requiredUSDT = (
                 BigInt(parseEther(buyAmount)) * BigInt(parseEther(price))
             ) / BigInt(parseEther("1"));
