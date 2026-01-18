@@ -6067,6 +6067,236 @@ export const stakingV2Abi = [
 	}
 ]
 
+export const priceOracleAbi = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "target",
+				"type": "address"
+			}
+		],
+		"name": "AddressEmptyCode",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "implementation",
+				"type": "address"
+			}
+		],
+		"name": "ERC1967InvalidImplementation",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "ERC1967NonPayable",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "FailedCall",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "InvalidInitialization",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "NotInitializing",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnableInvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "OwnableUnauthorizedAccount",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "UUPSUnauthorizedCallContext",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "slot",
+				"type": "bytes32"
+			}
+		],
+		"name": "UUPSUnsupportedProxiableUUID",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint64",
+				"name": "version",
+				"type": "uint64"
+			}
+		],
+		"name": "Initialized",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "implementation",
+				"type": "address"
+			}
+		],
+		"name": "Upgraded",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newImplementation",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "price",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "proxiableUUID",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "UPGRADE_INTERFACE_VERSION",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
+
 export const helperAddress = //"0x7d8893388408923708493bAd6704F0e6BC62a69e"  // Implementation 0x6C41D5bDC97714d50332766F58dE42a243942264  2nd implementation 0xA84B727E7E37f5e5C7FEE90c709a0024c97AE926 3rd implementaiton 0xd6C4B6B2a176D5de81616Ab80Ab66fd7e3A7199A 4th Implementation 0xe074612D53953e12e369Bf77d6867e9bdb114Deb  5th implementation 0xA604897348F618f6935dFa62d6f6fac5727345B8// 6th Implementaiton 0x9d73bE241167Fc25875205a116644D169B408616  7th Implementation 0x955c2cda11d3c4c0315eA85A48cD881B10d9293A
 "0xF0c46668EaA1D36f61e66da0E8F23d7375cD838b"//
 
@@ -6083,6 +6313,7 @@ export const helperv2 = "0xE1aaF570D9dAd51Dc43bee67B169810AD2B48c46"
 export const P2PAdd = "0x0115b19f4B9Cc29065E4ce5D3dF086F340413018"
 export const fetcherHelperv2 = "0xeC1b4ceC43a00134Ea571B146d3f2fcc24A7704a"
 export const stakingV2Add = "0x3cAd49255dcD8933A309d771A0Abad9D07003601"
+export const priceOracleAdd = "0x6176417d8Ab5232175FFEa27b26b2dCeDf09376B"
 
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
@@ -6716,6 +6947,13 @@ export const admin = "0xB066Ce4653576C310e9A8502e269fc54E32B28ab"  //bulk / list
 export const p2pContractR = new web3.eth.Contract(P2PAbi,P2PAdd)
 export const stakinvV2ContractR = new web3.eth.Contract(stakingV2Abi,stakingV2Add)
 export const USDTContractR = new web3.eth.Contract(erc20abi,erc20Add)
+
+export const priceOracleContractR = new web3.eth.Contract(priceOracleAbi,priceOracleAdd)
+
+export const priceOracleContract = {
+	address: priceOracleAdd,
+	abi: priceOracleAbi,
+};
 
 export const mlmContract = {
 	address: mlmcontractaddress,
