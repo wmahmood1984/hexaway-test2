@@ -6968,6 +6968,7 @@ export const admin = "0xB066Ce4653576C310e9A8502e269fc54E32B28ab"  //bulk / list
 export const p2pContractR = new web3.eth.Contract(P2PAbi,P2PAdd)
 export const stakinvV2ContractR = new web3.eth.Contract(stakingV2Abi,stakingV2Add)
 export const USDTContractR = new web3.eth.Contract(erc20abi,erc20Add)
+export const HEXAContractR = new web3.eth.Contract(erc20abi,hexaTokenAdd)
 
 export const priceOracleContractR = new web3.eth.Contract(priceOracleAbi,priceOracleAdd)
 

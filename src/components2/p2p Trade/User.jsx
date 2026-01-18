@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import "./User.css"
 import { useAppKitAccount } from '@reown/appkit/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { erc20abi, erc20Add, HexaContract, P2PAbi, P2PAdd, P2PContract, priceOracleContractR, usdtContract, web3 } from '../../config';
+import { erc20abi, erc20Add, HexaContract, HEXAContractR, P2PAbi, P2PAdd, P2PContract, priceOracleContractR, usdtContract, web3 } from '../../config';
 import { executeContract, formatWithCommas, secondsToDMY } from '../../utils/contractExecutor';
 import { formatEther, parseEther } from 'ethers';
 import { useConfig } from 'wagmi';
@@ -10,7 +10,7 @@ import { readName } from '../../slices/contractSlice';
 import toast from 'react-hot-toast';
 
 export default function User() {
-    const { walletBalance,
+    const {
         status, error
     } = useSelector((state) => state.contract);
     const { address } = useAppKitAccount();
@@ -21,8 +21,9 @@ export default function User() {
     const [usdtBalance, setUsdtBalance] = useState(0)
 
     const [sellAmount, setSellAmount] = useState()
+    const [walletBalance, setWalletBalance] = useState(0)
     const [price, setPrice] = useState(0.01)
-    const [buyAmount, setBuyAmount] = useState(5/price)
+    const [buyAmount, setBuyAmount] = useState(5 / price)
     const [loading, setLoading] = useState(false)
     const [buyOrders, setBuyOrders] = useState()
     const [fee, setFee] = useState(0)
@@ -45,11 +46,14 @@ export default function User() {
             setSellOrders(_sellOrders)
 
             const _fee = await P2PContract1.methods.fee().call()
-            console.log("fee", _fee)
+
             setFee(_fee)
 
             const _price = await priceOracleContractR.methods.price().call()
             setPrice(formatEther(_price))
+            const _walletBalance = await HEXAContractR.methods.balanceOf(address).call()
+                        console.log("fee", _walletBalance)
+            setWalletBalance(formatEther(_walletBalance))
 
         }
 
@@ -126,9 +130,9 @@ export default function User() {
 
 
     const handleBuyOrder = async (id) => {
-        if(buyAmount * price < 5 ){
+        if (buyAmount * price < 5) {
             toast.error("Purchase amount cannot be less than 5$")
-            return 
+            return
         }
 
         try {
@@ -190,9 +194,9 @@ export default function User() {
 
 
     const handleSale = async (id) => {
-        if(sellAmount * price < 5 ){
+        if (sellAmount * price < 5) {
             toast.error("Sale amount cannot be less than 5$")
-            return 
+            return
         }
 
         try {
@@ -252,7 +256,7 @@ export default function User() {
     const saleOrders1 = sellOrders && sellOrders.filter(v => Number(formatEther(v.amount)) > Number(formatEther(v.amountFilled)))
     const myTrades = Trades && Trades.filter(v => v.returnValues.user.toLowerCase() === address.toLowerCase())
 
-    console.log("Trades", fee);
+  
 
 
     if (isLoading) {
@@ -421,7 +425,7 @@ export default function User() {
                                         </div>
                                     </div>
 
-                                   <div style={{ marginBottom: "16px" }}>
+                                    <div style={{ marginBottom: "16px" }}>
                                         <label style={{
                                             display: "block",
                                             fontFamily: "'Poppins', system-ui, sans-serif",
@@ -628,10 +632,10 @@ export default function User() {
                                             Total (USDT)
                                         </div>
                                         <div class="stat-value" style={{ fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "22px", color: "#ef4444", fontWeight: 800 }}>
-                                            {sellAmount ? Number(sellAmount * price * (1-fee/100)).toFixed(2) : 0}
+                                            {sellAmount ? Number(sellAmount * price * (1 - fee / 100)).toFixed(2) : 0}
                                         </div>
                                         <p
-                                        style={{fontSize:"10px"}}
+                                            style={{ fontSize: "10px" }}
                                         >{fee}% fee will be applicable on sale</p>
                                     </div>
 
@@ -704,48 +708,7 @@ export default function User() {
                                     }
 
 
-                                    {/* <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(239, 68, 68, 0.2)", boxShadow: "0 2px 8px rgba(239, 68, 68, 0.05)", borderLeft: "3px solid #ef4444" }}>
-                                        <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
-                                            <div>
-                                                <span style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
-                                                    sell
-                                                </span>
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#ef4444", fontWeight: 700 }}>
-                                                0.01
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
-                                                150.0000 HEXA
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>
-                                                1.52 USDT
-                                            </div>
-                                            <div style={{ color: "#0f172a", opacity: 0.5, fontSize: "12px", fontWeight: 500 }}>
-                                                8:45 AM
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.05)", borderLeft: "3px solid #10b981" }}>
-                                        <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
-                                            <div>
-                                                <span style={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
-                                                    buy
-                                                </span>
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#10b981", fontWeight: 700 }}>
-                                                0.01
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#0f172a", fontWeight: 600 }}>
-                                                500.0000 HEXA
-                                            </div>
-                                            <div class="stat-value" style={{ color: "#0f172a", opacity: 0.7, fontWeight: 500 }}>
-                                                4.90 USDT
-                                            </div>
-                                            <div style={{ color: "#0f172a", opacity: 0.5, fontSize: "12px", fontWeight: 500 }}>
-                                                7:30 AM
-                                            </div>
-                                        </div>
-                                    </div> */}
+
                                 </div>
                             </div>
                         </div>
