@@ -24,8 +24,12 @@ export default function User() {
     const [price, setPrice] = useState(0.01)
     const [loading, setLoading] = useState(false)
     const [buyOrders, setBuyOrders] = useState()
+    const [fee, setFee] = useState(0)
     const [sellOrders, setSellOrders] = useState()
     const [Trades, setTrades] = useState()
+    const [buyPercent, setBuyPercent] = useState(0);
+    const [sellPercent, setSellPercent] = useState(0);
+
 
     useEffect(() => {
 
@@ -39,7 +43,9 @@ export default function User() {
             setBuyOrders(_buyOrders)
             setSellOrders(_sellOrders)
 
-
+            const _fee = await P2PContract1.methods.fee().call()
+            console.log("fee", _fee)
+            setFee(_fee)
 
         }
 
@@ -243,7 +249,7 @@ export default function User() {
     const saleOrders1 = sellOrders && sellOrders.filter(v => Number(formatEther(v.amount)) > Number(formatEther(v.amountFilled)))
     const myTrades = Trades && Trades.filter(v => v.returnValues.user.toLowerCase() === address.toLowerCase())
 
-    console.log("Trades", Trades);
+    console.log("Trades", fee);
 
 
     if (isLoading) {
@@ -412,7 +418,7 @@ export default function User() {
                                         </div>
                                     </div>
 
-                                    <div style={{ marginBottom: "16px" }}>
+                                    {/* <div style={{ marginBottom: "16px" }}>
                                         <label style={{ display: "block", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px", color: "#0f172a", fontWeight: 600, marginBottom: "8px" }}>
                                             Amount (HEXA)
                                         </label>
@@ -436,7 +442,77 @@ export default function User() {
                                                 MAX
                                             </button>
                                         </div>
+                                    </div> */}<div style={{ marginBottom: "16px" }}>
+                                        <label style={{
+                                            display: "block",
+                                            fontFamily: "'Poppins', system-ui, sans-serif",
+                                            fontSize: "14px",
+                                            color: "#0f172a",
+                                            fontWeight: 600,
+                                            marginBottom: "8px"
+                                        }}>
+                                            Amount (HEXA)
+                                        </label>
+
+                                        <input
+                                            value={(buyAmount)}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setBuyAmount(value);
+
+                                                if (!value || !price) {
+                                                    setBuyPercent(0);
+                                                    return;
+                                                }
+
+                                                const usedUSDT = value * price;
+                                                const percent = (usedUSDT / Number(formatEther(usdtBalance))) * 100;
+                                                setBuyPercent(Math.min(100, Math.max(0, percent)));
+                                            }}
+                                            type="number"
+                                            step="0.0001"
+                                            placeholder="Enter amount"
+                                            style={{
+                                                width: "100%",
+                                                padding: "14px 16px",
+                                                border: "2px solid rgba(16, 185, 129, 0.3)",
+                                                borderRadius: "10px",
+                                                fontFamily: "'Poppins', system-ui, sans-serif",
+                                                fontSize: "15px",
+                                                fontWeight: 600
+                                            }}
+                                        />
+
+                                        {/* Slider */}
+                                        <div style={{ marginTop: "14px" }}>
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="100"
+                                                value={buyPercent}
+                                                onChange={(e) => {
+                                                    const percent = Number(e.target.value);
+                                                    setBuyPercent(percent);
+
+                                                    const usdt = Number(formatEther(usdtBalance));
+                                                    const amount = ((usdt * percent) / 100) / price;
+                                                    setBuyAmount(amount.toFixed(4));
+                                                }}
+                                                style={{ width: "100%" }}
+                                            />
+
+                                            <div style={{
+                                                marginTop: "6px",
+                                                fontSize: "12px",
+                                                fontWeight: 700,
+                                                color: "#10b981",
+                                                textAlign: "right"
+                                            }}>
+                                                {buyPercent.toFixed(0)}%
+                                            </div>
+                                        </div>
                                     </div>
+
 
                                     <div style={{ marginBottom: "20px", padding: "16px", background: "rgba(16, 185, 129, 0.1)", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
                                         <div style={{ fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "12px", color: "#0f172a", opacity: 0.7, marginBottom: "6px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
@@ -465,14 +541,84 @@ export default function User() {
                                 </h3>
 
                                 <div>
-                                    <div style={{ marginBottom: "16px" }}>
+                                    {/* <div style={{ marginBottom: "16px" }}>
                                         <label style={{ display: "block", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px", color: "#0f172a", fontWeight: 600, marginBottom: "8px" }}>
                                             Price (USDT) - Market Price
                                         </label>
                                         <div style={{ width: "100%", padding: "14px 16px", border: "2px solid rgba(239, 68, 68, 0.3)", borderRadius: "10px", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "15px", fontWeight: 700, background: "rgba(239, 68, 68, 0.05)", color: "#ef4444" }}>
                                             {price}
                                         </div>
+                                    </div> */}
+
+                                    <div style={{ marginBottom: "16px" }}>
+                                        <label style={{
+                                            display: "block",
+                                            fontFamily: "'Poppins', system-ui, sans-serif",
+                                            fontSize: "14px",
+                                            color: "#0f172a",
+                                            fontWeight: 600,
+                                            marginBottom: "8px"
+                                        }}>
+                                            Amount (HEXA)
+                                        </label>
+
+                                        <input
+                                            value={sellAmount}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setSellAmount(value);
+
+                                                if (!value || !walletBalance) {
+                                                    setSellPercent(0);
+                                                    return;
+                                                }
+
+                                                const percent = (value / walletBalance) * 100;
+                                                setSellPercent(Math.min(100, Math.max(0, percent)));
+                                            }}
+                                            type="number"
+                                            step="0.0001"
+                                            placeholder="Enter amount"
+                                            style={{
+                                                width: "100%",
+                                                padding: "14px 16px",
+                                                border: "2px solid rgba(239, 68, 68, 0.3)",
+                                                borderRadius: "10px",
+                                                fontFamily: "'Poppins', system-ui, sans-serif",
+                                                fontSize: "15px",
+                                                fontWeight: 600
+                                            }}
+                                        />
+
+                                        {/* Slider */}
+                                        <div style={{ marginTop: "14px" }}>
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="100"
+                                                value={sellPercent}
+                                                onChange={(e) => {
+                                                    const percent = Number(e.target.value);
+                                                    setSellPercent(percent);
+
+                                                    const amount = (walletBalance * percent) / 100;
+                                                    setSellAmount(amount.toFixed(4));
+                                                }}
+                                                style={{ width: "100%" }}
+                                            />
+
+                                            <div style={{
+                                                marginTop: "6px",
+                                                fontSize: "12px",
+                                                fontWeight: 700,
+                                                color: "#ef4444",
+                                                textAlign: "right"
+                                            }}>
+                                                {sellPercent.toFixed(0)}%
+                                            </div>
+                                        </div>
                                     </div>
+
 
                                     <div style={{ marginBottom: "16px" }}>
                                         <label style={{ display: "block", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px", color: "#0f172a", fontWeight: 600, marginBottom: "8px" }}>
@@ -503,8 +649,11 @@ export default function User() {
                                             Total (USDT)
                                         </div>
                                         <div class="stat-value" style={{ fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "22px", color: "#ef4444", fontWeight: 800 }}>
-                                            {sellAmount ? sellAmount * price : 0}
+                                            {sellAmount ? Number(sellAmount * price * (1-fee/100)).toFixed(2) : 0}
                                         </div>
+                                        <p
+                                        style={{fontSize:"10px"}}
+                                        >{fee}% fee will be applicable on sale</p>
                                     </div>
 
                                     <button
