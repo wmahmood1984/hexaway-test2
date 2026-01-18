@@ -127,6 +127,36 @@ export default function ExchangeAdmin() {
 
 
 
+    function formatUserWiseTrades(trades) {
+        const userMap = {};
+
+        trades.forEach(trade => {
+            const user = trade.user.toLowerCase();
+            const amount = BigInt(trade.amount);
+
+            if (!userMap[user]) {
+                userMap[user] = {
+                    walletAddress: trade.user,
+                    totalTrades: 0,
+                    amountTraded: 0n
+                };
+            }
+
+            userMap[user].totalTrades += 1;
+            userMap[user].amountTraded += amount;
+        });
+
+        return Object.values(userMap).map((item, index) => ({
+            "SNo": index + 1,
+            "Address": item.walletAddress,
+            "TotalTrades": item.totalTrades,
+            "AmountTraded": formatEther(item.amountTraded.toString())
+        }));
+    }
+
+
+
+
 
     if (isLoading) {
         // show a waiting/loading screen
@@ -153,7 +183,8 @@ export default function ExchangeAdmin() {
 
     const combinedOrders = [...buyOrders, ...saleOrders].filter(t => Number(formatEther(t.amount)) > Number(formatEther(t.amountFilled)))
     const combinedOrdersFilled = [...buyOrders, ...saleOrders].filter(t => Number(formatEther(t.amount)) == Number(formatEther(t.amountFilled)))
-    console.log({ combinedOrders })
+const userWiseArray = formatUserWiseTrades([...buyOrders,...saleOrders]);
+console.log(userWiseArray);
 
     return (
         <div>
@@ -268,7 +299,7 @@ export default function ExchangeAdmin() {
                     <div class="fade-in" style={{ background: "#ffffff", padding: "28px", borderRadius: "16px", border: "2px solid #3b82f6", boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)", marginBottom: "32px" }}>
                         <h2 style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "24px", color: "#0f172a", fontWeight: 800, marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
                             <span style={{ fontSize: "28px" }}>👥</span>
-                            User Trading Activity - Development pending
+                            User Trading Activity
                         </h2>
 
                         <div class="mobile-scroll" style={{ overflowX: "auto" }}>
@@ -278,25 +309,26 @@ export default function ExchangeAdmin() {
                                         <th style={{ padding: "16px", textAlign: "center", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>S.No</th>
                                         <th style={{ padding: "16px", textAlign: "left", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Wallet Address</th>
                                         <th style={{ padding: "16px", textAlign: "center", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Total Trades</th>
-                                        <th style={{ padding: "16px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Today</th>
-                                        <th style={{ padding: "16px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Yesterday</th>
+                                        <th style={{ padding: "16px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Total Amount</th>
+                                        {/* <th style={{ padding: "16px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Yesterday</th> */}
                                         {/* <th style={{ padding: "16px", textAlign: "center", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "12px", color: "#0f172a", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Status</th> */}
                                     </tr>
                                 </thead>
                                 <tbody>
-
-                                    <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                            {userWiseArray.map((v,e)=>
+                            <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                                         <td style={{ padding: "16px", textAlign: "center" }}>
                                             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "40px", height: "40px", background: "linear-gradient(135deg, #3b82f6, #10b981)", borderRadius: "10px", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "18px", color: "white", fontWeight: 800 }}>
-                                                1
+                                                {v.SNo}
                                             </div>
                                         </td>
                                         <td style={{ padding: "16px" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                                                 <code style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "13px", color: "#3b82f6", background: "#f8fafc", padding: "6px 12px", borderRadius: "6px", fontWeight: 600 }}>
-                                                    0x742d...bEb1
+                                                    {formatAddress(v.Address)}
                                                 </code>
                                                 <button
+                                                onClick={()=>{copyToClipboard(v.Address)}}
                                                     class="copy-btn"
                                                     style={{ background: "#3b82f6", color: "white", border: "none", width: "32px", height: "32px", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px" }}
                                                     title="Copy full address"
@@ -307,15 +339,15 @@ export default function ExchangeAdmin() {
                                         </td>
                                         <td style={{ padding: "16px", textAlign: "center" }}>
                                             <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#0f172a", fontWeight: 700 }}>
-                                                45
+                                                {v.TotalTrades}
                                             </span>
                                         </td>
                                         <td style={{ padding: "16px", textAlign: "right" }}>
                                             <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#10b981", fontWeight: 700 }}>
-                                                $12,500.00
+                                                HEXA {v.AmountTraded}
                                             </span>
                                         </td>
-                                        <td style={{ padding: "16px", textAlign: "right" }}>
+                                        {/* <td style={{ padding: "16px", textAlign: "right" }}>
                                             <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#0f172a", opacity: 0.7, fontWeight: 600 }}>
                                                 $8,900.00
                                             </span>
@@ -324,8 +356,10 @@ export default function ExchangeAdmin() {
                                             <span style={{ background: "#10b981", color: "white", padding: "6px 16px", borderRadius: "20px", fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                                                 active
                                             </span>
-                                        </td>
+                                        </td> */}
                                     </tr>
+                            )}
+                                    
 
                                     {/* <tr style={{ borderBottom: "1px solid #f8fafc", transition: "all 0.2s" }} onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                                         <td style={{ padding: "16px", textAlign: "center" }}>
@@ -773,7 +807,7 @@ export default function ExchangeAdmin() {
                                             </td>
                                             <td style={{ padding: "16px", textAlign: "right" }}>
                                                 <span style={{ fontFamily: "'JetBrains Mono', monospace, system-ui", fontSize: "15px", color: "#10b981", fontWeight: 700 }}>
-                                                    ${(Number(formatEther(v.amount)) ) * Number(formatEther(v.price))}
+                                                    ${(Number(formatEther(v.amount))) * Number(formatEther(v.price))}
                                                 </span>
                                             </td>
                                             <td style={{ padding: "16px", textAlign: "right" }}>

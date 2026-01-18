@@ -21,6 +21,6 @@ admin distribution contracts
 11) show fee deuction in sale orders. 
 12) User list not working. 
 13) normalize the user trading activity in exchange admin. 
-14) supply is 51 crore.
+
 
 
