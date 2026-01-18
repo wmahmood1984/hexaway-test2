@@ -19,9 +19,10 @@ export default function User() {
     const usdtContract1 = new web3.eth.Contract(erc20abi, erc20Add)
     const P2PContract1 = new web3.eth.Contract(P2PAbi, P2PAdd)
     const [usdtBalance, setUsdtBalance] = useState(0)
-    const [buyAmount, setBuyAmount] = useState()
+
     const [sellAmount, setSellAmount] = useState()
     const [price, setPrice] = useState(0.01)
+    const [buyAmount, setBuyAmount] = useState(5/price)
     const [loading, setLoading] = useState(false)
     const [buyOrders, setBuyOrders] = useState()
     const [fee, setFee] = useState(0)
@@ -125,7 +126,10 @@ export default function User() {
 
 
     const handleBuyOrder = async (id) => {
-
+        if(buyAmount * price < 5 ){
+            toast.error("Purchase amount cannot be less than 5$")
+            return 
+        }
 
         try {
             setLoading(true);
@@ -186,7 +190,10 @@ export default function User() {
 
 
     const handleSale = async (id) => {
-
+        if(sellAmount * price < 5 ){
+            toast.error("Sale amount cannot be less than 5$")
+            return 
+        }
 
         try {
             setLoading(true);
@@ -414,31 +421,7 @@ export default function User() {
                                         </div>
                                     </div>
 
-                                    {/* <div style={{ marginBottom: "16px" }}>
-                                        <label style={{ display: "block", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px", color: "#0f172a", fontWeight: 600, marginBottom: "8px" }}>
-                                            Amount (HEXA)
-                                        </label>
-                                        <div style={{ position: "relative" }}>
-                                            <input
-                                                value={buyAmount}
-                                                onChange={(e) => { setBuyAmount(e.target.value) }}
-                                                type="number"
-                                                step="0.0001"
-                                                placeholder="Enter amount"
-                                                style={{ width: "100%", padding: "14px 80px 14px 16px", border: "2px solid rgba(16, 185, 129, 0.3)", borderRadius: "10px", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "15px", fontWeight: 600, outline: "none", background: "#ffffff", color: "#0f172a" }}
-                                            />
-                                            <button
-                                                onClick={() => {
-                                                    setBuyAmount(formatEther(usdtBalance) / price)
-                                                }}
-                                                style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "#10b981", color: "white", padding: "8px 16px", borderRadius: "6px", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "12px", fontWeight: 700, border: "none", cursor: "pointer", transition: "all 0.2s", textTransform: "uppercase" }}
-                                                onmouseover="this.style.background='#059669'"
-                                                onmouseout="this.style.background='#10b981'"
-                                            >
-                                                MAX
-                                            </button>
-                                        </div>
-                                    </div> */}<div style={{ marginBottom: "16px" }}>
+                                   <div style={{ marginBottom: "16px" }}>
                                         <label style={{
                                             display: "block",
                                             fontFamily: "'Poppins', system-ui, sans-serif",
