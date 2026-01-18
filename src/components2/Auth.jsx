@@ -15,7 +15,7 @@ export default function Auth({ setCreateActive, createActive }) {
     const [referrer, setReferrer] = useState(id)
 
 
-    const { User,walletBalance } = useSelector((state) => state.contract);
+    const { User, walletBalance } = useSelector((state) => state.contract);
 
     const dispatch = useDispatch()
 
@@ -133,14 +133,14 @@ export default function Auth({ setCreateActive, createActive }) {
                                             class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-base"> 
                                             🔗 Connect Wallet </button> */}
                                         <ConnectButton referrer={referrer} />
-                             
+
                                         {isConnected && <button
-                                        onClick={()=>{navigate("/p2p")}}
-                                        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-base"
-                                        
+                                            onClick={() => { navigate("/p2p") }}
+                                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-base"
+
                                         >
-                                        Buy Hexa</button>}
-                            
+                                            Buy Hexa</button>}
+
                                         <div class="relative">
                                             <div class="absolute inset-0 flex items-center">
                                                 <div class="w-full border-t border-gray-300"></div>
@@ -216,6 +216,12 @@ export default function Auth({ setCreateActive, createActive }) {
                                     {/* <button type="button" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform active:scale-95 text-base"> 
                                         🔗 Connect Wallet </button> */}
                                     <ConnectButton referrer={referrer} />
+                                    {isConnected && <button
+                                        onClick={() => { navigate("/p2p") }}
+                                        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-base"
+
+                                    >
+                                        Buy Hexa</button>}
                                     <div class="relative">
                                         <div class="absolute inset-0 flex items-center">
                                             <div class="w-full border-t border-gray-300"></div>
