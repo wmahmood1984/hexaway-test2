@@ -135,6 +135,12 @@ export default function User() {
             return
         }
 
+        if (buyAmount / price < Number(formatEther(usdtBalance))) {
+
+            toast.error("Insufficient USDT balance")
+            return
+        }
+
         try {
             setLoading(true);
 
@@ -196,6 +202,12 @@ export default function User() {
     const handleSale = async (id) => {
         if (sellAmount * price < 5) {
             toast.error("Sale amount cannot be less than 5$")
+            return
+        }
+
+        if (Number(walletBalance) < Number(sellAmount)) {
+
+            toast.error("Insufficient HEXA balance")
             return
         }
 

@@ -61,6 +61,10 @@ interface Ihelper {
     function userRegistered(address _user) external view returns (bool);
 }
 
+interface IpriceOracle {
+    function price() external view returns (uint256);
+}
+
 contract Helperv2 is
     Initializable,
     UUPSUpgradeable,
@@ -129,8 +133,9 @@ contract Helperv2 is
     uint public activeTicketIndex;
     address public adminWallet;
     mapping(address => uint) public balance;
-    uint public rateHexa;
+    
     mapping(address => bool) public stakeEligible;
+
 
     event Upgrades(uint time, uint amount, uint _type, address _user);
     event Incomes(
@@ -143,7 +148,8 @@ contract Helperv2 is
     );
 
     uint public usersArrayIndex;
-    mapping(uint => uint) public directLevelUnlock;
+    // mapping(uint => uint) public directLevelUnlock;
+    IpriceOracle public priceOracle;
 
     constructor() {
         _disableInitializers();
@@ -151,7 +157,8 @@ contract Helperv2 is
 
     function initialize(
         address _paymentToken,
-        address _helper
+        address _helper,
+        address _priceOracle
     ) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
@@ -163,23 +170,17 @@ contract Helperv2 is
         packages.push(Package(3, 15 ether, packageExpiry * 3, 12, 11, 15, 4));
         packages.push(Package(4, 20 ether, packageExpiry * 4, 14, 15, 20, 5)); //100 //90
         packages.push(Package(5, 25 ether, packageExpiry * 5, 16, 20, 24, 6));
-        directLevelUnlock[2] = 5;
-        directLevelUnlock[3] = 10;
-        directLevelUnlock[4] = 15;
-        directLevelUnlock[5] = 20;
-        directLevelUnlock[6] = 24;
-
+    
         timelimit = 60 * 60 * 24 * 45;
         helper = Ihelper(_helper);
-        rateHexa = 100;
-
         adminWallet = 0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF;
+        priceOracle = IpriceOracle(_priceOracle);
     }
 
     function register(address _ref) public {
         address _user = msg.sender;
         address _referrer = _ref != address(0) ? _ref : owner();
-        uint amount = packages[0].price * rateHexa;
+        uint amount = packages[0].price * 1 ether / priceOracle.price();
         Package memory tx1 = packages[0];
         userPackage[_user] = tx1;
 
@@ -251,7 +252,7 @@ contract Helperv2 is
     }
 
     function buyPackage(uint8 id) public {
-        uint amount = packages[id].price * rateHexa;
+        uint amount = packages[id].price * 1 ether / priceOracle.price();
         address _user = msg.sender;
 
         require(checkEligibility(_user, id), "not eligible");
@@ -285,56 +286,7 @@ contract Helperv2 is
         emit Upgrades(block.timestamp, amount, id, _user);
     }
 
-    // function processLevelIncome(
-    //     address[] memory _uplines,
-    //     uint _amount,
-    //     uint8 levelD,
-    //     uint8 _type,
-    //     uint _id
-    //  ) internal {
-    //     uint leftOver = 0;
-
-    //     for (uint i = 0; i < _uplines.length; i++) {
-    //         address up = _uplines[i];
-    //         uint levelUnlock = checkActive(users[up].direct) >=6? 24 :
-    //                            checkActive(users[up].direct) >=5? 20 :
-    //                            checkActive(users[up].direct) >=4? 15 :
-    //                            checkActive(users[up].direct) >=3? 10 :
-    //                             checkActive(users[up].direct) >=2? 5: 0;
-
-    //         bool cond = _type == 2 // Package Buy
-    //             ? users[up].direct.length >= 2 // trade
-    //             : userPackage[up].levelUnlock >= i &&
-    //               levelUnlock>=i;
-
-    //         uint transactionType = _type == 1 ? 2 : 3;
-    //         if (cond && incomeEligible(up)) {
-    //             paymentToken.transfer(up, _amount / levelD);
-    //             if (_type == 1) {
-    //                 users[up].data.tradingLevelBonus += (_amount * 60) / levelD;
-    //             } else {
-    //                 users[up].data.packageLevelBonus += _amount / levelD;
-    //             }
-
-    //             emit Incomes(
-    //                 block.timestamp,
-    //                 _amount / levelD,
-    //                 transactionType,
-    //                 up,
-    //                 i + 1,
-    //                 _id
-    //             );
-    //             leftOver++;
-    //         }
-    //     }
-
-    //     uint validLeftOver = leftOver > levelD ? levelD : leftOver;
-    //     paymentToken.transfer(
-    //         adminWallet,
-    //         (_amount * (levelD - validLeftOver)) / levelD
-    //     );
-    // }
-
+ 
     function processLevelIncome(
         address[] memory _uplines,
         uint _amount,
@@ -356,7 +308,7 @@ contract Helperv2 is
 
             // Level unlocked via active directs
             uint directLevelUnlock1 = activeDirects >= 6
-                ? 24
+                ? 25
                 : activeDirects >= 5
                     ? 20
                     : activeDirects >= 4
@@ -470,7 +422,7 @@ contract Helperv2 is
     }
 
     function trade() public {
-        uint amount = 6 ether * rateHexa;
+        uint amount = 6 ether * 1 ether / priceOracle.price();
 
         require(
             paymentToken.allowance(msg.sender, address(this)) >= amount,
@@ -554,8 +506,8 @@ contract Helperv2 is
         );
 
         ticketMapping[_ticket].filled = true;
-        balance[ticketMapping[_ticket].user] -= 9 ether * rateHexa;
-        paymentToken.transfer(msg.sender, 9 ether * rateHexa);
+        balance[ticketMapping[_ticket].user] -= 9 ether * 1 ether / priceOracle.price();
+        paymentToken.transfer(msg.sender, 9 ether * 1 ether / priceOracle.price());
     }
 
     function changePackages(

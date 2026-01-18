@@ -7,7 +7,7 @@ to make fetcher contract
 admin distribution contracts 
 
 
-0) errors for min 5$
+
 1) correct the hexa amount 
 2) stop reward in the old contract. 
 3) rate Hexa to be dynamic. 

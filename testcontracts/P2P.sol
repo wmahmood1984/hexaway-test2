@@ -9,6 +9,11 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
+
+interface IpriceOracle {
+    function price() external view returns (uint256);
+}
+
 contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     struct Order {
         uint id;
@@ -27,7 +32,7 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     Order[] public UserSaleOrders;
     IERC20 public USDT;
     IERC20 public HEXA;
-    uint public price;
+
     uint public fee;
     address public adminWallet;
 
@@ -39,20 +44,21 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         bool _type
     );
     event Settle(address user, uint originalAmount, uint time, bool _type);
+    IpriceOracle public priceOracle;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize() public initializer {
+    function initialize(address _usdt, address _hexa, address _priceOracle, address _admin) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
-        USDT = IERC20(0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9);
-        HEXA = IERC20(0x309D64381Ea67edbe9E09e719b398f0060AD4FCf);
-        price = 0.01 ether;
+        USDT = IERC20(_usdt);
+        HEXA = IERC20(_hexa);
+        priceOracle = IpriceOracle(_priceOracle);        
         fee = 5;
-        adminWallet = 0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF;
+        adminWallet = _admin;
     }
 
     function settle() public {
@@ -139,7 +145,8 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function setBuyOrder(uint _amount) public {
-        uint requiredUSDT = (_amount * price) / 1e18;
+        uint _price = priceOracle.price();
+        uint requiredUSDT = (_amount * _price) / 1e18;
 
         require(requiredUSDT >= 5 ether, "min order is $5");
 
@@ -156,7 +163,7 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                 _type: false,
                 user: msg.sender,
                 amount: _amount,
-                price: price,
+                price: _price,
                 time: block.timestamp,
                 amountFilled: 0,
                 future1: 0,
@@ -169,7 +176,8 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function setSaleOrder(uint _amount) public {
-        uint usdValue = (_amount * price) / 1e18;
+        uint _price = priceOracle.price();
+        uint usdValue = (_amount * _price) / 1e18;
 
         require(usdValue >= 5 ether, "min order is $5");
 
@@ -186,7 +194,7 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                 _type: true,
                 user: msg.sender,
                 amount: _amount,
-                price: price,
+                price: _price,
                 time: block.timestamp,
                 amountFilled: 0,
                 future1: 0,
