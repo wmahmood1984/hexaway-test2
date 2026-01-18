@@ -74,11 +74,16 @@ interface Ihelperv2 {
         function stakeEligible(address user) external view returns (bool);
 }
 
+interface IpriceOracle {
+    function price() external view returns (uint256);
+}
+
 contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     Ihelper public helper;
     IERC20 public paymentToken;
     uint public APR;
     Ihelperv2 public helperv2;
+    IpriceOracle public priceOracle;
 
     struct Stake {
         uint id;
@@ -105,13 +110,15 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         _disableInitializers();
     }
 
-    function initialize(address _helper, address _token, address _helperv2) public initializer {
+    function initialize(address _helper, address _token, address _helperv2, address _priceOracle) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         helper = Ihelper(_helper);
         paymentToken = IERC20(_token);
         helperv2 = Ihelperv2(_helperv2);
         APR = 50;
+        priceOracle = IpriceOracle(_priceOracle);
+    
     }
 
     function _authorizeUpgrade(
@@ -149,7 +156,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         for (uint i = 0; i < allQue.length; i++) {
             if (allQue[i].user == _user) {
-                que += (QUE_PREMIUM - allQue[i].income);
+                que += allQue[i].income>QUE_PREMIUM? 0 : (QUE_PREMIUM - allQue[i].income);
                 queCount++;    
                 // else: fully paid, add nothing
             }
@@ -159,7 +166,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function stake() public {
         require(helperv2.stakeEligible(msg.sender),"Please get the trade done on new module");
         (uint a, uint b, uint c,,,) = getData(msg.sender);
-        uint amount = a + b + c;
+        uint amount = (a + b + c) * 1 ether / priceOracle.price();
         helper.stakeAndBurn(msg.sender);
         stakeMapping[stakeIndex] = Stake({
             id: stakeIndex,
@@ -172,12 +179,13 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         });
         stakeIndex++;
 
-        helper.stakeAndBurn(msg.sender);
+        
     }
 
     function getAmounts(uint _id) public view returns (uint claimable) {
         uint amount = stakeMapping[_id].amount;
         uint daysPassed = (block.timestamp - stakeMapping[_id].time) /
+            (60 * 60 * 24) > 150 ? 150 : (block.timestamp - stakeMapping[_id].time) /
             (60 * 60 * 24);
         claimable = (amount * APR * daysPassed) / 1000;
     }
