@@ -233,11 +233,11 @@ export default function User() {
 
     
     const handleCancel = async (id, type) => {
-
+        console.log("cancel",id)
         await executeContract({
             config,
             functionName: "cancelOrder",
-            args: [id, type],
+            args: [Number(id), type],
             onSuccess: (txHash, receipt) => {
                 console.log("🎉 Tx Hash:", txHash);
                 console.log("🚀 Tx Receipt:", receipt);
