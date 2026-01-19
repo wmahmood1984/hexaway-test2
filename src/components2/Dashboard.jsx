@@ -578,7 +578,7 @@ export default function Dashboard() {
                                         {position}
                                     </div>
                                     <div class="text-xs sm:text-sm text-gray-600">
-                                        Trade Position
+                                        My Trade Position
                                     </div>
                                 </div>
                                 <div class="text-center p-3 bg-white/50 rounded-lg">
@@ -586,7 +586,7 @@ export default function Dashboard() {
                                         {Number(activeTicketIndex) + 1}
                                     </div>
                                     <div class="text-xs sm:text-sm text-gray-600">
-                                        Current Trade in Que
+                                        Current Reciever
                                     </div>
                                 </div>
                             </div>
