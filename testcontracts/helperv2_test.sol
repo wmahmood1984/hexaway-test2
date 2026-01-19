@@ -158,7 +158,8 @@ contract Helperv2 is
     function initialize(
         address _paymentToken,
         address _helper,
-        address _priceOracle
+        address _priceOracle,
+        address _adminWallet
     ) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
@@ -173,7 +174,7 @@ contract Helperv2 is
     
         timelimit = 60 * 60 * 24 * 45;
         helper = Ihelper(_helper);
-        adminWallet = 0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF;
+        adminWallet = _adminWallet;
         priceOracle = IpriceOracle(_priceOracle);
     }
 

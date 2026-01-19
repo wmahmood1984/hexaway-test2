@@ -104,13 +104,14 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     mapping(uint => Stake) public stakeMapping;
     uint public stakeIndex;
     mapping(address=>Claim[]) public claimMapping;
+    address public feeder;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address _helper, address _token, address _helperv2, address _priceOracle) public initializer {
+    function initialize(address _helper, address _token, address _helperv2, address _priceOracle,address _feeder) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         helper = Ihelper(_helper);
@@ -118,6 +119,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         helperv2 = Ihelperv2(_helperv2);
         APR = 50;
         priceOracle = IpriceOracle(_priceOracle);
+        feeder=_feeder;
     
     }
 
@@ -185,9 +187,9 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function getAmounts(uint _id) public view returns (uint claimable) {
         uint amount = stakeMapping[_id].amount;
         uint daysPassed = (block.timestamp - stakeMapping[_id].time) /
-            (60 * 60 * 24) > 150 ? 150 : (block.timestamp - stakeMapping[_id].time) /
-            (60 * 60 * 24);
-        claimable = (amount * APR * daysPassed) / 1000;
+            (60 ) > 200 ? 200 : (block.timestamp - stakeMapping[_id].time) /
+            (60 );
+        claimable = (amount * APR * daysPassed) / 10000;
     }
 
     function claim(uint _id) public {
@@ -197,7 +199,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         stakeMapping[_id].claimable = amount;
         uint claimable = amount - stakeMapping[_id].amountClaimed;
         stakeMapping[_id].amountClaimed = amount;
-        paymentToken.transfer(user,claimable);
+        paymentToken.transferFrom(feeder, user,claimable);
         claimMapping[user].push(Claim(block.timestamp,user,claimable));
     }
 
@@ -231,5 +233,9 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     function getClaims(address _claimer) public view returns (Claim[] memory) {
         return claimMapping[_claimer];
+    }
+
+    function addfeeder(address _feeder) public onlyOwner {
+        feeder = _feeder;
     }
 }

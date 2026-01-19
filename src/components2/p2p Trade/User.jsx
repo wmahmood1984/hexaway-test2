@@ -134,8 +134,8 @@ export default function User() {
             toast.error("Purchase amount cannot be less than 5$")
             return
         }
-            console.log("first",(buyAmount / price), Number(formatEther(usdtBalance)))
-        if (Number(formatEther(usdtBalance))<(buyAmount / price)) {
+            console.log("buy order",(buyAmount / price), Number(formatEther(usdtBalance)))
+        if (Number(formatEther(usdtBalance))<(buyAmount * price)) {
 
             toast.error("Insufficient USDT balance")
             return
@@ -147,9 +147,7 @@ export default function User() {
 
 
             ; // must match contract price
-            const requiredUSDT = (
-                BigInt(parseEther(buyAmount)) * BigInt(parseEther(price))
-            ) / BigInt(parseEther("1"));
+            const requiredUSDT = parseEther((Number(buyAmount)* Number(price)).toString())
 
 
 
