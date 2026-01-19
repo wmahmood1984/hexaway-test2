@@ -231,7 +231,7 @@ export default function User() {
     };
 
 
-
+    
     const handleCancel = async (id, type) => {
 
         await executeContract({
@@ -266,7 +266,7 @@ export default function User() {
     const saleOrders1 = sellOrders && sellOrders.filter(v => Number(formatEther(v.amount)) > Number(formatEther(v.amountFilled)))
     const myTrades = Trades && Trades.filter(v => v.returnValues.user.toLowerCase() === address.toLowerCase())
 
-  
+      console.log("first",{sellOrders,buyOrders,combinedOrders})
 
 
     if (isLoading) {
