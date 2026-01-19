@@ -557,19 +557,19 @@ export default function User() {
                                         </label>
 
                                         <input
-                                            value={sellAmount}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                setSellAmount(value);
+                                            value={price}
+                                            // onChange={(e) => {
+                                            //     const value = e.target.value;
+                                            //     setSellAmount(value);
 
-                                                if (!value || !walletBalance) {
-                                                    setSellPercent(0);
-                                                    return;
-                                                }
+                                            //     if (!value || !walletBalance) {
+                                            //         setSellPercent(0);
+                                            //         return;
+                                            //     }
 
-                                                const percent = (value / walletBalance) * 100;
-                                                setSellPercent(Math.min(100, Math.max(0, percent)));
-                                            }}
+                                            //     const percent = (value / walletBalance) * 100;
+                                            //     setSellPercent(Math.min(100, Math.max(0, percent)));
+                                            // }}
                                             type="number"
                                             step="0.0001"
                                             placeholder="Enter amount"
