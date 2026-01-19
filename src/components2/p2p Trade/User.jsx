@@ -134,8 +134,8 @@ export default function User() {
             toast.error("Purchase amount cannot be less than 5$")
             return
         }
-
-        if (buyAmount / price < Number(formatEther(usdtBalance))) {
+            console.log("first",(buyAmount / price), Number(formatEther(usdtBalance)))
+        if (Number(formatEther(usdtBalance))<(buyAmount / price)) {
 
             toast.error("Insufficient USDT balance")
             return
@@ -453,6 +453,7 @@ export default function User() {
                                             value={(buyAmount)}
                                             onChange={(e) => {
                                                 const value = e.target.value;
+                                                
                                                 setBuyAmount(value);
 
                                                 if (!value || !price) {
