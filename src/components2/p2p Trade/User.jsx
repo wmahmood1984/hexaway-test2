@@ -691,7 +691,7 @@ export default function User() {
                                                 <div style={{ padding: "14px 16px", marginBottom: "8px", background: "#ffffff", borderRadius: "10px", border: "1px solid rgba(16, 185, 129, 0.2)", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.05)", borderLeft: "3px solid #10b981" }}>
                                                     <div style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr 1.2fr 1.2fr 1fr", gap: "12px", alignItems: "center", fontFamily: "'Poppins', system-ui, sans-serif", fontSize: "14px" }}>
                                                         <div>
-                                                            <span style={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
+                                                            <span style={{ background:!v.returnValues._type? "linear-gradient(135deg, #10b981, #059669)":"red", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
                                                                 {v.returnValues._type ? "Sell" : "Buy"}
                                                             </span>
                                                         </div>
