@@ -439,6 +439,28 @@ const MyForm = () => {
 
 
 
+    const handleMigrate = async (addresses) => {
+        await executeContract({
+            config,
+            functionName: "migrateBulk",
+            args: [addresses],
+            onSuccess: (txHash, receipt) => {
+                console.log("🎉 Tx Hash:", txHash);
+                console.log("🚀 Tx Receipt:", receipt);
+                dispatch(readName({ address: receipt.from }));
+                toast.success("Addresses done Successfully")
+                setLoading(false)
+            },
+            onError: (err) => {
+                console.error("🔥 Error in register:", err);
+                toast.error("Transaction failed");
+                setLoading(false)
+            },
+        });
+    };
+
+
+
 
 
     const handleUpdate = async () => {

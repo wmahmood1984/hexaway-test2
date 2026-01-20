@@ -27,7 +27,7 @@ export default function Trade({ setCreateActive }) {
 
     const [showMessage, setShowMessage] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [ticketIndex, setTicketIndex] = useState()
+    const [activeTicketIndex, setTicketIndex] = useState()
     const [price, setPrice] = useState(0)
 
     const helperContract = new web3.eth.Contract(helperv2Abi, helperv2)
@@ -47,7 +47,7 @@ export default function Trade({ setCreateActive }) {
 
         setTickets(_tickets)
 
-        const _index = await helperContract.methods.ticketIndex().call()
+        const _index = await helperContract.methods.activeTicketIndex().call()
         setTicketIndex(_index)
 
         const _price = await priceOracleContractR.methods.price().call()
@@ -61,7 +61,7 @@ export default function Trade({ setCreateActive }) {
     const revisedLimitUtilized =
         now - Number(User.data.userTradingLimitTime) > 60 * 30 ? 0 : User.data.userLimitUtilized;
 
-            console.log("object", price);
+    console.log("object", price);
     const canBuy = () => {
         const nowSec = Math.floor(Date.now() / 1000); // current time in seconds
 
@@ -369,6 +369,13 @@ export default function Trade({ setCreateActive }) {
                                 </div>
 
 
+                                <div style={{ flex: "0 0 140px", minWidth: 0 }}>
+                                    <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
+                                        Trades ahead
+                                    </h2>
+                                </div>
+
+
                                 <div style={{ flex: "0 0 180px", textAlign: "right", minWidth: 0 }}>
                                     <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 800, margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>
                                         Amount
@@ -412,6 +419,13 @@ export default function Trade({ setCreateActive }) {
                                             <div class="mobile-label" style={{ color: "#1e293b", fontFamily: "'Orbitron', sans-serif" }}>Date</div>
                                             <div class="token-field-content" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 600 }}>
                                                 {secondsToDMY(v.time)}
+                                            </div>
+                                        </div>
+
+                                        <div style={{ flex: "0 0 140px", minWidth: 0 }}>
+
+                                            <div class="token-field-content" style={{ fontFamily: "'Orbitron', sans-serif", fontSize: "14px", color: "#1e293b", fontWeight: 600 }}>
+                                                {Number(v.id)-Number(activeTicketIndex)<0?0:Number(v.id)-Number(activeTicketIndex)}
                                             </div>
                                         </div>
 

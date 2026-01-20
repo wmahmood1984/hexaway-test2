@@ -9,7 +9,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
-
 interface IpriceOracle {
     function price() external view returns (uint256);
 }
@@ -35,6 +34,8 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     uint public fee;
     address public adminWallet;
+    uint public usersBuyOrderIndex;
+    uint public usersSaleOrderIndex;
 
     event Trades(
         address user,
@@ -51,12 +52,17 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         _disableInitializers();
     }
 
-    function initialize(address _usdt, address _hexa, address _priceOracle, address _admin) public initializer {
+    function initialize(
+        address _usdt,
+        address _hexa,
+        address _priceOracle,
+        address _admin
+    ) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         USDT = IERC20(_usdt);
         HEXA = IERC20(_hexa);
-        priceOracle = IpriceOracle(_priceOracle);        
+        priceOracle = IpriceOracle(_priceOracle);
         fee = 5;
         adminWallet = _admin;
     }
@@ -87,6 +93,11 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                 // Transfer USDT from buyer to seller
                 require(
                     USDT.transfer(sale.user, remaining),
+                    "USDT transfer failed"
+                );
+
+                require(
+                    USDT.transfer(adminWallet, _fee),
                     "USDT transfer failed"
                 );
 
@@ -159,7 +170,7 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         UserBuyOrders.push(
             Order({
-                id: UserBuyOrders.length,
+                id: usersBuyOrderIndex,
                 _type: false,
                 user: msg.sender,
                 amount: _amount,
@@ -171,6 +182,8 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                 future3: 0
             })
         );
+
+        usersBuyOrderIndex++;
 
         settle();
     }
@@ -190,7 +203,7 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         UserSaleOrders.push(
             Order({
-                id: UserSaleOrders.length,
+                id: usersSaleOrderIndex,
                 _type: true,
                 user: msg.sender,
                 amount: _amount,
@@ -202,7 +215,7 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                 future3: 0
             })
         );
-
+        usersSaleOrderIndex++;
         settle();
     }
 
@@ -215,6 +228,8 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         bool _type
     ) public view returns (Order[] memory) {
         Order[] storage orders = !_type ? UserBuyOrders : UserSaleOrders;
+
+
 
         // First pass: count how many orders belong to the user
         uint count = 0;
@@ -238,12 +253,15 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function cancelOrder(uint id, bool _type) public {
-        require(UserBuyOrders[id].user == msg.sender, "you are not authorized");
-        require(
-            UserSaleOrders[id].user == msg.sender,
-            "you are not authorized"
-        );
         Order[] storage orders = !_type ? UserBuyOrders : UserSaleOrders;
+
+        // require(id < orders.length, "invalid order index");
+        require(orders[id].user == msg.sender, "not authorized");
+
+        IERC20 paymentToken = !_type ? USDT : HEXA;
+        uint baseAmount = orders[id].amount - orders[id].amountFilled;
+        uint amount = _type ? baseAmount : baseAmount * priceOracle.price() / 1e18;
+        paymentToken.transfer(orders[id].user,amount);
 
         for (uint i = id; i < orders.length - 1; i++) {
             orders[i] = orders[i + 1];
@@ -252,7 +270,10 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         orders.pop();
     }
 
-    function changeWallet(address _adminWallet, address _paymentToken) public onlyOwner {
+    function changeWallet(
+        address _adminWallet,
+        address _paymentToken
+    ) public onlyOwner {
         adminWallet = _adminWallet;
         HEXA = IERC20(_paymentToken);
     }

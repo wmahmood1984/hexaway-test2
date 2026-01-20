@@ -168,10 +168,9 @@ contract Helperv2 is
         packages.push(Package(0, 2 ether, packageExpiry * 1, 0, 1, 1, 0));
         packages.push(Package(1, 5 ether, packageExpiry * 1, 0, 3, 5, 2));
         packages.push(Package(2, 10 ether, packageExpiry * 2, 10, 7, 10, 3));
-        packages.push(Package(3, 15 ether, packageExpiry * 3, 12, 11, 15, 4));
-        packages.push(Package(4, 20 ether, packageExpiry * 4, 14, 15, 20, 5)); //100 //90
-        packages.push(Package(5, 25 ether, packageExpiry * 5, 16, 20, 24, 6));
-    
+        packages.push(Package(3, 15 ether, packageExpiry * 3, 20, 11, 15, 4));
+        packages.push(Package(4, 20 ether, packageExpiry * 4, 50, 15, 20, 5)); //100 //90
+        packages.push(Package(5, 25 ether, packageExpiry * 5, 100, 20, 24, 6));
         timelimit = 60 * 60 * 24 * 45;
         helper = Ihelper(_helper);
         adminWallet = _adminWallet;
@@ -203,6 +202,7 @@ contract Helperv2 is
         users[_user].data.packageUpgraded = block.timestamp;
         users[_user].data.userJoiningTime = block.timestamp;
         users[_user].data.userTradingLimitTime = block.timestamp;
+        users[msg.sender].data.userTradingTime = block.timestamp;
         usersArray.push(_user);
         usersArrayIndex++;
         // Direct referral list
@@ -221,7 +221,7 @@ contract Helperv2 is
             block.timestamp - users[_referrer].data.packageUpgraded <=
                 timelimit &&
             block.timestamp - users[_referrer].data.userTradingTime <=
-                60 * 60 * 2
+                60 * 60 * 24 * 30
         ) {
             paymentToken.transfer(_referrer, amount / 2);
             users[_referrer].data.packageReferralBonus += amount / 2;
@@ -309,7 +309,7 @@ contract Helperv2 is
 
             // Level unlocked via active directs
             uint directLevelUnlock1 = activeDirects >= 6
-                ? 25
+                ? 24
                 : activeDirects >= 5
                     ? 20
                     : activeDirects >= 4
@@ -460,7 +460,7 @@ contract Helperv2 is
 
         if (
             block.timestamp - users[msg.sender].data.userTradingLimitTime >
-            30 minutes
+            24 hours
         ) {
             // Reset after 3 minutes
             users[msg.sender].data.userTradingLimitTime = block.timestamp;

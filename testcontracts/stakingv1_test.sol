@@ -187,8 +187,8 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function getAmounts(uint _id) public view returns (uint claimable) {
         uint amount = stakeMapping[_id].amount;
         uint daysPassed = (block.timestamp - stakeMapping[_id].time) /
-            (60 ) > 200 ? 200 : (block.timestamp - stakeMapping[_id].time) /
-            (60 );
+            (60 *60*24) > 200 ? 200 : (block.timestamp - stakeMapping[_id].time) /
+            (60*60*24 );
         claimable = (amount * APR * daysPassed) / 10000;
     }
 

@@ -287,7 +287,7 @@ onClick={() => setPriceSelected({ min: 75.00, max: 76.00 })}
                                 <thead style={{ background: "linear-gradient(135deg, #3b82f6, #8b5cf6)" }}>
                                     <tr>
                                         <th class="px-3 py-4 text-left font-bold uppercase" style={{ fontSize: "10.4px", color: "white", letterSpacing: "0.05em" }}>S.no</th>
-                                        <th class="px-3 py-4 text-left font-bold uppercase" style={{ fontSize: "10.4px", color: "white", letterSpacing: "0.05em" }}>NFT Token</th>
+                                        <th class="px-3 py-4 text-left font-bold uppercase" style={{ fontSize: "10.4px", color: "white", letterSpacing: "0.05em" }}>Token</th>
                                         <th class="px-3 py-4 text-left font-bold uppercase" style={{ fontSize: "10.4px", color: "white", letterSpacing: "0.05em" }}>Buy Time</th>
                                         <th class="px-3 py-4 text-left font-bold uppercase" style={{ fontSize: "10.4px", color: "white", letterSpacing: "0.05em" }}>Trade Time</th>
                                         <th class="px-3 py-4 text-left font-bold uppercase" style={{ fontSize: "10.4px", color: "white", letterSpacing: "0.05em" }}>Owner</th>
@@ -305,7 +305,7 @@ onClick={() => setPriceSelected({ min: 75.00, max: 76.00 })}
                                                     </td>
                                                     <td class="table-cell">
                                                         <span class="token-badge" data-token="1">
-                                                            NFT-{nft.id}
+                                                            TKN-{nft.id}
                                                         </span>
                                                     </td>
                                                     <td class="table-cell" style={{ fontSize: "11px", color: "#0f172a", opacity: "0.8", whiteSpace: "nowrap" }}>

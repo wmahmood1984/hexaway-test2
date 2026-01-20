@@ -59,7 +59,7 @@ contract Distribution is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function setExpenses(address _user) public {
-        require(msg.sender == Baldeep, "you are not authorized");
+        require(msg.sender == Harpreet, "you are not authorized");
          expenses = _user;
     }
 
