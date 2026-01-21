@@ -224,7 +224,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         for (uint i = 0; i < _users.length; i++) {
             Ihelper.User memory user = helperv2.getUser(_users[i]);
             if (
-                block.timestamp - user.data.packageUpgraded <= 60 * 60 * 24 * 45
+                block.timestamp - user.data.packageUpgraded <= 60  * 45
             ) {
                 count++;
             }
