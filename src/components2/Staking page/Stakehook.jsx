@@ -8,9 +8,12 @@ import {
 import { erc20Abi, parseEther } from "viem"
 import { useEffect } from "react"
 import { erc20abi, erc20Add, stakingV2Abi, stakingV2Add } from "../../config"
+import { useAppKitAccount } from "@reown/appkit/react";
 
-export function useStake(stakeAmount: bigint) {
-  const { address } = useAccount()
+export function useStake(stakeAmount) {
+  // const { address } = useAccount()
+
+      const { address } = useAppKitAccount();
 
   /* ------------------ 1. SIMULATE STAKE (FAIL FAST) ------------------ */
 
@@ -31,7 +34,7 @@ export function useStake(stakeAmount: bigint) {
     address: erc20Add,
     abi: erc20Abi,
     functionName: "allowance",
-    args: [address!, stakingV2Add],
+    args: [address, stakingV2Add],
 
   })
 

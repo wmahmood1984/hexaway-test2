@@ -8213,6 +8213,11 @@ export const stakingV1Contract = {
 	abi: stakingV1Abi,
 };
 
+export const USDTContract = {
+	address: erc20Add,
+	abi: erc20abi,
+};
+
 
 export const distributionContract = {
 	address: distributionAdd,

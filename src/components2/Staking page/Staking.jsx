@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { stakingContractV2, stakinvV2ContractR, USDTContractR } from '../../config'
+import { HexaContract, stakingContractV2, stakingV2Add, stakinvV2ContractR, USDTContract, USDTContractR } from '../../config'
 import { useSelector } from 'react-redux'
 import { executeContract, formatWithCommas, secondsToDHMSDiff, secondsToDMY } from '../../utils/contractExecutor'
 import { formatEther, parseEther } from 'ethers'
@@ -50,16 +50,59 @@ export default function Staking() {
     }
 
 
-    const { stake, stakeSimError } = useStake(parseEther("50"))
+    const onStakeClick = async (trade, id) => {
+        const stakeAmount = 50
 
-    const onStakeClick = async () => {
-        try {
-            await stake()
-            toast.success("Stake successful")
-            abc()
-        } catch (err) {
-            toast.error(err.shortMessage || err.message || stakeSimError)
+        if (
+            Number(USDTBalance) < stakeAmount
+        ) {
+            toast.error("Insufficient USDT Balance")
+            return
         }
+
+        try {
+            setLoading(true);
+            await executeContract({
+                config,
+                functionName: "approve",
+                args: [stakingV2Add, parseEther(stakeAmount.toString())],
+                contract: USDTContract,
+                onSuccess: () => onStakeClick1(),
+                onError: () => {
+                    setLoading(false);
+                    toast.error("Approval failed");
+                }
+            });
+
+        } catch (err) {
+            setLoading(false);
+            toast.error("Unexpected error occurred");
+            console.error(err);
+        }
+    };
+
+
+
+
+    const onStakeClick1 = async () => {
+        await executeContract({
+            config,
+            functionName: "stake",
+            args: [],
+            onSuccess: (txHash, receipt) => {
+                console.log("🎉 Tx Hash:", txHash);
+                console.log("🚀 Tx Receipt:", receipt);
+                toast.success("Stake done successfully")
+
+                setLoading(false)
+            },
+            contract: stakingContractV2,
+            onError: (err) => {
+                console.error("🔥 Error in register:", err);
+                toast.error("Transaction failed:", reason)
+                setLoading(false)
+            },
+        });
     }
 
 
@@ -285,7 +328,7 @@ export default function Staking() {
                                                                 $ {formatWithCommas(formatEther(v.amount))} Staking
                                                             </div>
                                                             <div style={{ fontSize: "12px", color: "#0f172a", opacity: "0.7" }}>
-                                                                {150} days 
+                                                                {150} days
                                                             </div>
                                                         </div>
                                                     </div>
