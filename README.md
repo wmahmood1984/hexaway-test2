@@ -8,20 +8,20 @@ admin distribution contracts
 
 
 
-1) correct the hexa amount 
-2) stop reward in the old contract. 
-3) rate Hexa to be dynamic. 
-4) Manadatory Trade Countdown. 
-5) To show first position instead of last one 
-6) To link all the dollars and hexa to price
-7) sort the tickets of staking and remove claim button once claimed. 
-
-done) include the percentage in p2p. 
-done) min 5 $ in p2p. 
-done) p2p trade is being failed.
-done) show fee deuction in sale orders. 
-done) User list not working. 
-done) normalize the user trading activity in exchange admin. 
-done) supply is 51 crore.
+done) change the price of token and save the stake amount in hexa only. 
+done) hexas will be locked in staking contract
+done) usdt will be transferred to buy/sale contract. 
+can be done through re deploying smart contract) no of stkaing to be changed. 
+done) 15$ will be distributed in managemnet and 35 into buy/sale contract
+done) commission (including managmenet portion) will be distributed in form of hexa 10%. 
+7) to crrect the my trade position. 
+8) check extra trade limit
 
 
+
+
+steps
+
+1) deploy buy/sale smart contract
+2) deploy staking smart contract 
+2) transfer hexas to the contract. 

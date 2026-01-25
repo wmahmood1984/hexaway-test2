@@ -1,9 +1,10 @@
 import { createAppKit } from '@reown/appkit/react'
 
 import { WagmiProvider } from 'wagmi'
-import { arbitrum, bscTestnet, mainnet, opBNB, opBNBTestnet } from '@reown/appkit/networks'
+import { arbitrum, bscTestnet,  opBNB, opBNBTestnet } from '@reown/appkit/networks'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+import { mainnet as main, mainnet } from './config'
 
 // 0. Setup queryClient
 const queryClient = new QueryClient()
@@ -19,13 +20,16 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/179229932']
 }
 
+const netw = mainnet ? opBNB : opBNBTestnet
+
 // 3. Set the networks
 const networks = [
   // mainnet
   // , arbitrum , 
   //bscTestnet, 
-   opBNBTestnet,
+   //opBNBTestnet,
  //   opBNB
+ netw
 ]
 
 // 4. Create Wagmi Adapter

@@ -17,6 +17,7 @@ export default function Staking() {
     const [totalStaked, setTotalStaked] = useState(0)
     const [totalEarned, setTotalEarned] = useState(0)
     const [mystake, setMyStake] = useState()
+    const [stakeAmount, setStakeAmount] = useState(0)
     const [loading, setLoading] = useState(false)
 
     const [myClaims, setMyClaims] = useState()
@@ -47,6 +48,9 @@ export default function Staking() {
         const _myClaims = await stakinvV2ContractR.methods.getClaimsByUser(address).call()
         setMyStake(_mystake)
         setMyClaims(_myClaims)
+
+        const _stakeAmount = await stakinvV2ContractR.methods.stakeAmount().call()
+        setStakeAmount(formatWithCommas(formatEther(_stakeAmount)))
     }
 
 
@@ -274,7 +278,7 @@ export default function Staking() {
                                     <div style={{ background: "#ffffff", padding: "12px", borderRadius: "12px", marginBottom: "16px" }}>
                                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                                             <span style={{ fontSize: "clamp(11px, 2.5vw, 12px)", color: "#0f172a", opacity: 0.7 }}>Stake:</span>
-                                            <span style={{ fontSize: "clamp(12px, 3vw, 14px)", color: "#0f172a", fontWeight: 700 }}>5000 HEXA</span>
+                                            <span style={{ fontSize: "clamp(12px, 3vw, 14px)", color: "#0f172a", fontWeight: 700 }}>{stakeAmount / hexaPrice} HEXA</span>
                                         </div>
                                         {/* <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                                             <span style={{ fontSize: "clamp(11px, 2.5vw, 12px)", color: "#0f172a", opacity: 0.7 }}>Duration:</span>

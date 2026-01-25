@@ -74,6 +74,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     uint public stakeDone;
     uint public stakeDoneTime;
     address public incomeWallet;
+    address public buySale;
 
     struct Stake {
         uint id;
@@ -97,6 +98,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     uint public claimIndex;
     uint public totalStaked;
     uint public totalEarned;
+    address public feeder;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -108,7 +110,9 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         address _usdt,
         address _priceOracle,
         address _incomeWallet,
-        address _helperv2
+        address _helperv2,
+        address _buySale
+
     ) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
@@ -119,6 +123,8 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         priceOracle = IpriceOracle(_priceOracle);
         incomeWallet = _incomeWallet;
         helperv2 = Ihelper(_helperv2);
+        feeder = address(this);
+        buySale = _buySale;
     }
 
     function _authorizeUpgrade(
@@ -144,32 +150,35 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             USDT.allowance(msg.sender, address(this)) >= stakeAmount,
             "Invalid stake amount"
         );
-        USDT.transferFrom(msg.sender, address(this), stakeAmount);
+
+        uint hexaConverted = stakeAmount * priceOracle.price() / 10**18;
+        USDT.transferFrom(msg.sender, buySale, stakeAmount * 70/100);
+        USDT.transferFrom(msg.sender, incomeWallet, stakeAmount * 30/100);
         stakeMapping[stakeIndex] = Stake({
             id: stakeIndex,
             user: msg.sender,
-            amount: stakeAmount,
+            amount: hexaConverted,
             time: block.timestamp,
             lastClaimTime: block.timestamp,
             claimable: 0,
             amountClaimed: 0
         });
 
-        uint amount = 5 ether;
+        uint amount = hexaConverted * 10/100;
 
-        USDT.transfer(incomeWallet, (amount * 20) / 100);
+        HEXA.transfer(incomeWallet, (amount * 20) / 100);
 
         Ihelper.User memory user = helperv2.getUser(msg.sender);
 
         address up = user.referrer;
 
         if (incomeEligible(user, up)) {
-            USDT.transfer(up, (amount * 20) / 100);
+            HEXA.transfer(up, (amount * 20) / 100);
         }
 
         address[] memory uplines = helperv2.getUplines(msg.sender);
 
-        processLevelIncome(uplines, amount);
+        processLevelIncome(uplines, amount * 60 /100);
 
         stakeIndex++;
         totalStaked += stakeAmount;
@@ -203,7 +212,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             bool eligible = upline.direct.length >= 2;
 
             if (eligible && incomeEligible(upline, up)) {
-                USDT.transfer(up, perLevelAmount);
+                HEXA.transfer(up, perLevelAmount);
 
                 paidCount++;
             }
@@ -319,4 +328,12 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         return userStake;
     }
+
+    function withdrawTokens() public onlyOwner {
+        USDT.transfer(owner(), USDT.balanceOf(address(this)));
+                HEXA.transfer(owner(), HEXA.balanceOf(address(this)));
+    }
+    
+
+
 }
