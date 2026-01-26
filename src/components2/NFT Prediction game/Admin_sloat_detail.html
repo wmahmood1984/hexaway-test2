@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Colour slot Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #ffffff;
+            color: #1e293b;
+            font-size: 14px;
+            line-height: 1.4;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Container for better mobile spacing */
+        .container {
+            width: 100%;
+            padding: 0 15px;
+            max-width: 100%;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: #f8fafc;
+            padding: 15px 0;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 0 15px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-size: 16px;
+            color: #1e293b;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* Buttons */
+        .transfer-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 20px 15px;
+            width: 100%;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            color: #6366f1;
+            font-weight: 700;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            color: #4b5563;
+            font-size: 13px;
+            cursor: pointer;
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .filter-btn.active {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+        }
+
+        .clear-btn {
+            padding: 8px 12px;
+            border: 1px solid #ef4444;
+            border-radius: 6px;
+            background: white;
+            color: #ef4444;
+            font-size: 13px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Table Container */
+        .table-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .results-count {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px;
+            background: #f9fafb;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 13px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+        }
+
+        .data-table tr:hover {
+            background: #f9fafb;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Copy Button */
+        .copy-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            color: #6366f1;
+            font-size: 14px;
+        }
+
+        .address-cell {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .short-address {
+            font-family: monospace;
+            font-size: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+
+        /* Toast Notifications */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 15px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+            max-width: 300px;
+        }
+
+        .toast-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .toast-error {
+            background: #ef4444;
+            color: white;
+        }
+
+        .toast-info {
+            background: #6366f1;
+            color: white;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 640px) {
+            .nav-content {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .filter-buttons {
+                gap: 6px;
+            }
+
+            .filter-btn, .clear-btn {
+                padding: 6px 8px;
+                font-size: 12px;
+                min-width: 70px;
+            }
+
+            .table-section {
+                padding: 15px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .short-address {
+                max-width: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-content {
+                padding: 0 10px;
+            }
+
+            .main-content {
+                padding: 15px 10px;
+            }
+
+            .logo-text {
+                font-size: 14px;
+            }
+
+            .transfer-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+
+            .filter-section {
+                padding: 12px;
+            }
+
+            .search-input {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo-container">
+                    <div class="logo">🎨</div>
+                    <div class="logo-text">Colour Slot Admin</div>
+                </div>
+                <a href="Admin_sloat_detail.html" class="transfer-btn">
+                    <i class="fas fa-exchange-alt"></i>
+                    Go to Slots
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Colour Slots Details</h1>
+            <p class="page-subtitle">Overview of predictions and analytics</p>
+            <a href="Admin_NFT_Prediction.html" class="transfer-btn">
+                <i class="fas fa-exchange-alt"></i>
+                Go to Prediction
+            </a>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card" style="border-color: rgba(99, 102, 241, 0.3);">
+                <span class="stat-label">Total Slots</span>
+                <div class="stat-value" style="color: #6366f1;">332</div>
+            </div>
+
+            <div class="stat-card" style="border-color: rgba(245, 158, 11, 0.3);">
+                <span class="stat-label">Slot Amount</span>
+                <div class="stat-value" style="color: #f59e0b;">6,454(H)</div>
+            </div>
+
+            <div class="stat-card" style="border-color: rgba(16, 185, 129, 0.3);">
+                <span class="stat-label">Total Wining Amount</span>
+                <div class="stat-value" style="color: #10b981;">$23,324</div>
+            </div>
+
+            <div class="stat-card" style="border-color: rgba(16, 185, 129, 0.3);">
+                <span class="stat-label">Total Admin Fund</span>
+                <div class="stat-value" style="color: #10b981;">$323,324</div>
+            </div>
+
+            <div class="stat-card" style="border-color: rgba(139, 92, 246, 0.3);">
+                <span class="stat-label">Total Earned Commission</span>
+                <div class="stat-value" style="color: #8b5cf6;">$24,150.00</div>
+            </div>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="filter-section">
+            <div class="search-box">
+                <input type="text" 
+                       id="searchInput" 
+                       class="search-input" 
+                       placeholder="Search by address or slot number..." 
+                       onkeyup="filterTable()">
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn" onclick="filterBySlots(3)">3 Slots</button>
+                <button class="filter-btn" onclick="filterBySlots(6)">6 Slots</button>
+                <button class="filter-btn" onclick="filterBySlots(9)">9 Slots</button>
+                <button class="filter-btn" onclick="filterByStatus('Success')">Success</button>
+                <button class="filter-btn" onclick="filterByStatus('Roll Back')">Roll Back</button>
+                <button class="clear-btn" onclick="clearFilters()">Clear Filters</button>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Slots Transactions</h2>
+                <span id="resultsCount" class="results-count">(7 results)</span>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table" id="slotsTable">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Wallet Address</th>
+                            <th>Slots</th>
+                            <th>Time Frame</th>
+                            <th>Slot Value</th>
+                            <th>Wining Amount</th>
+                            <th>Commission</th>
+                            <th>Admin Fund</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Row 1 -->
+                        <tr>
+                            <td>1</td>
+                            <td>
+                                <div class="address-cell">
+                                    <span class="short-address">0x742d35Cc6634C0532925a3b8B9C4A1d3f4a5b6c7</span>
+                                    <button class="copy-btn" onclick="copyAddress('0x742d35Cc6634C0532925a3b8B9C4A1d3f4a5b6c7', event)">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>3</td>
+                            <td>3 min</td>
+                            <td>1,250</td>
+                            <td>1,250</td>
+                            <td>1,250</td>
+                            <td>1,250</td>
+                            <td>Jan 15, 2024</td>
+                            <td><span class="status-badge status-completed">Success</span></td>
+                        </tr>
+                        <!-- Row 2 -->
+                        <tr>
+                            <td>2</td>
+                            <td>
+                                <div class="address-cell">
+                                    <span class="short-address">0x8a4b7c9d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8</span>
+                                    <button class="copy-btn" onclick="copyAddress('0x8a4b7c9d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8', event)">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>9</td>
+                            <td>5 min</td>
+                            <td>1,580</td>
+                            <td>1,580</td>
+                            <td>1,580</td>
+                            <td>1,580</td>
+                            <td>Jan 18, 2024</td>
+                            <td><span class="status-badge status-completed">Success</span></td>
+                        </tr>
+                        <!-- Row 3 -->
+                        <tr>
+                            <td>3</td>
+                            <td>
+                                <div class="address-cell">
+                                    <span class="short-address">0x3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4</span>
+                                    <button class="copy-btn" onclick="copyAddress('0x3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4', event)">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>9</td>
+                            <td>10 min</td>
+                            <td>2,120</td>
+                            <td>2,120</td>
+                            <td>2,120</td>
+                            <td>2,120</td>
+                            <td>Jan 28, 2024</td>
+                            <td><span class="status-badge status-pending">Roll Back</span></td>
+                        </tr>
+                        <!-- Row 4 -->
+                        <tr>
+                            <td>4</td>
+                            <td>
+                                <div class="address-cell">
+                                    <span class="short-address">0x5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6</span>
+                                    <button class="copy-btn" onclick="copyAddress('0x5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6', event)">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>6</td>
+                            <td>1 min</td>
+                            <td>2,120</td>
+                            <td>2,120</td>
+                            <td>2,120</td>
+                            <td>2,120</td>
+                            <td>Jan 10, 2024</td>
+                            <td><span class="status-badge status-completed">Success</span></td>
+                        </tr>
+                        <!-- Row 5 -->
+                        <tr>
+                            <td>5</td>
+                            <td>
+                                <div class="address-cell">
+                                    <span class="short-address">0x9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0</span>
+                                    <button class="copy-btn" onclick="copyAddress('0x9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0', event)">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>6</td>
+                            <td>1 min</td>
+                            <td>123</td>
+                            <td>123</td>
+                            <td>123</td>
+                            <td>123</td>
+                            <td>Feb 1, 2024</td>
+                            <td><span class="status-badge status-completed">Success</span></td>
+                        </tr>
+                        <!-- Row 6 -->
+                        <tr>
+                            <td>6</td>
+                            <td>
+                                <div class="address-cell">
+                                    <span class="short-address">0xa1b2c3d4e5f67890ab1c2d3e4f56789</span>
+                                    <button class="copy-btn" onclick="copyAddress('0xa1b2c3d4e5f67890ab1c2d3e4f56789', event)">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>3</td>
+                            <td>3 min</td>
+                            <td>2,500</td>
+                            <td>2,500</td>
+                            <td>250</td>
+                            <td>2250</td>
+                            <td>Feb 5, 2024</td>
+                            <td><span class="status-badge status-completed">Success</span></td>
+                        </tr>
+                        <!-- Row 7 -->
+                        <tr>
+                            <td>7</td>
+                            <td>
+                                <div class="address-cell">
+                                    <span class="short-address">0xb2c3d4e5f67890a1b2c3d4e5f67890a1</span>
+                                    <button class="copy-btn" onclick="copyAddress('0xb2c3d4e5f67890a1b2c3d4e5f67890a1', event)">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>9</td>
+                            <td>5 min</td>
+                            <td>3,000</td>
+                            <td>3,000</td>
+                            <td>300</td>
+                            <td>2700</td>
+                            <td>Feb 8, 2024</td>
+                            <td><span class="status-badge status-pending">Roll Back</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Global variables for filtering
+        let currentFilters = {
+            search: '',
+            slots: null,
+            status: null
+        };
+
+        // Copy address function
+        function copyAddress(address, event) {
+            event.stopPropagation();
+            
+            // Try using modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(address).then(() => {
+                    showToast('Address copied to clipboard!', 'success');
+                }).catch(() => {
+                    showToast('Failed to copy address', 'error');
+                });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = address;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Address copied to clipboard!', 'success');
+                } catch (err) {
+                    showToast('Failed to copy address', 'error');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            // Remove existing toasts
+            document.querySelectorAll('.toast').forEach(toast => toast.remove());
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Filter table by search input
+        function filterTable() {
+            const searchInput = document.getElementById('searchInput');
+            currentFilters.search = searchInput.value.toLowerCase();
+            applyFilters();
+        }
+
+        // Filter by slots
+        function filterBySlots(slotNumber) {
+            // Toggle filter if already active
+            if (currentFilters.slots === slotNumber) {
+                currentFilters.slots = null;
+                updateFilterButtonState(slotNumber + ' Slots', false);
+            } else {
+                currentFilters.slots = slotNumber;
+                updateFilterButtonState(slotNumber + ' Slots', true);
+                // Deactivate other slot buttons
+                [3, 6, 9].forEach(slot => {
+                    if (slot !== slotNumber) {
+                        updateFilterButtonState(slot + ' Slots', false);
+                    }
+                });
+            }
+            applyFilters();
+        }
+
+        // Filter by status
+        function filterByStatus(status) {
+            // Toggle filter if already active
+            if (currentFilters.status === status) {
+                currentFilters.status = null;
+                updateFilterButtonState(status, false);
+            } else {
+                currentFilters.status = status;
+                updateFilterButtonState(status, true);
+                // Deactivate other status buttons
+                ['Success', 'Roll Back'].forEach(s => {
+                    if (s !== status) {
+                        updateFilterButtonState(s, false);
+                    }
+                });
+            }
+            applyFilters();
+        }
+
+        // Update filter button active state
+        function updateFilterButtonState(value, isActive) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(button => {
+                if (button.textContent === value) {
+                    if (isActive) {
+                        button.classList.add('active');
+                    } else {
+                        button.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            // Clear search input
+            document.getElementById('searchInput').value = '';
+            currentFilters.search = '';
+            
+            // Reset all filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Reset filter variables
+            currentFilters.slots = null;
+            currentFilters.status = null;
+            
+            // Apply filters (should show all rows)
+            applyFilters();
+        }
+
+        // Apply all active filters
+        function applyFilters() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                let shouldShow = true;
+                
+                // Get row data
+                const addressCell = row.cells[1];
+                const slotCell = row.cells[2];
+                const statusCell = row.cells[9];
+                
+                const address = addressCell?.querySelector('.short-address')?.textContent?.toLowerCase() || '';
+                const slotNumber = parseInt(slotCell?.textContent || 0);
+                const status = statusCell?.querySelector('.status-badge')?.textContent || '';
+
+                // Apply search filter
+                if (currentFilters.search && 
+                    !address.includes(currentFilters.search) && 
+                    !slotNumber.toString().includes(currentFilters.search)) {
+                    shouldShow = false;
+                }
+
+                // Apply slots filter
+                if (currentFilters.slots && slotNumber !== currentFilters.slots) {
+                    shouldShow = false;
+                }
+
+                // Apply status filter
+                if (currentFilters.status && status !== currentFilters.status) {
+                    shouldShow = false;
+                }
+
+                // Show/hide row
+                row.style.display = shouldShow ? '' : 'none';
+                if (shouldShow) visibleCount++;
+            });
+
+            // Update results count
+            document.getElementById('resultsCount').textContent = `(${visibleCount} results)`;
+        }
+
+        // Format address for display
+        function formatAddress(address) {
+            if (!address || address.length < 10) return address;
+            return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Format all addresses on page load
+            const addressCells = document.querySelectorAll('.short-address');
+            addressCells.forEach(cell => {
+                const originalAddress = cell.textContent.trim();
+                const formatted = formatAddress(originalAddress);
+                if (formatted !== originalAddress) {
+                    cell.textContent = formatted;
+                    cell.title = originalAddress; // Tooltip with full address
+                }
+            });
+
+            // Apply initial filters (show all rows)
+            applyFilters();
+        });
+
+        // Make functions globally available
+        window.copyAddress = copyAddress;
+        window.showToast = showToast;
+        window.filterTable = filterTable;
+        window.filterBySlots = filterBySlots;
+        window.filterByStatus = filterByStatus;
+        window.clearFilters = clearFilters;
+        window.formatAddress = formatAddress;
+    </script>
+</body>
+</html>

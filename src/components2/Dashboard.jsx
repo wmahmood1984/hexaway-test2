@@ -202,18 +202,36 @@ export default function Dashboard() {
                             <p class="text-indigo-100 text-sm sm:text-base">Manage your NFT portfolio and earnings</p>
 
 
-                            <div class="flex justify-center mt-10 -mb-[-10px]">
-                                <button
-                                    onclick="showPage('history')"
-                                    class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg flex items-center space-x-2"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <Link to="/history">Transaction History</Link>
-                                </button>
-                            </div>
+<div className="flex justify-center mt-10">
+  <div className="flex items-center gap-x-14 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-4 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg">
+
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <Link to="/history" className="whitespace-nowrap">
+      Transaction History
+    </Link>
+
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <Link to="/tree" className="whitespace-nowrap">
+      Team Tree
+    </Link>
+
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <Link to="/teamview" className="whitespace-nowrap">
+      Team View
+    </Link>
+
+  </div>
+</div>
+
                         </div>
                     </div>
 

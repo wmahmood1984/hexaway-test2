@@ -168,8 +168,8 @@ export default function Nav({ setCreateActive, createActive }) {
                 )}
                 <Link to="/asset" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Assets</Link> */}
                 <Link to="/p2p" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Trade Hexa</Link>
-                <Link to="/tree" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Team Tree</Link>
-                <Link to="/teamview" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Team View</Link>
+                 <Link to="/game" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Color Game</Link>
+               {/* <Link to="/teamview" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Team View</Link> */}
 
               </>
             )}
@@ -318,21 +318,21 @@ export default function Nav({ setCreateActive, createActive }) {
                   Trade Hexa
                 </Link>
 
-                <Link
-                  to="/tree"
+                 <Link
+                  to="/game"
                   onClick={() => setMobileOpen(false)}
                   className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                 >
-                  Team Tree
+                  Color Game
                 </Link>
-
+{/*
                 <Link
                   to="/teamview"
                   onClick={() => setMobileOpen(false)}
                   className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                 >
                   Team View
-                </Link>
+                </Link> */}
               </>
             )}
             <div className="pt-2 border-t border-gray-200">

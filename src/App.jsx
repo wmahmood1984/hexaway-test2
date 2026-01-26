@@ -23,6 +23,7 @@ import NoteMarquee from './components2/Note'
 import Lists from './components2/Lists'
 import User from './components2/p2p Trade/User'
 import Staking from './components2/Staking page/Staking'
+import Game from './components2/NFT Prediction game/Game'
 
 export default function App() {
 
@@ -54,9 +55,10 @@ export default function App() {
                 <Route path="/createhistory" element={<CreateHistory />} />
                 <Route path="/nftcreationdetails" element={<NFTCreationDetails />} />
                 <Route path="/teamview" element={<Teamtree />} />
-                 <Route path="/p2p" element={<User />} />
+                <Route path="/p2p" element={<User />} />
                 <Route path="/lists" element={<Lists />} />
                 <Route path="/staking" element={<Staking />} />
+                <Route path="/game" element={<Game />} />
             </Routes>
         </div >
     )
