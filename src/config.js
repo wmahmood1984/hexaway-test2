@@ -5599,6 +5599,11 @@ export const stakingV2Abi = [
 				"internalType": "address",
 				"name": "_helperv2",
 				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_buySale",
+				"type": "address"
 			}
 		],
 		"name": "initialize",
@@ -5746,12 +5751,32 @@ export const stakingV2Abi = [
 	},
 	{
 		"inputs": [],
+		"name": "withdrawTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "APR",
 		"outputs": [
 			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "buySale",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -5813,6 +5838,19 @@ export const stakingV2Abi = [
 				"internalType": "uint256",
 				"name": "amountClaimed",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "feeder",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -7543,6 +7581,600 @@ export const stakingV1Abi = [
 		"type": "function"
 	}
 ]
+export const gameAbi = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "target",
+				"type": "address"
+			}
+		],
+		"name": "AddressEmptyCode",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "implementation",
+				"type": "address"
+			}
+		],
+		"name": "ERC1967InvalidImplementation",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "ERC1967NonPayable",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "FailedCall",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "InvalidInitialization",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "NotInitializing",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnableInvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "OwnableUnauthorizedAccount",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "UUPSUnauthorizedCallContext",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "slot",
+				"type": "bytes32"
+			}
+		],
+		"name": "UUPSUnsupportedProxiableUUID",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "gameId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint8",
+				"name": "slots",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint8",
+				"name": "duration",
+				"type": "uint8"
+			}
+		],
+		"name": "GameCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "gameId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint8",
+				"name": "winningColor",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "payout",
+				"type": "uint256"
+			}
+		],
+		"name": "GameSettled",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_hexa",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_incomeWallet",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_helper",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_settler",
+				"type": "address"
+			}
+		],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint64",
+				"name": "version",
+				"type": "uint64"
+			}
+		],
+		"name": "Initialized",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint8",
+				"name": "color",
+				"type": "uint8"
+			}
+		],
+		"name": "placeBid",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameId",
+				"type": "uint256"
+			}
+		],
+		"name": "settleGame",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "implementation",
+				"type": "address"
+			}
+		],
+		"name": "Upgraded",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newImplementation",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "gameRan",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "games",
+		"outputs": [
+			{
+				"internalType": "uint8",
+				"name": "slots",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint8",
+				"name": "duration",
+				"type": "uint8"
+			},
+			{
+				"internalType": "bool",
+				"name": "active",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "helper",
+		"outputs": [
+			{
+				"internalType": "contract Ihelper",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "hexa",
+		"outputs": [
+			{
+				"internalType": "contract IERC20",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "referrer",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "parent",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "children",
+						"type": "address[]"
+					},
+					{
+						"internalType": "address[]",
+						"name": "indirect",
+						"type": "address[]"
+					},
+					{
+						"internalType": "address[]",
+						"name": "direct",
+						"type": "address[]"
+					},
+					{
+						"internalType": "bool",
+						"name": "registered",
+						"type": "bool"
+					},
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "userJoiningTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "userTradingTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "userTradingLimitTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "userLimitUtilized",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradingLevelBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "packageLevelBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradeXHours",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradingReferralBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "packageReferralBonus",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "selfTradingProfit",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "packageUpgraded",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "future1",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "future2",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "tradeYHours",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Ihelper.UserDetails",
+						"name": "data",
+						"type": "tuple"
+					}
+				],
+				"internalType": "struct Ihelper.User",
+				"name": "user",
+				"type": "tuple"
+			},
+			{
+				"internalType": "address",
+				"name": "addr",
+				"type": "address"
+			}
+		],
+		"name": "incomeEligible",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "incomeWallet",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "proxiableUUID",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "settler",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "totalSpent",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "totalWon",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "UPGRADE_INTERFACE_VERSION",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
 
 export const helperAddress = mainnet ? "0x7d8893388408923708493bAd6704F0e6BC62a69e"  // Implementation 0x6C41D5bDC97714d50332766F58dE42a243942264  2nd implementation 0xA84B727E7E37f5e5C7FEE90c709a0024c97AE926 3rd implementaiton 0xd6C4B6B2a176D5de81616Ab80Ab66fd7e3A7199A 4th Implementation 0xe074612D53953e12e369Bf77d6867e9bdb114Deb  5th implementation 0xA604897348F618f6935dFa62d6f6fac5727345B8// 6th Implementaiton 0x9d73bE241167Fc25875205a116644D169B408616  7th Implementation 0x955c2cda11d3c4c0315eA85A48cD881B10d9293A  8th Implementaiton // 0x7aDFc221505d04635Bb5ec5774B6970404F5a8c1
  : "0xF0c46668EaA1D36f61e66da0E8F23d7375cD838b"//
@@ -7563,7 +8195,7 @@ export const P2PAdd = mainnet ? "0x156321E10fe6152E17DbFF84efb653Ed3fcd74bb" // 
 export const fetcherHelperv2 = mainnet ? "0x531275f6a03e0a8198066E00BF8Ec544AA1c057E"  //  implementation //0xb1Ed4fAF6c881273D83C7ab3F3bB1c535877E95f
 :"0xF89D8125a94ed0eb30C837d978a8Af2a54e61F2a"
 export const stakingV2Add = mainnet ? ""
-:"0xDc91a0b458d1351b99922343d87832452F4dE680"
+:"0x27a25668DD7647b2aa19dAfa5c09595351565838"
 export const priceOracleAdd = mainnet ? "0x17e7631A0941ee79BaD11d85473E1FE169C98EA8" //  1st Implementation "0x319F6B6B38c2162C57052d5AD7317835A270E8Ee"
 :"0x6176417d8Ab5232175FFEa27b26b2dCeDf09376B"
 export const stakingV1Add = mainnet ?  "0x4Ce39a7F48490c9ad093AC36A13C3B7518F7B002"//"0xb8C6c7151de6933dc0b7DCCDaf1e562c85125e32" //implementaiton 0xdEDe08f1af52A53d40272174D329667811c44A2A 
@@ -7571,8 +8203,9 @@ export const stakingV1Add = mainnet ?  "0x4Ce39a7F48490c9ad093AC36A13C3B7518F7B0
 export const distributionAdd = mainnet ?  "0xaE2A9F5F5AB9f437826D2Ac6173EfB98f86E09da"  // 1st implementaiton "0xaFAa2CB712d3dFcacBaC10b46b2890ed160e59D8"
 : "0x0872c88D2Ca157e4C6221c6B55BeAeba64848Df4"
 export const buySale = mainnet ? ""
-:"0x0b13FbC7d4BF441C5e9f846E7F60846B41eA3cBf"
-
+:"	"
+export const gameAdd = mainnet ? ""
+: "0x8AC075Dd7DfE55CB457e99752119Ebc3c15e1B2A"
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 
@@ -8211,6 +8844,13 @@ export const priceOracleContractR = new web3.eth.Contract(priceOracleAbi,priceOr
 export const distributionContractR = new web3.eth.Contract(distributionAbi,distributionAdd)
 
 export const stakingV1ContractR = new web3.eth.Contract(stakingV1Abi,stakingV1Add)
+export const gameContractR = new web3.eth.Contract(gameAbi,gameAdd)
+
+export const gameContract = {
+	address: gameAdd,
+	abi: gameAbi,
+};
+
 
 export const stakingV1Contract = {
 	address: stakingV1Add,

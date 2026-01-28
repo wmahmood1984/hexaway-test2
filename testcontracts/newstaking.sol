@@ -44,15 +44,13 @@ interface Ihelper {
     }
 
     struct Package {
-        uint id;
+       uint id;
         uint price;
         uint time;
         uint team;
         uint limit;
-        uint purchaseTime;
         uint levelUnlock;
-        uint8 directrequired;
-        uint packageUpgraded;
+        uint8 future;
     }
 
     function userPackage(address user) external view returns (Package memory);
@@ -99,6 +97,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     uint public totalStaked;
     uint public totalEarned;
     address public feeder;
+ 
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -172,7 +171,10 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         address up = user.referrer;
 
-        if (incomeEligible(user, up)) {
+        if (
+           incomeEligible(user, up)
+
+            ) {
             HEXA.transfer(up, (amount * 20) / 100);
         }
 
@@ -223,7 +225,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         uint adminAmount = _amount - (perLevelAmount * paidCount);
 
         if (adminAmount > 0) {
-            USDT.transfer(incomeWallet, adminAmount);
+            HEXA.transfer(incomeWallet, adminAmount);
         }
     }
 

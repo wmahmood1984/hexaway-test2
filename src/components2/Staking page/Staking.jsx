@@ -54,60 +54,60 @@ export default function Staking() {
     }
 
 
-    const onStakeClick = async (trade, id) => {
-        const stakeAmount = 50
+        const onStakeClick = async (trade, id) => {
+            const stakeAmount = 50
 
-        if (
-            Number(USDTBalance) < stakeAmount
-        ) {
-            toast.error("Insufficient USDT Balance")
-            return
-        }
+            if (
+                Number(USDTBalance) < stakeAmount
+            ) {
+                toast.error("Insufficient USDT Balance")
+                return
+            }
 
-        try {
-            setLoading(true);
+            try {
+                setLoading(true);
+                await executeContract({
+                    config,
+                    functionName: "approve",
+                    args: [stakingV2Add, parseEther(stakeAmount.toString())],
+                    contract: USDTContract,
+                    onSuccess: () => onStakeClick1(),
+                    onError: () => {
+                        setLoading(false);
+                        toast.error("Approval failed");
+                    }
+                });
+
+            } catch (err) {
+                setLoading(false);
+                toast.error("Unexpected error occurred");
+                console.error(err);
+            }
+        };
+
+
+
+
+        const onStakeClick1 = async () => {
             await executeContract({
                 config,
-                functionName: "approve",
-                args: [stakingV2Add, parseEther(stakeAmount.toString())],
-                contract: USDTContract,
-                onSuccess: () => onStakeClick1(),
-                onError: () => {
-                    setLoading(false);
-                    toast.error("Approval failed");
-                }
+                functionName: "stake",
+                args: [],
+                onSuccess: (txHash, receipt) => {
+                    console.log("🎉 Tx Hash:", txHash);
+                    console.log("🚀 Tx Receipt:", receipt);
+                    toast.success("Stake done successfully")
+                    abc()
+                    setLoading(false)
+                },
+                contract: stakingContractV2,
+                onError: (err) => {
+                    console.error("🔥 Error in register:", err);
+                    toast.error("Transaction failed:", reason)
+                    setLoading(false)
+                },
             });
-
-        } catch (err) {
-            setLoading(false);
-            toast.error("Unexpected error occurred");
-            console.error(err);
         }
-    };
-
-
-
-
-    const onStakeClick1 = async () => {
-        await executeContract({
-            config,
-            functionName: "stake",
-            args: [],
-            onSuccess: (txHash, receipt) => {
-                console.log("🎉 Tx Hash:", txHash);
-                console.log("🚀 Tx Receipt:", receipt);
-                toast.success("Stake done successfully")
-
-                setLoading(false)
-            },
-            contract: stakingContractV2,
-            onError: (err) => {
-                console.error("🔥 Error in register:", err);
-                toast.error("Transaction failed:", reason)
-                setLoading(false)
-            },
-        });
-    }
 
 
     const handleClaim = async (id) => {
@@ -119,8 +119,8 @@ export default function Staking() {
             onSuccess: (txHash, receipt) => {
                 console.log("🎉 Tx Hash:", txHash);
                 console.log("🚀 Tx Receipt:", receipt);
-                toast.success("Package Bought Succes")
-
+                toast.success("Claim Succesful")
+                abc()
                 setLoading(false)
             },
             contract: stakingContractV2,
@@ -153,7 +153,7 @@ export default function Staking() {
         );
     }
 
-    console.log("staked", mystake)
+    console.log("staked", myClaims)
 
     return (
         <div>
@@ -329,7 +329,7 @@ export default function Staking() {
                                                         <span style={{ fontSize: "32px" }}>{icon}</span>
                                                         <div>
                                                             <div style={{ fontSize: "16px", color: "#0f172a", fontWeight: "900" }}>
-                                                                $ {formatWithCommas(formatEther(v.amount))} Staking
+                                                                $ {formatWithCommas(formatEther(v.amount) * hexaPrice)} Staking
                                                             </div>
                                                             <div style={{ fontSize: "12px", color: "#0f172a", opacity: "0.7" }}>
                                                                 {150} days
@@ -448,11 +448,11 @@ export default function Staking() {
                                                 </div>
                                                 <div style={{ textAlign: "right", marginTop: "8px" }}>
                                                     <div style={{ fontSize: "18px", color: "#06b6d4", fontWeight: 900 }}>
-                                                        +${formatWithCommas(formatEther(v.amountClaimed))} HEXA
+                                                        +{formatWithCommas(formatEther(v.amountClaimed))} HEXA
                                                     </div>
-                                                    <div style={{ fontSize: "12px", color: "${statusColor}", fontWeight: 700 }}>
+                                                    {/* <div style={{ fontSize: "12px", color: "${statusColor}", fontWeight: 700 }}>
                                                         ${"statusText"}
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </div>
                                             <div style={{ fontSize: "10px", color: "#0f172a", opacity: 0.6 }}>

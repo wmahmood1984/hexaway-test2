@@ -86,20 +86,46 @@ contract game is Initializable, UUPSUpgradeable, OwnableUpgradeable {
  
     }
 
+    struct Game_Settled {
+        uint slot;
+        uint time;
+        Bid[]  bids;
+        address[] winners;
+        address[] losers;
+        uint winningAmount;
+        uint distributedAmountToWinner;
+        uint distributedAmountToAdmin;
+ 
+    }
+
     struct Bid {
         address user;
         uint amount;
+        uint8 color;
     }
 
     Game[] public gameArray;
     address public incomeWallet;
     Ihelper public helperv2;
+    address public settler;
+    Game_Settled[] public gamesSettled;
+    mapping(address=>uint)public userSpent;
+    mapping(address=>uint)public userWon;
+
+
+    event GameSettled(
+        uint256 indexed gameId,
+        uint8 winningColor,
+        address[] winners,
+        uint256 totalWinningAmount
+    );
+
 
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address _hexa, address _incomeWallet, address _helperV2) public initializer {
+    function initialize(address _hexa, address _incomeWallet, address _helperV2, address _settler) public initializer {
     __Ownable_init(msg.sender);
     __UUPSUpgradeable_init();
 
@@ -121,6 +147,7 @@ contract game is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     _addGame(9, 10);
     incomeWallet = _incomeWallet;
     helperv2 = Ihelper(_helperV2);
+    settler = _settler;
     }
 
     function _addGame(uint8 slot, uint8 time) internal {
@@ -131,27 +158,123 @@ contract game is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         // g.bids is automatically initialized as empty
     }
 
-    function placeBid(uint _id, uint _amount) public {
+    function placeBid(uint _id, uint _amount, uint8 _color) public {
         Bid[] storage g = gameArray[_id].bids;
         require(hexa.allowance(msg.sender,address(this))>=_amount,"insufficient allowance");
         hexa.transferFrom(msg.sender, address(this), _amount);
-        Bid memory tx1 = Bid(msg.sender,_amount);
+        Bid memory tx1 = Bid(msg.sender,_amount,_color);
         g.push(tx1);
 
-           hexa.transfer(incomeWallet, (_amount * 20) / 100);
+        uint distributableAmount = _amount * 18/100;
+
+        hexa.transfer(incomeWallet, (distributableAmount * 20) / 100);
 
         Ihelper.User memory user = helperv2.getUser(msg.sender);
 
         address up = user.referrer;
 
         if (incomeEligible(user, up)) {
-            hexa.transfer(up, (_amount * 20) / 100);
+            hexa.transfer(up, (distributableAmount * 20) / 100);
         }
 
         address[] memory uplines = helperv2.getUplines(msg.sender);
 
-        processLevelIncome(uplines, _amount * 60 /100);
+        processLevelIncome(uplines, distributableAmount * 60 /100);
+        userSpent[msg.sender]+=_amount;
     }
+
+    function settlement(uint256 _id) external onlyOwner {
+        require(_id < gameArray.length, "Invalid game id");
+
+
+        Game storage g = gameArray[_id];
+        uint256 bidsLength = g.bids.length;
+        require(bidsLength > 0, "No bids");
+
+        // -----------------------------
+        // STEP 1: Aggregate by color
+        // -----------------------------
+        // Adjust size if you have more colors
+        uint[] memory totalAmountByColor = new uint[](g.slot);
+        uint256[] memory totalCountByColor = new uint[](g.slot);
+
+        for (uint256 i = 0; i < bidsLength; i++) {
+            Bid storage b = g.bids[i];
+            require(b.color < g.slot, "Invalid color");
+
+            totalAmountByColor[b.color] += b.amount;
+            totalCountByColor[b.color] += 1;
+        }
+
+        // -----------------------------
+        // STEP 2: Find lowest amount
+        // -----------------------------
+        uint8 winningColor;
+        uint256 lowestAmount = type(uint256).max;
+
+        for (uint8 c = 0; c < g.slot; c++) {
+            if (totalAmountByColor[c] > 0 && totalAmountByColor[c] < lowestAmount) {
+                lowestAmount = totalAmountByColor[c];
+                winningColor = c;
+            }
+        }
+
+        require(lowestAmount != type(uint256).max, "No valid winner");
+
+        // -----------------------------
+        // STEP 3: Collect winners
+        // -----------------------------
+        address[] memory winners = new address[](totalCountByColor[winningColor]);
+        uint256 winnerIndex;
+        uint256 totalPayout;
+
+        for (uint256 i = 0; i < bidsLength; i++) {
+            Bid storage b = g.bids[i];
+
+            if (b.color == winningColor) {
+                winners[winnerIndex++] = b.user;
+
+                uint256 payout = b.amount * 2;
+                totalPayout += payout;
+
+                hexa.transfer(b.user, payout);
+                userWon[b.user]+=payout;
+                
+                
+
+            }
+        }
+
+        // -----------------------------
+        // STEP 4: Income wallet logic
+        // -----------------------------
+        uint256 totalBidded;
+        for (uint8 c = 0; c < g.slot; c++) {
+            totalBidded += totalAmountByColor[c];
+        }
+
+        uint256 incomeAmount =
+            totalBidded
+            - ((totalBidded * 18) / 100)
+            - totalPayout;
+
+        if (incomeAmount > 0) {
+            hexa.transfer(incomeWallet, incomeAmount);
+        }
+
+        // -----------------------------
+        // STEP 5: Finalize
+        // -----------------------------
+
+
+        emit GameSettled(
+            _id,
+            winningColor,
+            winners,
+            totalAmountByColor[winningColor]
+        );
+    }
+
 
 
     function processLevelIncome(
@@ -164,11 +287,7 @@ contract game is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         for (uint i = 0; i < _uplines.length; i++) {
             address up = _uplines[i];
             Ihelper.User memory upline = helperv2.getUser(up);
-            // Level number is 1-based
 
-            // Cache active directs (important for gas + correctness)
-
-            // Level unlocked via active directs
             bool eligible = upline.direct.length >= 2;
 
             if (eligible && incomeEligible(upline, up)) {
@@ -178,7 +297,7 @@ contract game is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             }
         }
 
-        // Remaining amount goes to admin
+
 
         uint adminAmount = _amount - (perLevelAmount * paidCount);
 
