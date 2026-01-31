@@ -1,11 +1,12 @@
 import { AbiCoder, parseEther } from 'ethers'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { gameAdd, gameContract, gameContractR, HexaContract, HEXAContractR, priceOracleContractR } from '../../config'
 import { useAppKitAccount } from '@reown/appkit/react'
 import { useConfig } from 'wagmi'
 import { executeContract } from '../../utils/contractExecutor'
 import RoundCountdown from './Countdown'
+import DepositModal from './Modal'
 
 const colors = ['Red', 'Green', 'Purple', "black", "yellow", "blue", "pink", "grey", "orange"]
 
@@ -20,33 +21,36 @@ export default function Game() {
   const [Spent, setSpent] = useState(0)
   const [Won, setWon] = useState(0)
   const [selectedColor, setSelectedColor] = useState(null)
-  
-  const [gameRan, setGamRan] = useState(0)
+  const [showDeposit, setShowDeposit] = useState(false);
+  const ROUND_BUFFER = 1; // safety buffer
+
+  const [gameRan, setGameRan] = useState(0);
+  const [remaining, setRemaining] = useState(0);
   const [predictionHistory, setPredictionHistory] = useState()
   const [loading, setLoading] = useState(false)
 
 
-const findGame = (slots, time) => {
-  switch (true) {
-    case slots === 3 && time === 1: return 0;
-    case slots === 3 && time === 3: return 1;
-    case slots === 3 && time === 5: return 2;
-    case slots === 3 && time === 10: return 3;
+  const findGame = (slots, time) => {
+    switch (true) {
+      case slots === 3 && time === 1: return 0;
+      case slots === 3 && time === 3: return 1;
+      case slots === 3 && time === 5: return 2;
+      case slots === 3 && time === 10: return 3;
 
-    case slots === 6 && time === 1: return 4;
-    case slots === 6 && time === 3: return 5;
-    case slots === 6 && time === 5: return 6;
-    case slots === 6 && time === 10: return 7;
+      case slots === 6 && time === 1: return 4;
+      case slots === 6 && time === 3: return 5;
+      case slots === 6 && time === 5: return 6;
+      case slots === 6 && time === 10: return 7;
 
-    case slots === 9 && time === 1: return 8;
-    case slots === 9 && time === 3: return 9;
-    case slots === 9 && time === 5: return 10;
-    case slots === 9 && time === 10: return 11;
+      case slots === 9 && time === 1: return 8;
+      case slots === 9 && time === 3: return 9;
+      case slots === 9 && time === 5: return 10;
+      case slots === 9 && time === 10: return 11;
 
-    default:
-      throw new Error("Invalid slots or time combination");
-  }
-};
+      default:
+        throw new Error("Invalid slots or time combination");
+    }
+  };
 
 
 
@@ -55,20 +59,47 @@ const findGame = (slots, time) => {
   }, [address])
 
 
-    useEffect(() => {
-    fetchGameRan()
-  }, [time,slot])
+  const fetchGameRan = useCallback(async () => {
+    const gameAddr = findGame(slot, time);
+    const ran = await gameContractR.methods.gameRan(gameAddr).call();
+    setGameRan(Number(ran));
+  }, [slot, time]);
 
-  const fetchGameRan = async () => {
-    let gameAddr = findGame(slot, time);
-    const _gameRan = await gameContractR.methods.gameRan(gameAddr).call()
-    setGamRan(_gameRan)
-  }
+
+  useEffect(() => {
+    fetchGameRan();
+  }, [fetchGameRan]);
+
+
+  useEffect(() => {
+    if (!gameRan) return;
+
+    const interval = setInterval(() => {
+      const now = Math.floor(Date.now() / 1000);
+      const end = gameRan + time * 60;
+      const diff = Math.max(end - now, 0);
+
+      setRemaining(diff);
+
+      // 🔁 Round ended → refetch once
+      if (diff === 0) {
+        fetchGameRan();
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [gameRan, time, fetchGameRan]);
+
+
+
+
+
+
 
 
   const abc = async () => {
-    const _hexaBalance = await HEXAContractR.methods.balanceOf(address).call()
-    setHexaBalance((_hexaBalance / 1e18).toFixed(4))
+    const _hexaBalance = await gameContractR.methods.balance(address).call()
+    setHexaBalance((_hexaBalance / 1e18).toFixed(0))
     const _price = await priceOracleContractR.methods.price().call()
     setPrice((_price / 1e18).toFixed(4))
     const _spent = await gameContractR.methods.userSpent(address).call()
@@ -76,75 +107,77 @@ const findGame = (slots, time) => {
     const _won = await gameContractR.methods.userWon(address).call()
     setWon((_won / 1e18).toFixed(4))
     const _game = await gameContractR.methods.getGame().call()
-    console.log("game",_game)
-  
+    console.log("game", _game)
+
   }
+//
+
+  const handleClick = async (v) => {
 
 
-    const handleClick = async (trade, id) => {
-
-
-        if (
-            Number(hexaBalance) < amount
-        ) {
-            toast.error("Insufficient HEXA Balance")
-            return
-        }
-
-        try {
-            setLoading(true);
-            await executeContract({
-                config,
-                functionName: "approve",
-                args: [gameAdd, parseEther(amount.toString())],
-                contract: HexaContract,
-                onSuccess: () => onStakeClick1(),
-                onError: () => {
-                    setLoading(false);
-                    toast.error("Approval failed");
-                }
-            });
-
-        } catch (err) {
-            setLoading(false);
-            toast.error("Unexpected error occurred");
-            console.error(err);
-        }
-    };
-
-
-
-
-    const onStakeClick1 = async () => {
-        
-      let gameAddr = findGame(slot, time);
-      console.log("object",gameAddr)
-      await executeContract({
-            config,
-            functionName: "placeBid",
-            args: [gameAddr, parseEther(amount.toString()), colors.indexOf(selectedColor)],
-            onSuccess: (txHash, receipt) => {
-                console.log("🎉 Tx Hash:", txHash);
-                console.log("🚀 Tx Receipt:", receipt);
-                toast.success("Stake done successfully")
-
-                setLoading(false)
-            },
-            contract: gameContract,
-            onError: (err) => {
-                console.error("🔥 Error in register:", err);
-                toast.error("Transaction failed:", reason)
-                setLoading(false)
-            },
-        });
+    if (
+      Number(hexaBalance) < amount
+    ) {
+      toast.error("Insufficient HEXA Balance")
+      return
     }
+
+    const value = amount / price;
+    console.log("value", value)
+    try {
+      setLoading(true);
+      await executeContract({
+        config,
+        functionName: "approve",
+        args: [gameAdd, parseEther(value.toString())],
+        contract: HexaContract,
+        onSuccess: () => onStakeClick1(v),
+        onError: () => {
+          setLoading(false);
+          toast.error("Approval failed");
+        }
+      });
+
+    } catch (err) {
+      setLoading(false);
+      toast.error("Unexpected error occurred");
+      console.error(err);
+    }
+  };
+
+
+
+
+  const onStakeClick1 = async (v) => {
+
+    let gameAddr = findGame(slot, time);
+    console.log("object", gameAddr)
+    await executeContract({
+      config,
+      functionName: "placeBid",
+      args: [gameAddr, parseEther(amount.toString()), colors.indexOf(v)],
+      onSuccess: (txHash, receipt) => {
+        console.log("🎉 Tx Hash:", txHash);
+        console.log("🚀 Tx Receipt:", receipt);
+        toast.success("Stake done successfully")
+
+        setLoading(false)
+      },
+      contract: gameContract,
+      onError: (err) => {
+        console.error("🔥 Error in register:", err);
+        toast.error("Transaction failed:", reason)
+        setLoading(false)
+      },
+    });
+  }
 
 
 
   const isLoading = false;
-  const now = new Date().getTime()/1000;
+  const now = new Date().getTime() / 1000;
 
-  const duration = ((Number(gameRan) + Number(time * 60))-now).toFixed(0)
+  const duration = ((Number(gameRan) + Number(time * 60)) - now).toFixed(0)
 
 
   if (isLoading) {
@@ -157,7 +190,7 @@ const findGame = (slots, time) => {
     );
   }
 
-  console.log("prediction", { duration,now,gameRan,time })
+  // console.log("prediction", { duration, now, gameRan, time })
 
   return (
     <div>
@@ -178,6 +211,10 @@ const findGame = (slots, time) => {
                 </div>
               </div>
             </div>
+
+            <button 
+            style={{ padding: "12px 8px", borderRadius: "10px", border: "2px solid #8b5cf6", background:   "#8b5cf6", color:  "white" , cursor: "pointer", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", fontWeight: 700, transition: "all 0.2s" }}
+            onClick={() => setShowDeposit(true)}>Deposit</button>
 
 
             <div style={{ background: "linear-gradient(135deg, #ffffff, #8b5cf630)", padding: "16px", borderRadius: "16px", marginBottom: "24px", boxShadow: "0 10px 40px rgba(0,0,0,0.4)", border: "3px solid #8b5cf6" }}>
@@ -232,7 +269,7 @@ const findGame = (slots, time) => {
 
               <div style={{ marginBottom: "16px" }}>
                 <label style={{ display: "block", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#0f172a", fontWeight: 700, marginBottom: "8px" }}>
-                  🎰 Select Slots
+                  🎰 Select Color
                 </label>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
                   <button
@@ -242,7 +279,7 @@ const findGame = (slots, time) => {
                     data-slots="3"
                     style={{ padding: "12px 8px", borderRadius: "10px", border: slot == 3 ? "2px solid #8b5cf6" : "2px solid #8b5cf640", background: slot == 3 ? "#8b5cf6" : "#f8fafc", color: slot == 3 ? "white" : "#0f172a", cursor: "pointer", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", fontWeight: 700, transition: "all 0.2s" }}
                   >
-                    3 Slots
+                    3 Colors
                   </button>
                   <button
                     onClick={() => { setSlots(6) }}
@@ -251,7 +288,7 @@ const findGame = (slots, time) => {
                     data-slots="6"
                     style={{ padding: "12px 8px", borderRadius: "10px", border: slot == 6 ? "2px solid #8b5cf6" : "2px solid #8b5cf640", background: slot == 6 ? "#8b5cf6" : "#f8fafc", color: slot == 6 ? "white" : "#0f172a", cursor: "pointer", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", fontWeight: 700, transition: "all 0.2s" }}
                   >
-                    6 Slots
+                    6 Colors
                   </button>
                   <button
                     onClick={() => { setSlots(9) }}
@@ -260,7 +297,7 @@ const findGame = (slots, time) => {
                     data-slots="9"
                     style={{ padding: "12px 8px", borderRadius: "10px", border: slot == 9 ? "2px solid #8b5cf6" : "2px solid #8b5cf640", background: slot == 9 ? "#8b5cf6" : "#f8fafc", color: slot == 9 ? "white" : "#0f172a", cursor: "pointer", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", fontWeight: 700, transition: "all 0.2s" }}
                   >
-                    9 Slots
+                    9 Colors
                   </button>
                 </div>
               </div>
@@ -323,8 +360,8 @@ const findGame = (slots, time) => {
                 </div>
               </div> */}
 
-              <RoundCountdown initialSeconds={duration} 
-              onComplete={fetchGameRan}
+              <RoundCountdown seconds={remaining}
+
               />
 
 
@@ -407,12 +444,13 @@ const findGame = (slots, time) => {
                             </div>
 
                             <button
-                              onClick={()=>{setSelectedColor(v)}}
+                              disabled={duration <= 10}
+                              onClick={() => { handleClick(v) }}
                               class="select-slot-btn"
                               data-slot-index="0"
                               style={{ width: "100%", background: "rgba(255,255,255,0.3)", color: "#ffffff", border: "2px solid rgba(255,255,255,0.5)", padding: "8px", borderRadius: "8px", cursor: "pointer", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "12px", fontWeight: 900, marginTop: "8px", transition: "all 0.2s", boxSizing: "border-box", textShadow: "0 1px 2px rgba(0,0,0,0.2)", backdropFilter: "blur(10px)" }}
                             >
-                              ✓ Select Slot
+                              ✓ Select Color
                             </button>
                           </div>
                         </div>
@@ -494,13 +532,13 @@ const findGame = (slots, time) => {
               </div>
 
 
-              <button
+              {/* <button
                 onClick={handleClick}
                 id="confirmPredictionBtn"
                 style={{ display: "block", width: "100%", background: "linear-gradient(135deg, #10b981, #059669)", color: "white", border: "none", padding: "16px", borderRadius: "12px", cursor: "pointer", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "18px", fontWeight: 900, boxShadow: "0 6px 20px #10b98160", marginBottom: "16px" }}
               >
                 🎯 Confirm & Start Game
-              </button>
+              </button> */}
 
             </div>
 
@@ -870,6 +908,16 @@ const findGame = (slots, time) => {
           </div>
         </div>
       </div>
+
+      <DepositModal
+        isOpen={showDeposit}
+        onClose={() => setShowDeposit(false)}
+        executeContract={executeContract}
+        config={config}
+        gameContract={gameContract}
+        hexaBalance={hexaBalance}
+        price={price}
+      />
     </div>
   )
 }

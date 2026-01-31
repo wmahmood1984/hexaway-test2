@@ -1,28 +1,10 @@
 import { useEffect, useState } from "react";
+import { gameContractR } from "../../config";
 
 export default function RoundCountdown({
-  initialSeconds,
-  warningAt = 10, // seconds
-  onComplete,
+  seconds, warningAt = 10
 }) {
-  const [seconds, setSeconds] = useState(initialSeconds);
 
-  useEffect(() => {
-    setSeconds(initialSeconds);
-  }, [initialSeconds]);
-
-  useEffect(() => {
-    if (seconds <= 0) {
-      onComplete?.();
-      return;
-    }
-
-    const timer = setInterval(() => {
-      setSeconds((prev) => Math.max(prev - 1, 0));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [seconds, onComplete]);
 
   return (
     <div

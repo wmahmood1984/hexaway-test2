@@ -7601,6 +7601,19 @@ export const gameAbi = [
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "deposit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "implementation",
 				"type": "address"
@@ -7718,28 +7731,7 @@ export const gameAbi = [
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_hexa",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_incomeWallet",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_helper",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_settler",
-				"type": "address"
-			}
-		],
+		"inputs": [],
 		"name": "initialize",
 		"outputs": [],
 		"stateMutability": "nonpayable",
@@ -7862,6 +7854,25 @@ export const gameAbi = [
 		"name": "upgradeToAndCall",
 		"outputs": [],
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "balance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -8099,6 +8110,19 @@ export const gameAbi = [
 	},
 	{
 		"inputs": [],
+		"name": "priceOracle",
+		"outputs": [
+			{
+				"internalType": "contract IpriceOracle",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "proxiableUUID",
 		"outputs": [
 			{
@@ -8194,7 +8218,7 @@ export const P2PAdd = mainnet ? "0x156321E10fe6152E17DbFF84efb653Ed3fcd74bb" // 
 :"0x4587931628CE2208296BE1a34847DF9b39471121"
 export const fetcherHelperv2 = mainnet ? "0x531275f6a03e0a8198066E00BF8Ec544AA1c057E"  //  implementation //0xb1Ed4fAF6c881273D83C7ab3F3bB1c535877E95f
 :"0xF89D8125a94ed0eb30C837d978a8Af2a54e61F2a"
-export const stakingV2Add = mainnet ? ""
+export const stakingV2Add = mainnet ? "0xeB5b77bdb4410c03f275171Ee1632D2a38d39410"
 :"0x27a25668DD7647b2aa19dAfa5c09595351565838"
 export const priceOracleAdd = mainnet ? "0x17e7631A0941ee79BaD11d85473E1FE169C98EA8" //  1st Implementation "0x319F6B6B38c2162C57052d5AD7317835A270E8Ee"
 :"0x6176417d8Ab5232175FFEa27b26b2dCeDf09376B"
@@ -8202,10 +8226,10 @@ export const stakingV1Add = mainnet ?  "0x4Ce39a7F48490c9ad093AC36A13C3B7518F7B0
 :"0x0EeE249Da3Df668bb65b2FbDb5f44e6a75E906d7"
 export const distributionAdd = mainnet ?  "0xaE2A9F5F5AB9f437826D2Ac6173EfB98f86E09da"  // 1st implementaiton "0xaFAa2CB712d3dFcacBaC10b46b2890ed160e59D8"
 : "0x0872c88D2Ca157e4C6221c6B55BeAeba64848Df4"
-export const buySale = mainnet ? ""
-:"	"
+export const buySale = mainnet ? "0x052DbC12bac5490e4225042493bF9B438545668E"
+:"0x0b13FbC7d4BF441C5e9f846E7F60846B41eA3cBf"
 export const gameAdd = mainnet ? ""
-: "0x8AC075Dd7DfE55CB457e99752119Ebc3c15e1B2A"
+: "0x9C57864021911A64a59264D5B865A4B3eF3C8177"
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 

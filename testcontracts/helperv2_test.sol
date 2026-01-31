@@ -2218,16 +2218,16 @@ contract Helperv2 is
         ticketMapping[ticketIndex] = tx1;
         ticketIndex++;
 
-        paymentToken.transfer(adminWallet, (amount * 10) / 100);
+        paymentToken.transfer(adminWallet, (amount * 5) / 100);
         address referrer = users[msg.sender].referrer == address(0)
             ? adminWallet
             : users[msg.sender].referrer;
         if (incomeEligible(referrer)) {
-            paymentToken.transfer(referrer, (amount * 5) / 100);
+            paymentToken.transfer(referrer, (amount * 25) / 1000);
         }
 
-        emit Incomes(block.timestamp, (amount * 5) / 100, 0, referrer, 0, 0);
-        users[referrer].data.tradingReferralBonus += (amount * 5) / 100;
+        emit Incomes(block.timestamp, (amount * 25) / 1000, 0, referrer, 0, 0);
+        users[referrer].data.tradingReferralBonus += (amount * 25) / 1000;
         users[msg.sender].data.userLimitUtilized++;
         users[msg.sender].data.userTradingTime = block.timestamp;
         users[msg.sender].data.tradeXHours += amount;
@@ -2253,16 +2253,16 @@ contract Helperv2 is
         address[] memory _uplines = getUplines(msg.sender);
 
         if (_uplines.length == 25) {
-            paymentToken.transfer(_uplines[24], (amount * 5) / 100);
+            paymentToken.transfer(_uplines[24], (amount * 25) / 1000);
         } else {
-            paymentToken.transfer(adminWallet, (amount * 5) / 100);
+            paymentToken.transfer(adminWallet, (amount * 25) / 1000);
         }
 
-        processLevelIncome(_uplines, (amount * 30) / 100, 24, 1, 0);
-        ticketMapping[activeTicketIndex].income += (amount * 50) / 100;
-        balance[ticketMapping[activeTicketIndex].user] += (amount * 50) / 100;
+        processLevelIncome(_uplines, (amount * 15) / 100, 24, 1, 0);
+        ticketMapping[activeTicketIndex].income += (amount * 75) / 100;
+        balance[ticketMapping[activeTicketIndex].user] += (amount * 75) / 100;
         users[ticketMapping[activeTicketIndex].user].data.selfTradingProfit +=
-            (amount * 50) / 100;
+            (amount * 75) / 100;
 
         if (ticketMapping[activeTicketIndex].income >= (amount * 3) / 2) {
             ticketMapping[activeTicketIndex].active = true;

@@ -136,7 +136,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function stake() public {
-        if (block.timestamp > stakeDoneTime + 30 minutes) {
+        if (block.timestamp > stakeDoneTime + 24 hours) {
             stakeDone = 0;
             stakeDoneTime = block.timestamp;
         }
@@ -150,7 +150,7 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             "Invalid stake amount"
         );
 
-        uint hexaConverted = stakeAmount * priceOracle.price() / 10**18;
+        uint hexaConverted = stakeAmount *10**18  / priceOracle.price();
         USDT.transferFrom(msg.sender, buySale, stakeAmount * 70/100);
         USDT.transferFrom(msg.sender, incomeWallet, stakeAmount * 30/100);
         stakeMapping[stakeIndex] = Stake({
@@ -168,11 +168,13 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         HEXA.transfer(incomeWallet, (amount * 20) / 100);
 
         Ihelper.User memory user = helperv2.getUser(msg.sender);
-
         address up = user.referrer;
+        Ihelper.User memory Referrer = helperv2.getUser(up);
+
+
 
         if (
-           incomeEligible(user, up)
+           incomeEligible(Referrer, up)
 
             ) {
             HEXA.transfer(up, (amount * 20) / 100);
@@ -191,9 +193,9 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         address _up
     ) public view returns (bool) {
         return
-            block.timestamp - _user.data.packageUpgraded <= 60 *  45 &&
+            block.timestamp - _user.data.packageUpgraded <= 60 *60*24*  45 &&
             helperv2.userPackage(_up).id > 0 &&
-            block.timestamp - _user.data.userTradingTime <= 60 * 60 * 2;
+            block.timestamp - _user.data.userTradingTime <= 60 * 60 * 24*30;
     }
 
     function processLevelIncome(
@@ -244,10 +246,10 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     function getAmounts(uint _id) public view returns (uint claimable) {
         uint amount = stakeMapping[_id].amount;
-        uint daysPassed = (block.timestamp - stakeMapping[_id].time) / (60) >
+        uint daysPassed = (block.timestamp - stakeMapping[_id].time) / (60*60*24) >
             150
             ? 150
-            : (block.timestamp - stakeMapping[_id].time) / (60);
+            : (block.timestamp - stakeMapping[_id].time) / (60*60*24);
         claimable = (amount * APR * daysPassed) / 10000;
     }
 
@@ -331,11 +333,6 @@ contract Staking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         return userStake;
     }
 
-    function withdrawTokens() public onlyOwner {
-        USDT.transfer(owner(), USDT.balanceOf(address(this)));
-                HEXA.transfer(owner(), HEXA.balanceOf(address(this)));
-    }
-    
 
 
 }
