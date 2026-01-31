@@ -110,9 +110,9 @@ export default function Game() {
     console.log("game", _game)
 
   }
-//
 
-  const handleClick = async (v) => {
+
+  const handleClick1 = async (v) => {
 
 
     if (
@@ -148,7 +148,7 @@ export default function Game() {
 
 
 
-  const onStakeClick1 = async (v) => {
+  const handleClick = async (v) => {
 
     let gameAddr = findGame(slot, time);
     console.log("object", gameAddr)
