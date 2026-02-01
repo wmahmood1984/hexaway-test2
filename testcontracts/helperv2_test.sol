@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // File: @openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol
 
-
 // OpenZeppelin Contracts (last updated v5.3.0) (proxy/utils/Initializable.sol)
 
 pragma solidity ^0.8.20;
@@ -77,7 +76,8 @@ abstract contract Initializable {
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.Initializable")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant INITIALIZABLE_STORAGE = 0xf0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a00;
+    bytes32 private constant INITIALIZABLE_STORAGE =
+        0xf0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a00;
 
     /**
      * @dev The contract is already initialized.
@@ -224,7 +224,12 @@ abstract contract Initializable {
      *
      * NOTE: Consider following the ERC-7201 formula to derive storage locations.
      */
-    function _initializableStorageSlot() internal pure virtual returns (bytes32) {
+    function _initializableStorageSlot()
+        internal
+        pure
+        virtual
+        returns (bytes32)
+    {
         return INITIALIZABLE_STORAGE;
     }
 
@@ -232,7 +237,11 @@ abstract contract Initializable {
      * @dev Returns a pointer to the storage namespace.
      */
     // solhint-disable-next-line var-name-mixedcase
-    function _getInitializableStorage() private pure returns (InitializableStorage storage $) {
+    function _getInitializableStorage()
+        private
+        pure
+        returns (InitializableStorage storage $)
+    {
         bytes32 slot = _initializableStorageSlot();
         assembly {
             $.slot := slot
@@ -241,7 +250,6 @@ abstract contract Initializable {
 }
 
 // File: @openzeppelin/contracts/interfaces/draft-IERC1822.sol
-
 
 // OpenZeppelin Contracts (last updated v5.4.0) (interfaces/draft-IERC1822.sol)
 
@@ -265,7 +273,6 @@ interface IERC1822Proxiable {
 
 // File: @openzeppelin/contracts/proxy/beacon/IBeacon.sol
 
-
 // OpenZeppelin Contracts (last updated v5.4.0) (proxy/beacon/IBeacon.sol)
 
 pragma solidity >=0.4.16;
@@ -283,7 +290,6 @@ interface IBeacon {
 }
 
 // File: @openzeppelin/contracts/interfaces/IERC1967.sol
-
 
 // OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1967.sol)
 
@@ -310,7 +316,6 @@ interface IERC1967 {
 }
 
 // File: @openzeppelin/contracts/utils/Errors.sol
-
 
 // OpenZeppelin Contracts (last updated v5.1.0) (utils/Errors.sol)
 
@@ -348,11 +353,9 @@ library Errors {
 
 // File: @openzeppelin/contracts/utils/Address.sol
 
-
 // OpenZeppelin Contracts (last updated v5.4.0) (utils/Address.sol)
 
 pragma solidity ^0.8.20;
-
 
 /**
  * @dev Collection of functions related to the address type
@@ -384,7 +387,9 @@ library Address {
             revert Errors.InsufficientBalance(address(this).balance, amount);
         }
 
-        (bool success, bytes memory returndata) = recipient.call{value: amount}("");
+        (bool success, bytes memory returndata) = recipient.call{value: amount}(
+            ""
+        );
         if (!success) {
             _revert(returndata);
         }
@@ -408,7 +413,10 @@ library Address {
      * - `target` must be a contract.
      * - calling `target` with `data` must not revert.
      */
-    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+    function functionCall(
+        address target,
+        bytes memory data
+    ) internal returns (bytes memory) {
         return functionCallWithValue(target, data, 0);
     }
 
@@ -421,11 +429,17 @@ library Address {
      * - the calling contract must have an ETH balance of at least `value`.
      * - the called Solidity function must be `payable`.
      */
-    function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value
+    ) internal returns (bytes memory) {
         if (address(this).balance < value) {
             revert Errors.InsufficientBalance(address(this).balance, value);
         }
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
         return verifyCallResultFromTarget(target, success, returndata);
     }
 
@@ -433,7 +447,10 @@ library Address {
      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
      * but performing a static call.
      */
-    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+    function functionStaticCall(
+        address target,
+        bytes memory data
+    ) internal view returns (bytes memory) {
         (bool success, bytes memory returndata) = target.staticcall(data);
         return verifyCallResultFromTarget(target, success, returndata);
     }
@@ -442,7 +459,10 @@ library Address {
      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
      * but performing a delegate call.
      */
-    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+    function functionDelegateCall(
+        address target,
+        bytes memory data
+    ) internal returns (bytes memory) {
         (bool success, bytes memory returndata) = target.delegatecall(data);
         return verifyCallResultFromTarget(target, success, returndata);
     }
@@ -473,7 +493,10 @@ library Address {
      * @dev Tool to verify that a low level call was successful, and reverts if it wasn't, either by bubbling the
      * revert reason or with a default {Errors.FailedCall} error.
      */
-    function verifyCallResult(bool success, bytes memory returndata) internal pure returns (bytes memory) {
+    function verifyCallResult(
+        bool success,
+        bytes memory returndata
+    ) internal pure returns (bytes memory) {
         if (!success) {
             _revert(returndata);
         } else {
@@ -498,7 +521,6 @@ library Address {
 }
 
 // File: @openzeppelin/contracts/utils/StorageSlot.sol
-
 
 // OpenZeppelin Contracts (last updated v5.1.0) (utils/StorageSlot.sol)
 // This file was procedurally generated from scripts/generate/templates/StorageSlot.js.
@@ -564,7 +586,9 @@ library StorageSlot {
     /**
      * @dev Returns an `AddressSlot` with member `value` located at `slot`.
      */
-    function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
+    function getAddressSlot(
+        bytes32 slot
+    ) internal pure returns (AddressSlot storage r) {
         assembly ("memory-safe") {
             r.slot := slot
         }
@@ -573,7 +597,9 @@ library StorageSlot {
     /**
      * @dev Returns a `BooleanSlot` with member `value` located at `slot`.
      */
-    function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
+    function getBooleanSlot(
+        bytes32 slot
+    ) internal pure returns (BooleanSlot storage r) {
         assembly ("memory-safe") {
             r.slot := slot
         }
@@ -582,7 +608,9 @@ library StorageSlot {
     /**
      * @dev Returns a `Bytes32Slot` with member `value` located at `slot`.
      */
-    function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
+    function getBytes32Slot(
+        bytes32 slot
+    ) internal pure returns (Bytes32Slot storage r) {
         assembly ("memory-safe") {
             r.slot := slot
         }
@@ -591,7 +619,9 @@ library StorageSlot {
     /**
      * @dev Returns a `Uint256Slot` with member `value` located at `slot`.
      */
-    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
+    function getUint256Slot(
+        bytes32 slot
+    ) internal pure returns (Uint256Slot storage r) {
         assembly ("memory-safe") {
             r.slot := slot
         }
@@ -600,7 +630,9 @@ library StorageSlot {
     /**
      * @dev Returns a `Int256Slot` with member `value` located at `slot`.
      */
-    function getInt256Slot(bytes32 slot) internal pure returns (Int256Slot storage r) {
+    function getInt256Slot(
+        bytes32 slot
+    ) internal pure returns (Int256Slot storage r) {
         assembly ("memory-safe") {
             r.slot := slot
         }
@@ -609,7 +641,9 @@ library StorageSlot {
     /**
      * @dev Returns a `StringSlot` with member `value` located at `slot`.
      */
-    function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
+    function getStringSlot(
+        bytes32 slot
+    ) internal pure returns (StringSlot storage r) {
         assembly ("memory-safe") {
             r.slot := slot
         }
@@ -618,7 +652,9 @@ library StorageSlot {
     /**
      * @dev Returns an `StringSlot` representation of the string storage pointer `store`.
      */
-    function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
+    function getStringSlot(
+        string storage store
+    ) internal pure returns (StringSlot storage r) {
         assembly ("memory-safe") {
             r.slot := store.slot
         }
@@ -627,7 +663,9 @@ library StorageSlot {
     /**
      * @dev Returns a `BytesSlot` with member `value` located at `slot`.
      */
-    function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
+    function getBytesSlot(
+        bytes32 slot
+    ) internal pure returns (BytesSlot storage r) {
         assembly ("memory-safe") {
             r.slot := slot
         }
@@ -636,7 +674,9 @@ library StorageSlot {
     /**
      * @dev Returns an `BytesSlot` representation of the bytes storage pointer `store`.
      */
-    function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
+    function getBytesSlot(
+        bytes storage store
+    ) internal pure returns (BytesSlot storage r) {
         assembly ("memory-safe") {
             r.slot := store.slot
         }
@@ -645,14 +685,9 @@ library StorageSlot {
 
 // File: @openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol
 
-
 // OpenZeppelin Contracts (last updated v5.4.0) (proxy/ERC1967/ERC1967Utils.sol)
 
 pragma solidity ^0.8.21;
-
-
-
-
 
 /**
  * @dev This library provides getters and event emitting update functions for
@@ -664,7 +699,8 @@ library ERC1967Utils {
      * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1.
      */
     // solhint-disable-next-line private-vars-leading-underscore
-    bytes32 internal constant IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+    bytes32 internal constant IMPLEMENTATION_SLOT =
+        0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
     /**
      * @dev The `implementation` of the proxy is invalid.
@@ -700,7 +736,9 @@ library ERC1967Utils {
         if (newImplementation.code.length == 0) {
             revert ERC1967InvalidImplementation(newImplementation);
         }
-        StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
+        StorageSlot
+            .getAddressSlot(IMPLEMENTATION_SLOT)
+            .value = newImplementation;
     }
 
     /**
@@ -710,7 +748,10 @@ library ERC1967Utils {
      *
      * Emits an {IERC1967-Upgraded} event.
      */
-    function upgradeToAndCall(address newImplementation, bytes memory data) internal {
+    function upgradeToAndCall(
+        address newImplementation,
+        bytes memory data
+    ) internal {
         _setImplementation(newImplementation);
         emit IERC1967.Upgraded(newImplementation);
 
@@ -726,7 +767,8 @@ library ERC1967Utils {
      * This is the keccak-256 hash of "eip1967.proxy.admin" subtracted by 1.
      */
     // solhint-disable-next-line private-vars-leading-underscore
-    bytes32 internal constant ADMIN_SLOT = 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103;
+    bytes32 internal constant ADMIN_SLOT =
+        0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103;
 
     /**
      * @dev Returns the current admin.
@@ -764,7 +806,8 @@ library ERC1967Utils {
      * This is the keccak-256 hash of "eip1967.proxy.beacon" subtracted by 1.
      */
     // solhint-disable-next-line private-vars-leading-underscore
-    bytes32 internal constant BEACON_SLOT = 0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50;
+    bytes32 internal constant BEACON_SLOT =
+        0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50;
 
     /**
      * @dev Returns the current beacon.
@@ -800,12 +843,18 @@ library ERC1967Utils {
      * it uses an immutable beacon without looking at the value of the ERC-1967 beacon slot for
      * efficiency.
      */
-    function upgradeBeaconToAndCall(address newBeacon, bytes memory data) internal {
+    function upgradeBeaconToAndCall(
+        address newBeacon,
+        bytes memory data
+    ) internal {
         _setBeacon(newBeacon);
         emit IERC1967.BeaconUpgraded(newBeacon);
 
         if (data.length > 0) {
-            Address.functionDelegateCall(IBeacon(newBeacon).implementation(), data);
+            Address.functionDelegateCall(
+                IBeacon(newBeacon).implementation(),
+                data
+            );
         } else {
             _checkNonPayable();
         }
@@ -824,13 +873,9 @@ library ERC1967Utils {
 
 // File: @openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol
 
-
 // OpenZeppelin Contracts (last updated v5.3.0) (proxy/utils/UUPSUpgradeable.sol)
 
 pragma solidity ^0.8.22;
-
-
-
 
 /**
  * @dev An upgradeability mechanism designed for UUPS proxies. The functions included here can perform an upgrade of an
@@ -887,11 +932,9 @@ abstract contract UUPSUpgradeable is Initializable, IERC1822Proxiable {
         _;
     }
 
-    function __UUPSUpgradeable_init() internal onlyInitializing {
-    }
+    function __UUPSUpgradeable_init() internal onlyInitializing {}
 
-    function __UUPSUpgradeable_init_unchained() internal onlyInitializing {
-    }
+    function __UUPSUpgradeable_init_unchained() internal onlyInitializing {}
     /**
      * @dev Implementation of the ERC-1822 {proxiableUUID} function. This returns the storage slot used by the
      * implementation. It is used to validate the implementation's compatibility when performing an upgrade.
@@ -900,7 +943,13 @@ abstract contract UUPSUpgradeable is Initializable, IERC1822Proxiable {
      * bricking a proxy that upgrades to it, by delegating to itself until out of gas. Thus it is critical that this
      * function revert if invoked through a proxy. This is guaranteed by the `notDelegated` modifier.
      */
-    function proxiableUUID() external view virtual notDelegated returns (bytes32) {
+    function proxiableUUID()
+        external
+        view
+        virtual
+        notDelegated
+        returns (bytes32)
+    {
         return ERC1967Utils.IMPLEMENTATION_SLOT;
     }
 
@@ -914,7 +963,10 @@ abstract contract UUPSUpgradeable is Initializable, IERC1822Proxiable {
      *
      * @custom:oz-upgrades-unsafe-allow-reachable delegatecall
      */
-    function upgradeToAndCall(address newImplementation, bytes memory data) public payable virtual onlyProxy {
+    function upgradeToAndCall(
+        address newImplementation,
+        bytes memory data
+    ) public payable virtual onlyProxy {
         _authorizeUpgrade(newImplementation);
         _upgradeToAndCallUUPS(newImplementation, data);
     }
@@ -963,8 +1015,13 @@ abstract contract UUPSUpgradeable is Initializable, IERC1822Proxiable {
      *
      * Emits an {IERC1967-Upgraded} event.
      */
-    function _upgradeToAndCallUUPS(address newImplementation, bytes memory data) private {
-        try IERC1822Proxiable(newImplementation).proxiableUUID() returns (bytes32 slot) {
+    function _upgradeToAndCallUUPS(
+        address newImplementation,
+        bytes memory data
+    ) private {
+        try IERC1822Proxiable(newImplementation).proxiableUUID() returns (
+            bytes32 slot
+        ) {
             if (slot != ERC1967Utils.IMPLEMENTATION_SLOT) {
                 revert UUPSUnsupportedProxiableUUID(slot);
             }
@@ -978,11 +1035,9 @@ abstract contract UUPSUpgradeable is Initializable, IERC1822Proxiable {
 
 // File: @openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
 
 pragma solidity ^0.8.20;
-
 
 /**
  * @dev Provides information about the current execution context, including the
@@ -995,11 +1050,9 @@ pragma solidity ^0.8.20;
  * This contract is only required for intermediate, library-like contracts.
  */
 abstract contract ContextUpgradeable is Initializable {
-    function __Context_init() internal onlyInitializing {
-    }
+    function __Context_init() internal onlyInitializing {}
 
-    function __Context_init_unchained() internal onlyInitializing {
-    }
+    function __Context_init_unchained() internal onlyInitializing {}
     function _msgSender() internal view virtual returns (address) {
         return msg.sender;
     }
@@ -1015,12 +1068,9 @@ abstract contract ContextUpgradeable is Initializable {
 
 // File: @openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (access/Ownable.sol)
 
 pragma solidity ^0.8.20;
-
-
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -1041,9 +1091,14 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.Ownable")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant OwnableStorageLocation = 0x9016d09d72d40fdae2fd8ceac6b6234c7706214fd39c1cd1e609a0528c199300;
+    bytes32 private constant OwnableStorageLocation =
+        0x9016d09d72d40fdae2fd8ceac6b6234c7706214fd39c1cd1e609a0528c199300;
 
-    function _getOwnableStorage() private pure returns (OwnableStorage storage $) {
+    function _getOwnableStorage()
+        private
+        pure
+        returns (OwnableStorage storage $)
+    {
         assembly {
             $.slot := OwnableStorageLocation
         }
@@ -1059,7 +1114,10 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
      */
     error OwnableInvalidOwner(address owner);
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     /**
      * @dev Initializes the contract setting the address provided by the deployer as the initial owner.
@@ -1068,7 +1126,9 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
         __Ownable_init_unchained(initialOwner);
     }
 
-    function __Ownable_init_unchained(address initialOwner) internal onlyInitializing {
+    function __Ownable_init_unchained(
+        address initialOwner
+    ) internal onlyInitializing {
         if (initialOwner == address(0)) {
             revert OwnableInvalidOwner(address(0));
         }
@@ -1136,7 +1196,6 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
 
 // File: @openzeppelin/contracts/token/ERC721/IERC721Receiver.sol
 
-
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/IERC721Receiver.sol)
 
 pragma solidity >=0.5.0;
@@ -1167,7 +1226,6 @@ interface IERC721Receiver {
 
 // File: @openzeppelin/contracts/token/ERC20/IERC20.sol
 
-
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/IERC20.sol)
 
 pragma solidity >=0.4.16;
@@ -1188,7 +1246,11 @@ interface IERC20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 
     /**
      * @dev Returns the value of tokens in existence.
@@ -1216,7 +1278,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender) external view returns (uint256);
+    function allowance(
+        address owner,
+        address spender
+    ) external view returns (uint256);
 
     /**
      * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
@@ -1244,16 +1309,18 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(address from, address to, uint256 value) external returns (bool);
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) external returns (bool);
 }
 
 // File: @openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol
 
-
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/IERC20Metadata.sol)
 
 pragma solidity >=0.6.2;
-
 
 /**
  * @dev Interface for the optional metadata functions from the ERC-20 standard.
@@ -1277,7 +1344,6 @@ interface IERC20Metadata is IERC20 {
 
 // File: @openzeppelin/contracts/interfaces/draft-IERC6093.sol
 
-
 // OpenZeppelin Contracts (last updated v5.4.0) (interfaces/draft-IERC6093.sol)
 pragma solidity >=0.8.4;
 
@@ -1292,7 +1358,11 @@ interface IERC20Errors {
      * @param balance Current balance for the interacting account.
      * @param needed Minimum amount required to perform a transfer.
      */
-    error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);
+    error ERC20InsufficientBalance(
+        address sender,
+        uint256 balance,
+        uint256 needed
+    );
 
     /**
      * @dev Indicates a failure with the token `sender`. Used in transfers.
@@ -1312,7 +1382,11 @@ interface IERC20Errors {
      * @param allowance Amount of tokens a `spender` is allowed to operate with.
      * @param needed Minimum amount required to perform a transfer.
      */
-    error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed);
+    error ERC20InsufficientAllowance(
+        address spender,
+        uint256 allowance,
+        uint256 needed
+    );
 
     /**
      * @dev Indicates a failure with the `approver` of a token to be approved. Used in approvals.
@@ -1397,7 +1471,12 @@ interface IERC1155Errors {
      * @param needed Minimum amount required to perform a transfer.
      * @param tokenId Identifier number of a token.
      */
-    error ERC1155InsufficientBalance(address sender, uint256 balance, uint256 needed, uint256 tokenId);
+    error ERC1155InsufficientBalance(
+        address sender,
+        uint256 balance,
+        uint256 needed,
+        uint256 tokenId
+    );
 
     /**
      * @dev Indicates a failure with the token `sender`. Used in transfers.
@@ -1441,15 +1520,9 @@ interface IERC1155Errors {
 
 // File: @openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol
 
-
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/ERC20.sol)
 
 pragma solidity ^0.8.20;
-
-
-
-
-
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -1469,21 +1542,25 @@ pragma solidity ^0.8.20;
  * conventional and does not conflict with the expectations of ERC-20
  * applications.
  */
-abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20, IERC20Metadata, IERC20Errors {
+abstract contract ERC20Upgradeable is
+    Initializable,
+    ContextUpgradeable,
+    IERC20,
+    IERC20Metadata,
+    IERC20Errors
+{
     /// @custom:storage-location erc7201:openzeppelin.storage.ERC20
     struct ERC20Storage {
         mapping(address account => uint256) _balances;
-
         mapping(address account => mapping(address spender => uint256)) _allowances;
-
         uint256 _totalSupply;
-
         string _name;
         string _symbol;
     }
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.ERC20")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant ERC20StorageLocation = 0x52c63247e1f47db19d5ce0460030c497f067ca4cebf71ba98eeadabe20bace00;
+    bytes32 private constant ERC20StorageLocation =
+        0x52c63247e1f47db19d5ce0460030c497f067ca4cebf71ba98eeadabe20bace00;
 
     function _getERC20Storage() private pure returns (ERC20Storage storage $) {
         assembly {
@@ -1496,11 +1573,17 @@ abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20,
      *
      * Both values are immutable: they can only be set once during construction.
      */
-    function __ERC20_init(string memory name_, string memory symbol_) internal onlyInitializing {
+    function __ERC20_init(
+        string memory name_,
+        string memory symbol_
+    ) internal onlyInitializing {
         __ERC20_init_unchained(name_, symbol_);
     }
 
-    function __ERC20_init_unchained(string memory name_, string memory symbol_) internal onlyInitializing {
+    function __ERC20_init_unchained(
+        string memory name_,
+        string memory symbol_
+    ) internal onlyInitializing {
         ERC20Storage storage $ = _getERC20Storage();
         $._name = name_;
         $._symbol = symbol_;
@@ -1567,7 +1650,10 @@ abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20,
     }
 
     /// @inheritdoc IERC20
-    function allowance(address owner, address spender) public view virtual returns (uint256) {
+    function allowance(
+        address owner,
+        address spender
+    ) public view virtual returns (uint256) {
         ERC20Storage storage $ = _getERC20Storage();
         return $._allowances[owner][spender];
     }
@@ -1582,7 +1668,10 @@ abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20,
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 value) public virtual returns (bool) {
+    function approve(
+        address spender,
+        uint256 value
+    ) public virtual returns (bool) {
         address owner = _msgSender();
         _approve(owner, spender, value);
         return true;
@@ -1604,7 +1693,11 @@ abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20,
      * - the caller must have allowance for ``from``'s tokens of at least
      * `value`.
      */
-    function transferFrom(address from, address to, uint256 value) public virtual returns (bool) {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) public virtual returns (bool) {
         address spender = _msgSender();
         _spendAllowance(from, spender, value);
         _transfer(from, to, value);
@@ -1736,7 +1829,12 @@ abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20,
      *
      * Requirements are the same as {_approve}.
      */
-    function _approve(address owner, address spender, uint256 value, bool emitEvent) internal virtual {
+    function _approve(
+        address owner,
+        address spender,
+        uint256 value,
+        bool emitEvent
+    ) internal virtual {
         ERC20Storage storage $ = _getERC20Storage();
         if (owner == address(0)) {
             revert ERC20InvalidApprover(address(0));
@@ -1758,11 +1856,19 @@ abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20,
      *
      * Does not emit an {Approval} event.
      */
-    function _spendAllowance(address owner, address spender, uint256 value) internal virtual {
+    function _spendAllowance(
+        address owner,
+        address spender,
+        uint256 value
+    ) internal virtual {
         uint256 currentAllowance = allowance(owner, spender);
         if (currentAllowance < type(uint256).max) {
             if (currentAllowance < value) {
-                revert ERC20InsufficientAllowance(spender, currentAllowance, value);
+                revert ERC20InsufficientAllowance(
+                    spender,
+                    currentAllowance,
+                    value
+                );
             }
             unchecked {
                 _approve(owner, spender, currentAllowance - value, false);
@@ -1773,13 +1879,7 @@ abstract contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20,
 
 // File: helperv2.sol
 
-
 pragma solidity ^0.8.20;
-
-
-
-
-
 
 interface Ihelper {
     struct User {
@@ -1907,9 +2007,8 @@ contract Helperv2 is
     uint public activeTicketIndex;
     address public adminWallet;
     mapping(address => uint) public balance;
-    
-    mapping(address => bool) public stakeEligible;
 
+    mapping(address => bool) public stakeEligible;
 
     event Upgrades(uint time, uint amount, uint _type, address _user);
     event Incomes(
@@ -1954,7 +2053,7 @@ contract Helperv2 is
     function register(address _ref) public {
         address _user = msg.sender;
         address _referrer = _ref != address(0) ? _ref : owner();
-        uint amount = packages[0].price * 1 ether / priceOracle.price();
+        uint amount = (packages[0].price * 1 ether) / priceOracle.price();
         Package memory tx1 = packages[0];
         userPackage[_user] = tx1;
 
@@ -2027,7 +2126,7 @@ contract Helperv2 is
     }
 
     function buyPackage(uint8 id) public {
-        uint amount = packages[id].price * 1 ether / priceOracle.price();
+        uint amount = (packages[id].price * 1 ether) / priceOracle.price();
         address _user = msg.sender;
 
         require(checkEligibility(_user, id), "not eligible");
@@ -2061,7 +2160,6 @@ contract Helperv2 is
         emit Upgrades(block.timestamp, amount, id, _user);
     }
 
- 
     function processLevelIncome(
         address[] memory _uplines,
         uint _amount,
@@ -2158,7 +2256,8 @@ contract Helperv2 is
         return
             block.timestamp - users[_user].data.packageUpgraded <= timelimit &&
             userPackage[_user].id > 0 &&
-            block.timestamp - users[_user].data.userTradingTime <= 60 * 60 * 24*30;
+            block.timestamp - users[_user].data.userTradingTime <=
+                60 * 60 * 24 * 30;
     }
 
     function getUplines(address user) public view returns (address[] memory) {
@@ -2197,7 +2296,7 @@ contract Helperv2 is
     }
 
     function trade() public {
-        uint amount = 6 ether * 1 ether / priceOracle.price();
+        uint amount = (6 ether * 1 ether) / priceOracle.price();
 
         require(
             paymentToken.allowance(msg.sender, address(this)) >= amount,
@@ -2228,7 +2327,7 @@ contract Helperv2 is
 
         emit Incomes(block.timestamp, (amount * 25) / 1000, 0, referrer, 0, 0);
         users[referrer].data.tradingReferralBonus += (amount * 25) / 1000;
-        users[msg.sender].data.userLimitUtilized++;
+
         users[msg.sender].data.userTradingTime = block.timestamp;
         users[msg.sender].data.tradeXHours += amount;
 
@@ -2246,10 +2345,11 @@ contract Helperv2 is
         }
 
         require(
-            users[msg.sender].data.userLimitUtilized <=
+            users[msg.sender].data.userLimitUtilized <
                 userPackage[msg.sender].limit,
             "2"
         );
+        users[msg.sender].data.userLimitUtilized++;
         address[] memory _uplines = getUplines(msg.sender);
 
         if (_uplines.length == 25) {
@@ -2281,8 +2381,12 @@ contract Helperv2 is
         );
 
         ticketMapping[_ticket].filled = true;
-        balance[ticketMapping[_ticket].user] -= 9 ether * 1 ether / priceOracle.price();
-        paymentToken.transfer(msg.sender, 9 ether * 1 ether / priceOracle.price());
+        balance[ticketMapping[_ticket].user] -=
+            (9 ether * 1 ether) / priceOracle.price();
+        paymentToken.transfer(
+            msg.sender,
+            (9 ether * 1 ether) / priceOracle.price()
+        );
     }
 
     function changePackages(
@@ -2309,7 +2413,10 @@ contract Helperv2 is
         return packages;
     }
 
-    function changeWallet(address _adminWallet, address _paymentToken) public onlyOwner {
+    function changeWallet(
+        address _adminWallet,
+        address _paymentToken
+    ) public onlyOwner {
         adminWallet = _adminWallet;
         paymentToken = IERC20(_paymentToken);
     }
@@ -2466,6 +2573,11 @@ contract DataFetcherUpgradeable is
         UserDetails data;
     }
 
+    struct TopReferrer {
+        address referrer;
+        uint count;
+    }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -2541,7 +2653,7 @@ contract DataFetcherUpgradeable is
                     packageReferralBonus: u.data.packageReferralBonus,
                     selfTradingProfit: u.data.selfTradingProfit,
                     packageUpgraded: u.data.packageUpgraded,
-                    packageId: 0,//helper.userPackage(userAddress).id,
+                    packageId: 0, //helper.userPackage(userAddress).id,
                     future1: u.data.future1,
                     future2: u.data.future2,
                     tradeYHours: u.data.tradeYHours
@@ -2568,8 +2680,81 @@ contract DataFetcherUpgradeable is
 
         return Tickets;
     }
+
+    function _countReferrals(
+        uint windowSeconds
+    ) internal view returns (address[] memory refs, uint[] memory counts) {
+        uint total = helper.usersArrayIndex();
+        refs = new address[](total);
+        counts = new uint[](total);
+
+        uint cutoff = block.timestamp - windowSeconds;
+        uint size = 0;
+
+        for (uint i = 0; i < total; i++) {
+            address userAddr = helper.usersArray(i);
+            IHelperV2.User memory u = helper.getUser(userAddr);
+
+            if (!u.registered) continue;
+            if (u.data.userJoiningTime < cutoff) continue;
+            if (u.referrer == address(0)) continue;
+
+            // find or insert referrer
+            bool found = false;
+            for (uint j = 0; j < size; j++) {
+                if (refs[j] == u.referrer) {
+                    counts[j]++;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                refs[size] = u.referrer;
+                counts[size] = 1;
+                size++;
+            }
+        }
+    }
+
+    function _top3(
+        address[] memory refs,
+        uint[] memory counts
+    ) internal pure returns (TopReferrer[3] memory top) {
+        for (uint i = 0; i < refs.length; i++) {
+            uint c = counts[i];
+            address r = refs[i];
+
+            if (c > top[0].count) {
+                top[2] = top[1];
+                top[1] = top[0];
+                top[0] = TopReferrer(r, c);
+            } else if (c > top[1].count) {
+                top[2] = top[1];
+                top[1] = TopReferrer(r, c);
+            } else if (c > top[2].count) {
+                top[2] = TopReferrer(r, c);
+            }
+        }
+    }
+
+    function topReferrers24h() external view returns (TopReferrer[3] memory) {
+        (address[] memory refs, uint[] memory counts) = _countReferrals(1 days);
+
+        return _top3(refs, counts);
+    }
+
+    function topReferrers7d() external view returns (TopReferrer[3] memory) {
+        (address[] memory refs, uint[] memory counts) = _countReferrals(7 days);
+
+        return _top3(refs, counts);
+    }
+
+    function topReferrers30d() external view returns (TopReferrer[3] memory) {
+        (address[] memory refs, uint[] memory counts) = _countReferrals(
+            30 days
+        );
+
+        return _top3(refs, counts);
+    }
 }
-
-
-
-
