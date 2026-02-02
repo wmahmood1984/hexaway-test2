@@ -20,7 +20,7 @@ export default function Game() {
   const [price, setPrice] = useState(0.01)
   const [Spent, setSpent] = useState(0)
   const [Won, setWon] = useState(0)
-    const [depositBalance, setDepositBalance] = useState(0)
+  const [depositBalance, setDepositBalance] = useState(0)
   const [selectedColor, setSelectedColor] = useState(null)
   const [showDeposit, setShowDeposit] = useState(false);
   const ROUND_BUFFER = 1; // safety buffer
@@ -62,7 +62,9 @@ export default function Game() {
 
   const fetchGameRan = useCallback(async () => {
     const gameAddr = findGame(slot, time);
+
     const ran = await gameContractR.methods.gameRan(gameAddr).call();
+       console.log("remaining", {gameAddr,ran})
     setGameRan(Number(ran));
   }, [slot, time]);
 
@@ -109,9 +111,9 @@ export default function Game() {
     setWon((_won / 1e18).toFixed(4))
     const _depositBalance = await gameContractR.methods.balance(address).call()
     setDepositBalance((_depositBalance / 1e18).toFixed(4))
-    const _game = await gameContractR.methods.getGame().call()
+    // const _game = await gameContractR.methods.getGame().call()
     
-      console.log("game", _hexaBalance)
+   
   
   }
 
@@ -155,7 +157,7 @@ export default function Game() {
   const handleClick = async (v) => {
 
     let gameAddr = findGame(slot, time);
-    console.log("object", gameAddr)
+//    console.log("object", gameAddr)
     await executeContract({
       config,
       functionName: "placeBid",
