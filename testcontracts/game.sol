@@ -107,7 +107,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         // address _hexa,
         // address _incomeWallet,
         // address _helper,
-        // address _settler
+         address[] memory _settler
     ) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
@@ -120,6 +120,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         feeder = 0x27a25668DD7647b2aa19dAfa5c09595351565838;
 
         _createGames();
+        setSettlers(_settler);
     }
 
     function setScheme(
@@ -133,19 +134,28 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         );
     }
 
+    function setSettlers(address[] memory _settler) public onlyOwner{
+        for(uint i = 0;i < _settler.length; i ++){
+            settlers[_settler[i]]=true;
+        }
+    }
+
     function deposit(uint _amount) public {
         uint HexaRequired = 5 ether * priceOracle.price() / 1e18; 
         require(hexa.allowance(msg.sender, address(this))>=HexaRequired,"allowance should be more than 5");
-        hexa.transferFrom(msg.sender, address(this), HexaRequired);
+        hexa.transferFrom(msg.sender, address(this), _amount);
         balance[msg.sender]+=_amount;
 
         if(block.timestamp>=scheme.start && block.timestamp<=scheme.end){
             balance[msg.sender]+=_amount*scheme.perToDepositor/100;
-            balance[msg.sender]+=_amount*scheme.perToReferrer/100;
-            uint amountNeeded = _amount*scheme.perToDepositor/100 + _amount*scheme.perToReferrer/100;
-            require(hexa.allowance(feeder, address(this))>=amountNeeded,"insufficient Allowance");
-            hexa.transferFrom(feeder, address(this), amountNeeded);
+            Ihelper.User memory u = helper.getUser(msg.sender);
+            balance[u.referrer]+=_amount*scheme.perToReferrer/100;
+            // uint amountNeeded = _amount*scheme.perToDepositor/100 + _amount*scheme.perToReferrer/100;
+            // require(hexa.allowance(feeder, address(this))>=amountNeeded,"insufficient Allowance");
+            // hexa.transferFrom(feeder, address(this), amountNeeded);
         }
+
+        _distributeIncome(msg.sender, _amount );
 
     }
 
@@ -183,21 +193,27 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         bids.push(tx1);
         totalSpent[msg.sender] += amount;
 
-        _distributeIncome(msg.sender, amount);
+
     }
 
-    function _distributeIncome(address user, uint amount) internal {
-        uint dist = (amount * 18) / 100;
+    function _distributeIncome(address user, uint dist) internal {
 
-        hexa.transfer(incomeWallet, (dist * 20) / 100);
+
+        hexa.transfer(incomeWallet, (dist * 2) / 100);
 
         Ihelper.User memory u = helper.getUser(user);
         if (incomeEligible(u, u.referrer)) {
-            hexa.transfer(u.referrer, (dist * 20) / 100);
+            hexa.transfer(u.referrer, (dist * 2) / 100);
         }
 
         address[] memory uplines = helper.getUplines(user);
-        _processLevelIncome(uplines, (dist * 60) / 100);
+        _processLevelIncome(uplines, (dist * 13) / 100);
+        typeAmount[1]+=dist*5/1000;
+        typeAmount[2]+=dist*5/1000;
+        typeAmount[3]+=dist*5/1000;
+        typeAmount[4]+=dist*5/1000;
+        typeAmount[5]+=dist*5/1000;
+        typeAmount[6]+=dist*5/1000;
     }
 
     function settleGame(uint gameId) external {
@@ -210,16 +226,17 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         }
 
         uint[] memory totals = new uint[](g.slots);
-
+        uint totalBidded;
         for (uint i; i < g.bids.length; i++) {
             totals[g.bids[i].color] += g.bids[i].amount;
+            totalBidded+=g.bids[i].amount;
         }
 
         // RULE 1: zero-bid color => no winners
         for (uint8 c = 0; c < g.slots; c++) {
             if (totals[c] == 0) {
                 uint bal = hexa.balanceOf(address(this));
-                if (bal > 0) hexa.transfer(incomeWallet, bal);
+                if (bal > 0) hexa.transfer(incomeWallet, totalBidded*80/100);
 
                 delete g.bids;
                 emit GameSettled(gameId, type(uint8).max, 0);
@@ -249,7 +266,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             }
         }
 
-        uint remaining = hexa.balanceOf(address(this));
+        uint remaining = (totalBidded-payout)*80/100;
         if (remaining > 0) hexa.transfer(incomeWallet, remaining);
 
         delete g.bids;

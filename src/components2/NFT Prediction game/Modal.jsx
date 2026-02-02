@@ -57,6 +57,13 @@ export default function DepositModal({
         toast.error("Insufficient HEXA Balance")
         return
       }
+
+      if (
+        (amount * price ) < 5 
+      ) {
+        toast.error("the amount should at lease be equivalent to $5")
+        return
+      }
   
       const value = amount / price;
       console.log("value", value)

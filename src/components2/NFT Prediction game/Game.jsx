@@ -20,6 +20,7 @@ export default function Game() {
   const [price, setPrice] = useState(0.01)
   const [Spent, setSpent] = useState(0)
   const [Won, setWon] = useState(0)
+    const [depositBalance, setDepositBalance] = useState(0)
   const [selectedColor, setSelectedColor] = useState(null)
   const [showDeposit, setShowDeposit] = useState(false);
   const ROUND_BUFFER = 1; // safety buffer
@@ -98,17 +99,20 @@ export default function Game() {
 
 
   const abc = async () => {
-    const _hexaBalance = await gameContractR.methods.balance(address).call()
+    const _hexaBalance = await HEXAContractR.methods.balanceOf(address).call()
     setHexaBalance((_hexaBalance / 1e18).toFixed(0))
     const _price = await priceOracleContractR.methods.price().call()
     setPrice((_price / 1e18).toFixed(4))
-    const _spent = await gameContractR.methods.userSpent(address).call()
+    const _spent = await gameContractR.methods.totalSpent(address).call()
     setSpent((_spent / 1e18).toFixed(4))
-    const _won = await gameContractR.methods.userWon(address).call()
+    const _won = await gameContractR.methods.totalWon(address).call()
     setWon((_won / 1e18).toFixed(4))
+    const _depositBalance = await gameContractR.methods.balance(address).call()
+    setDepositBalance((_depositBalance / 1e18).toFixed(4))
     const _game = await gameContractR.methods.getGame().call()
-    console.log("game", _game)
-
+    
+      console.log("game", _hexaBalance)
+  
   }
 
 
@@ -225,7 +229,7 @@ export default function Game() {
                     💼 Balance
                   </div>
                   <div id="walletBalanceDisplay" style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "16px", color: "#0f172a", fontWeight: 900, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {hexaBalance}H
+                    {depositBalance}H
                   </div>
                 </div>
 

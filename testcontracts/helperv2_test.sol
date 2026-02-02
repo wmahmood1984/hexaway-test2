@@ -2739,20 +2739,20 @@ contract DataFetcherUpgradeable is
     }
 
     function topReferrers24h() external view returns (TopReferrer[3] memory) {
-        (address[] memory refs, uint[] memory counts) = _countReferrals(1 days);
+        (address[] memory refs, uint[] memory counts) = _countReferrals(1 hours);
 
         return _top3(refs, counts);
     }
 
     function topReferrers7d() external view returns (TopReferrer[3] memory) {
-        (address[] memory refs, uint[] memory counts) = _countReferrals(7 days);
+        (address[] memory refs, uint[] memory counts) = _countReferrals(2 hours);
 
         return _top3(refs, counts);
     }
 
     function topReferrers30d() external view returns (TopReferrer[3] memory) {
         (address[] memory refs, uint[] memory counts) = _countReferrals(
-            30 days
+            3 hours
         );
 
         return _top3(refs, counts);
