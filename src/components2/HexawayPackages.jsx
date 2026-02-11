@@ -3,7 +3,7 @@ import React from 'react';
 import { formatEther } from 'ethers';
 import Spinner from './Spinner'; // adjust import if needed
 
-export default function HexawayPackages({ packages, Package, downlines, handleUpdate, loading }) {
+export default function HelpingPackages({ packages, Package, downlines, handleUpdate, loading }) {
 
   // Helper: calculate remaining time until (purchaseTime + pkg.time)
   const getRemainingTime = (pkg) => {

@@ -40,10 +40,8 @@ interface Ihelper {
         uint time;
         uint team;
         uint limit;
-        uint purchaseTime;
         uint levelUnlock;
-        uint8 directrequired;
-        uint packageUpgraded;
+        uint8 future;
     }
 
     function getUser(address _user) external view returns (User memory);
@@ -68,9 +66,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         uint end;
         uint perToDepositor;
         uint perToReferrer;
-
     }
-
 
     struct Bid {
         address user;
@@ -92,10 +88,10 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     mapping(address => uint) public totalSpent;
     mapping(address => uint) public totalWon;
     mapping(uint => uint) public gameRan;
-    mapping(address=>uint) public balance;
-    mapping(uint=>uint) public typeAmount;
+    mapping(address => uint) public balance;
+    mapping(uint => uint) public typeAmount;
     Scheme public scheme;
-    mapping(address=>bool) public settlers;
+    mapping(address => bool) public settlers;
     event GameCreated(uint indexed gameId, uint8 slots, uint8 duration);
     event GameSettled(uint indexed gameId, uint8 winningColor, uint payout);
 
@@ -107,7 +103,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         // address _hexa,
         // address _incomeWallet,
         // address _helper,
-         address[] memory _settler
+        address[] memory _settler
     ) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
@@ -128,35 +124,49 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         uint _end,
         uint _perToDepositor,
         uint _perToReferrer
-        ) public onlyOwner{
-        scheme = Scheme(
-            _start,_end,_perToDepositor,_perToReferrer
+    ) public onlyOwner {
+        scheme = Scheme(_start, _end, _perToDepositor, _perToReferrer);
+    }
+
+    function setSettlers(address[] memory _settler) public onlyOwner {
+        for (uint i = 0; i < _settler.length; i++) {
+            settlers[_settler[i]] = true;
+        }
+    }
+
+    function deposit(uint256 _amount) public {
+        // USD minimum = $5 (18 decimals)
+        uint256 minUsd = 5 ether;
+
+        // Price = USD per HEXA (18 decimals)
+        uint256 price = priceOracle.price(); // e.g. 0.01e18
+
+        // Minimum HEXA required for $5
+        uint256 minHexa = (minUsd * 1e18) / price;
+
+        // Enforce minimum deposit
+        require(_amount >= minHexa, "Minimum deposit is $5");
+
+        // Allowance check must match _amount
+        require(
+            hexa.allowance(msg.sender, address(this)) >= _amount,
+            "Insufficient allowance"
         );
-    }
 
-    function setSettlers(address[] memory _settler) public onlyOwner{
-        for(uint i = 0;i < _settler.length; i ++){
-            settlers[_settler[i]]=true;
-        }
-    }
-
-    function deposit(uint _amount) public {
-        uint HexaRequired = 5 ether * priceOracle.price() / 1e18; 
-        require(hexa.allowance(msg.sender, address(this))>=HexaRequired,"allowance should be more than 5");
         hexa.transferFrom(msg.sender, address(this), _amount);
-        balance[msg.sender]+=_amount;
+        balance[msg.sender] += _amount;
 
-        if(block.timestamp>=scheme.start && block.timestamp<=scheme.end){
-            balance[msg.sender]+=_amount*scheme.perToDepositor/100;
+        if (block.timestamp >= scheme.start && block.timestamp <= scheme.end) {
+            uint256 depositorBonus = (_amount * scheme.perToDepositor) / 100;
+            uint256 referrerBonus = (_amount * scheme.perToReferrer) / 100;
+
+            balance[msg.sender] += depositorBonus;
+
             Ihelper.User memory u = helper.getUser(msg.sender);
-            balance[u.referrer]+=_amount*scheme.perToReferrer/100;
-            // uint amountNeeded = _amount*scheme.perToDepositor/100 + _amount*scheme.perToReferrer/100;
-            // require(hexa.allowance(feeder, address(this))>=amountNeeded,"insufficient Allowance");
-            // hexa.transferFrom(feeder, address(this), amountNeeded);
+            balance[u.referrer] += referrerBonus;
         }
 
-        _distributeIncome(msg.sender, _amount );
-
+        _distributeIncome(msg.sender, _amount);
     }
 
     function _createGames() internal {
@@ -186,19 +196,18 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         require(color < g.slots, "Invalid color");
         require(amount > 0, "Zero bid");
 
-        require(balance[msg.sender]>=amount,"balance should be more than amount");
-        balance[msg.sender]-=amount;
-        Bid memory tx1 =Bid(msg.sender, amount, color,block.timestamp); 
+        require(
+            balance[msg.sender] >= amount,
+            "balance should be more than amount"
+        );
+        balance[msg.sender] -= amount;
+        Bid memory tx1 = Bid(msg.sender, amount, color, block.timestamp);
         g.bids.push(tx1);
         bids.push(tx1);
         totalSpent[msg.sender] += amount;
-
-
     }
 
     function _distributeIncome(address user, uint dist) internal {
-
-
         hexa.transfer(incomeWallet, (dist * 2) / 100);
 
         Ihelper.User memory u = helper.getUser(user);
@@ -208,17 +217,17 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         address[] memory uplines = helper.getUplines(user);
         _processLevelIncome(uplines, (dist * 13) / 100);
-        typeAmount[1]+=dist*5/1000;
-        typeAmount[2]+=dist*5/1000;
-        typeAmount[3]+=dist*5/1000;
-        typeAmount[4]+=dist*5/1000;
-        typeAmount[5]+=dist*5/1000;
-        typeAmount[6]+=dist*5/1000;
+        typeAmount[1] += (dist * 5) / 1000;
+        typeAmount[2] += (dist * 5) / 1000;
+        typeAmount[3] += (dist * 5) / 1000;
+        typeAmount[4] += (dist * 5) / 1000;
+        typeAmount[5] += (dist * 5) / 1000;
+        typeAmount[6] += (dist * 5) / 1000;
     }
 
     function settleGame(uint gameId) external {
         // require(msg.sender == settler, "Unauthorized");
-        gameRan[gameId]=block.timestamp;
+        gameRan[gameId] = block.timestamp;
         Game storage g = games[gameId];
         if (g.bids.length == 0) {
             emit GameSettled(gameId, type(uint8).max, 0);
@@ -229,14 +238,15 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         uint totalBidded;
         for (uint i; i < g.bids.length; i++) {
             totals[g.bids[i].color] += g.bids[i].amount;
-            totalBidded+=g.bids[i].amount;
+            totalBidded += g.bids[i].amount;
         }
 
         // RULE 1: zero-bid color => no winners
         for (uint8 c = 0; c < g.slots; c++) {
             if (totals[c] == 0) {
                 uint bal = hexa.balanceOf(address(this));
-                if (bal > 0) hexa.transfer(incomeWallet, totalBidded*80/100);
+                if (bal > 0)
+                    hexa.transfer(incomeWallet, (totalBidded * 80) / 100);
 
                 delete g.bids;
                 emit GameSettled(gameId, type(uint8).max, 0);
@@ -266,12 +276,11 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             }
         }
 
-        uint remaining = (totalBidded-payout)*80/100;
+        uint remaining = ((totalBidded - payout) * 80) / 100;
         if (remaining > 0) hexa.transfer(incomeWallet, remaining);
 
         delete g.bids;
         emit GameSettled(gameId, winningColor, payout);
-
     }
 
     function _processLevelIncome(
@@ -303,18 +312,41 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             block.timestamp - user.data.userTradingTime <= 2 hours;
     }
 
-    function getBids() public view returns(Bid[] memory) {
+    function getBids() public view returns (Bid[] memory) {
         return bids;
     }
 
-    function distributeReward(uint _type, address _winner, address _runnerup, address _2ndRunnerup) public {
-        require(settlers[msg.sender],"not authorized");
-        require(_type == 1 || _type == 2 || _type == 3|| _type == 4|| _type == 5|| _type == 6,"invalid type");
-        require(_winner != address(0) && _runnerup != address(0) && _2ndRunnerup != address(0),"invalid address");
-        require(_winner != _runnerup && _runnerup != _2ndRunnerup && _winner != _2ndRunnerup,"invalid address");
-        hexa.transferFrom(feeder, _winner, typeAmount[_type]*50/100);
-        hexa.transferFrom(feeder, _runnerup, typeAmount[_type]*30/100);
-        hexa.transferFrom(feeder, _2ndRunnerup, typeAmount[_type]*20/100);
+    function distributeReward(
+        uint _type,
+        address _winner,
+        address _runnerup,
+        address _2ndRunnerup
+    ) public {
+        require(settlers[msg.sender], "not authorized");
+        require(
+            _type == 1 ||
+                _type == 2 ||
+                _type == 3 ||
+                _type == 4 ||
+                _type == 5 ||
+                _type == 6,
+            "invalid type"
+        );
+        require(
+            _winner != address(0) &&
+                _runnerup != address(0) &&
+                _2ndRunnerup != address(0),
+            "invalid address"
+        );
+        require(
+            _winner != _runnerup &&
+                _runnerup != _2ndRunnerup &&
+                _winner != _2ndRunnerup,
+            "invalid address"
+        );
+        hexa.transferFrom(feeder, _winner, (typeAmount[_type] * 50) / 100);
+        hexa.transferFrom(feeder, _runnerup, (typeAmount[_type] * 30) / 100);
+        hexa.transferFrom(feeder, _2ndRunnerup, (typeAmount[_type] * 20) / 100);
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}

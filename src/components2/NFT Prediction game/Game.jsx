@@ -165,8 +165,8 @@ export default function Game() {
       onSuccess: (txHash, receipt) => {
         console.log("🎉 Tx Hash:", txHash);
         console.log("🚀 Tx Receipt:", receipt);
-        toast.success("Stake done successfully")
-
+        toast.success("Bid done successfully")
+        abc()
         setLoading(false)
       },
       contract: gameContract,
