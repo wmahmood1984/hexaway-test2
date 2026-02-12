@@ -1,7 +1,7 @@
-import { AbiCoder, parseEther } from 'ethers'
+import { AbiCoder, formatEther, parseEther } from 'ethers'
 import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { gameAdd, gameContract, gameContractR, HexaContract, HEXAContractR, priceOracleContractR } from '../../config'
+import { gameAdd, gameContract, gameContractR, gameFetcherContractR, HexaContract, HEXAContractR, priceOracleContractR } from '../../config'
 import { useAppKitAccount } from '@reown/appkit/react'
 import { useConfig } from 'wagmi'
 import { executeContract } from '../../utils/contractExecutor'
@@ -26,6 +26,7 @@ export default function Game() {
   const ROUND_BUFFER = 1; // safety buffer
 
   const [gameRan, setGameRan] = useState(0);
+  const [myBids, setMyBids] = useState();
   const [remaining, setRemaining] = useState(0);
   const [predictionHistory, setPredictionHistory] = useState()
   const [loading, setLoading] = useState(false)
@@ -87,6 +88,7 @@ export default function Game() {
       // 🔁 Round ended → refetch once
       if (diff === 0) {
         fetchGameRan();
+        abc()
       }
     }, 1000);
 
@@ -112,7 +114,8 @@ export default function Game() {
     const _depositBalance = await gameContractR.methods.balance(address).call()
     setDepositBalance((_depositBalance / 1e18).toFixed(4))
     // const _game = await gameContractR.methods.getGame().call()
-    
+    const _myBids = await gameFetcherContractR.methods.getBidsByUser(address).call()
+    setMyBids(_myBids)
    
   
   }
@@ -180,7 +183,7 @@ export default function Game() {
 
 
 
-  const isLoading = false;
+  const isLoading = !myBids;
   const now = new Date().getTime() / 1000;
 
   const duration = ((Number(gameRan) + Number(time * 60)) - now).toFixed(0)
@@ -196,7 +199,7 @@ export default function Game() {
     );
   }
 
-  // console.log("prediction", { duration, now, gameRan, time })
+   console.log("prediction", { myBids })
 
   return (
     <div>
@@ -587,31 +590,37 @@ export default function Game() {
               <div id="predictionHistoryContent">
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <div style={{ background: "#10b98120", padding: "12px 16px", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: "4px solid #10b981" }}>
+                {myBids.map((bid, index) => {
+                  return(
+                 <div style={{ background: "#10b98120", padding: "12px 16px", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: "4px solid #10b981" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                       <div style={{ width: "40px", height: "40px", background: "#10b98140", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "#10b981" }}>
-                        2
+                        {index+1}
                       </div>
                       <div>
                         <div style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#0f172a", fontWeight: 700 }}>
-                          Prediction #1
+                          Prediction #{index+1}
                         </div>
                         <div style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "12px", color: "#0f172a", opacity: 0.7 }}>
-                          2.5 USDT
+                          {formatEther(bid.amount)} USDT
                         </div>
                       </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
                       <div style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "16px", color: "#10b981", fontWeight: 900 }}>
-                        WON
+                        {bid.settled && bid.won ? "WON" : bid.settled && !bid.won ? "LOST" : "PENDING"}
                       </div>
                       <div style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#10b981", fontWeight: 700 }}>
-                        +5.0 USDT
+                        {bid.settled && bid.won ? `+${Number(formatEther(bid.amount))*2} USDT` : bid.settled && !bid.won ? "$ 0" : "PENDING"}
+                        
                       </div>
                     </div>
                   </div>
+                  )
+                })} 
+ 
 
-                  <div style={{ background: "#ef444420", padding: "12px 16px", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: "4px solid #ef4444" }}>
+                  {/* <div style={{ background: "#ef444420", padding: "12px 16px", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: "4px solid #ef4444" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                       <div style={{ width: "40px", height: "40px", background: "#ef444440", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "#ef4444" }}>
                         1
@@ -657,7 +666,7 @@ export default function Game() {
                         +6.0 USDT
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -917,7 +926,9 @@ export default function Game() {
 
       <DepositModal
         isOpen={showDeposit}
-        onClose={() => setShowDeposit(false)}
+        onClose={() => {setShowDeposit(false)
+          abc()
+        }}
         executeContract={executeContract}
         config={config}
         gameContract={gameContract}

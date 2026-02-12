@@ -8898,7 +8898,7 @@ export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 
 export const dataFetcherGameAdd = mainnet ? "" : 
-"0xF8A40366Df911DDcE730775771faD9a945C88482"
+"0x13D5c9A5Ce0C4F9c3e8319e8D52A0C86347ED53C"
 
 export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"
 export const tokenFeeder = "0xF942224e5D97b78a0C32C7cB9A4Aae8fa602f75C"  //EOA => Doctor sb
