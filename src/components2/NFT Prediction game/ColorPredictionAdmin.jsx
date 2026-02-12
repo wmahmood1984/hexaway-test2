@@ -56,9 +56,9 @@ export default function ColorPredictionAdmin() {
                 <div class="page-header">
                     <h1 class="page-title">Colour Predictions Details</h1>
                     <p class="page-subtitle">Overview of predictions and analytics</p>
-                    <a href="Admin_sloat_Detail.html" class="transfer-btn">
+                    <a href="/slotadmin" class="transfer-btn">
                         <i class="fas fa-exchange-alt"></i>
-                        Go to Sloats
+                        Go to Slots
                     </a>
                 </div>
 

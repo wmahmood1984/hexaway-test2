@@ -1,22 +1,52 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import "./Slot.css"
+import { gameContractR } from '../../config';
+import { formatEther } from 'ethers';
+import { copyToClipboard, formatAddress, secondsToDMY } from '../../utils/contractExecutor';
 export default function ColorSlotAdmin() {
-  return (
-    <div>
-      <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <div class="logo-container">
-                    <div class="logo">🎨</div>
-                    <div class="logo-text">Colour Slot Admin</div>
-                </div>
-                <a href="Admin_sloat_detail.html" class="transfer-btn">
-                    <i class="fas fa-exchange-alt"></i>
-                    Go to Slots
-                </a>
+     const [bids, setBids] = useState()
+         const [searchText, setSearchText] = useState("")
+        const [filterbyStatus, setFilterbyStatus] = useState("all")
+         const [slotFilter, setSlotFilter] = useState("all")
+
+    useEffect(() => {
+        abc();
+
+    }, [])
+
+    const abc = async () => {
+        const _data = await gameContractR.methods.getBids().call()
+        setBids(_data)
+
+
+    }
+
+
+    const isLoading = !bids;
+
+
+
+    if (isLoading) {
+        // show a waiting/loading screen
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
+                <p className="text-gray-600 text-lg font-medium">Loading your data...</p>
             </div>
-        </div>
-    </nav>
+        );
+    }
+
+    const spentAmount = bids.reduce((total, bid) => total + Number(formatEther(bid.amount)), 0);
+
+    console.log("prediction", { bids })
+
+
+
+
+
+    return (
+    <div>
+
 
     
     <main class="main-content container">
@@ -62,6 +92,8 @@ export default function ColorSlotAdmin() {
         <div class="filter-section">
             <div class="search-box">
                 <input type="text" 
+                          onChange={(e) => setSearchText(e.target.value)}
+                          value={searchText}
                        id="searchInput" 
                        class="search-input" 
                        placeholder="Search by address or slot number..." 
@@ -69,12 +101,15 @@ export default function ColorSlotAdmin() {
             </div>
             
             <div class="filter-buttons">
-                <button class="filter-btn" onclick="filterBySlots(3)">3 Slots</button>
-                <button class="filter-btn" onclick="filterBySlots(6)">6 Slots</button>
-                <button class="filter-btn" onclick="filterBySlots(9)">9 Slots</button>
-                <button class="filter-btn" onclick="filterByStatus('Success')">Success</button>
-                <button class="filter-btn" onclick="filterByStatus('Roll Back')">Roll Back</button>
-                <button class="clear-btn" onclick="clearFilters()">Clear Filters</button>
+                <button class="filter-btn" onClick={() => setSlotFilter(3)}>3 Slots</button>
+                <button class="filter-btn" onClick={() => setSlotFilter(6)}>6 Slots</button>
+                <button class="filter-btn" onClick={() => setSlotFilter(9)}>9 Slots</button>
+                <button class="filter-btn" onClick={() => setFilterbyStatus('Success')}>Success</button>
+                <button class="filter-btn" onClick={() => setFilterbyStatus('Roll Back')}>Roll Back</button>
+                <button class="clear-btn" onClick={() => {
+                    setSlotFilter("all")
+                    setFilterbyStatus("all")
+                }}>Clear Filters</button>
             </div>
         </div>
 
@@ -102,28 +137,37 @@ export default function ColorSlotAdmin() {
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        
+                    {bids
+                    .filter(
+                        bid => bid.user.toLowerCase().includes(searchText.toLowerCase())
+                        && (slotFilter === "all" || bid.slots === slotFilter)
+                        && (filterbyStatus === "all" || (bid.settled && bid.won ? "Success" : !bid.won ? "Roll Back" : "Pending") === filterbyStatus)
+                    )
+                    .map((bid, index) => (
+                            
                         <tr>
-                            <td>1</td>
+                            <td>{index+1}</td>
                             <td>
                                 <div class="address-cell">
-                                    <span class="short-address">0x742d35Cc6634C0532925a3b8B9C4A1d3f4a5b6c7</span>
-                                    <button class="copy-btn" onclick="copyAddress('0x742d35Cc6634C0532925a3b8B9C4A1d3f4a5b6c7', event)">
+                                    <span class="short-address">{formatAddress(bid.user)}</span>
+                                    <button class="copy-btn" onClick={() => copyToClipboard(bid.user)}>
                                         <i class="far fa-copy"></i>
                                     </button>
                                 </div>
                             </td>
-                            <td>3</td>
-                            <td>3 min</td>
-                            <td>1,250</td>
-                            <td>1,250</td>
-                            <td>1,250</td>
-                            <td>1,250</td>
-                            <td>Jan 15, 2024</td>
-                            <td><span class="status-badge status-completed">Success</span></td>
-                        </tr>
+                            <td>{bid.slots}</td>
+                            <td>{bid.duration} min</td>
+                            <td>{formatEther(bid.amount)}</td>
+                            <td>{
+                            bid.settled && bid.won ? formatEther(bid.amount) * 2 : 0
+                            }</td>
+                            <td>{0}</td>
+                            <td>{0}</td>
+                            <td>{secondsToDMY(bid.time)}</td>
+                            <td><span class={`status-badge status-${bid.settled && bid.won ? 'completed' : !bid.won ? 'failed' : 'pending'}`}>{bid.settled && bid.won ? "Success": !bid.won ? "Roll Back" :"Pending"}</span></td>
+                        </tr>))}
                         
-                        <tr>
+                        {/* <tr>
                             <td>2</td>
                             <td>
                                 <div class="address-cell">
@@ -241,7 +285,7 @@ export default function ColorSlotAdmin() {
                             <td>2700</td>
                             <td>Feb 8, 2024</td>
                             <td><span class="status-badge status-pending">Roll Back</span></td>
-                        </tr>
+                        </tr> */}
                     </tbody>
                 </table>
             </div>
