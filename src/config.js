@@ -7768,6 +7768,19 @@ export const gameAbi = [
 		"type": "error"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "UUPSUnauthorizedCallContext",
 		"type": "error"
@@ -7958,19 +7971,6 @@ export const gameAbi = [
 			}
 		],
 		"name": "settleGame",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -8484,6 +8484,38 @@ export const gameAbi = [
 				"type": "address"
 			}
 		],
+		"name": "totalLost",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalLost1",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
 		"name": "totalSpent",
 		"outputs": [
 			{
@@ -8504,6 +8536,19 @@ export const gameAbi = [
 			}
 		],
 		"name": "totalWon",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalWon1",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -8546,7 +8591,6 @@ export const gameAbi = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-
 ]
 
 export const dataFetcherGameAbi = [
