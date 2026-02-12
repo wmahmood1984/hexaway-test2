@@ -97,7 +97,7 @@ export default function Nav({ setCreateActive, createActive }) {
   };
 
 
-  //console.log("admin",showAdminPage,address===admin,address,admin);
+  console.log("admin",showAdminPage,address===admin,address,admin);
 
 
   return (
@@ -125,7 +125,7 @@ export default function Nav({ setCreateActive, createActive }) {
           <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {registered && (
               <>
-                {showAdminPage &&
+                {/* {showAdminPage &&
 
 
                   <>
@@ -139,25 +139,25 @@ export default function Nav({ setCreateActive, createActive }) {
 
 
 
-                  </>}
+                  </>} */}
                 {showAdminPage &&
                   <>
 
                     <Link
-                      to="/admin"
+                      to="/predictionadmin"
                       onClick={() => setMobileOpen(false)}
                       className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                     >
-                      Admin form
+                      Prediction Admin
                     </Link>
                     <Link
-                      to="/lists"
+                      to="/slotadmin"
                       onClick={() => setMobileOpen(false)}
                       className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                     >
-                      Lists
+                      Slot Admin
                     </Link>
-                    <Link to="/bulk" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Bulk Upload</Link>
+                    {/* <Link to="/bulk" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Bulk Upload</Link> */}
                   </>
                 }
                 <Link to="/dashboard" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Dashboard</Link>
@@ -223,7 +223,7 @@ export default function Nav({ setCreateActive, createActive }) {
           <div className="px-4 py-3 space-y-1">
             {registered && (
               <>
-                {showAdminPage &&
+                {/* {showAdminPage &&
                   <>
                     <Link
                       to="/suck"
@@ -239,33 +239,33 @@ export default function Nav({ setCreateActive, createActive }) {
 
 
 
-                }
+                } */}
 
                 {showAdminPage &&
                   <>
                     <Link
-                      to="/admin"
+                      to="/predictionadmin"
                       onClick={() => setMobileOpen(false)}
                       className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                     >
-                      Admin form
+                      Prediction Admin
                     </Link>
 
                     <Link
-                      to="/lists"
+                      to="/slotadmin"
                       onClick={() => setMobileOpen(false)}
                       className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                     >
-                      Lists
+                      Slot Admin
                     </Link>
 
-                    <Link
+                    {/* <Link
                       to="/bulk"
                       onClick={() => setMobileOpen(false)}
                       className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                     >
                       Bulk Upload
-                    </Link>
+                    </Link> */}
                   </>
 
 

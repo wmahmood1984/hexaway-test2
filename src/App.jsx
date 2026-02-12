@@ -24,6 +24,8 @@ import Lists from './components2/Lists'
 import User from './components2/p2p Trade/User'
 import Staking from './components2/Staking page/Staking'
 import Game from './components2/NFT Prediction game/Game'
+import ColorPredictionAdmin from './components2/NFT Prediction game/ColorPredictionAdmin'
+import ColorSlotAdmin from './components2/NFT Prediction game/ColorSlotAdmin'
 
 export default function App() {
 
@@ -59,6 +61,8 @@ export default function App() {
                 <Route path="/lists" element={<Lists />} />
                 <Route path="/staking" element={<Staking />} />
                 <Route path="/game" element={<Game />} />
+                <Route path="/predictionadmin" element={<ColorPredictionAdmin />} />
+                <Route path="/slotadmin" element={<ColorSlotAdmin />} />
             </Routes>
         </div >
     )
