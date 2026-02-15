@@ -8462,6 +8462,11 @@ export const gameAbi = [
 				"type": "uint256"
 			},
 			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
 				"internalType": "uint256",
 				"name": "future1",
 				"type": "uint256"
@@ -8686,6 +8691,11 @@ export const gameAbi = [
 				"type": "uint256"
 			},
 			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
 				"internalType": "uint256",
 				"name": "future1",
 				"type": "uint256"
@@ -8693,6 +8703,30 @@ export const gameAbi = [
 			{
 				"internalType": "uint256",
 				"name": "future2",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "userRewardTypeAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
 				"type": "uint256"
 			}
 		],
@@ -9045,7 +9079,7 @@ export const distributionAdd = mainnet ?  "0xaE2A9F5F5AB9f437826D2Ac6173EfB98f86
 export const buySale = mainnet ? "0x052DbC12bac5490e4225042493bF9B438545668E"
 :"0x0b13FbC7d4BF441C5e9f846E7F60846B41eA3cBf"
 export const gameAdd = mainnet ? ""
-: "0xcDfE5Ab12F840486a03443ce925a8Bc978506160"
+: "0x93183a4AFD8874057Cd216c95ed83F51C19e3564"
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 

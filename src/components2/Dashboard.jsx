@@ -6,7 +6,7 @@ import { executeContract, extractRevertReason, formatAddress, formatWithCommas }
 import { formatEther } from 'ethers';
 import toast from 'react-hot-toast';
 import { init, readName } from '../slices/contractSlice';
-import { erc20abi, erc20Add, fetcherHelperv2, fetcherV2Abi, helperContractV2, helperv2, helperv2Abi, HexaContract, hexaTokenAdd, mlmcontractaddress, packageKeys, usdtContract, web3 } from '../config';
+import { erc20abi, erc20Add, fetcherHelperv2, fetcherV2Abi, gameContractR, helperContractV2, helperv2, helperv2Abi, HexaContract, hexaTokenAdd, mlmcontractaddress, packageKeys, usdtContract, web3 } from '../config';
 import CountdownTimer from './Timer';
 import Spinner from './Spinner';
 import HexawayPackages from './HexawayPackages';
@@ -32,6 +32,20 @@ export default function Dashboard() {
     const [activeTicketIndex, setActiveTicketIndex] = useState(0);
     const fetcherContract = new web3.eth.Contract(fetcherV2Abi, fetcherHelperv2)
     const helperV2Contract = new web3.eth.Contract(helperv2Abi, helperv2)
+    
+    const [dailyStarSponsorReward, setDailyStarSponsorReward] = useState(0);
+    const [weeklyStarSponsorReward, setWeeklyStarSponsorReward] = useState(0);
+    const [monthlyStarSponsorReward, setMonthlyStarSponsorReward] = useState(0);
+    const [dailyProTraderReward, setDailyProTraderReward] = useState(0);
+    const [weeklyProTraderReward, setWeeklyProTraderReward] = useState(0);
+    const [monthlyProTraderReward, setMonthlyProTraderReward] = useState(0);
+
+    const [dailyStarRewardInfo, setDailyStarRewardInfo] = useState();
+    const [weeklyStarRewardInfo, setWeeklyStarRewardInfo] = useState();
+    const [monthlyStarRewardInfo, setMonthlyStarRewardInfo] = useState({});
+    const [dailyProRewardInfo, setDailyProRewardInfo] = useState();
+    const [weeklyProRewardInfo, setWeeklyProRewardInfo] = useState();
+    const [monthlyProRewardInfo, setMonthlyProRewardInfo] = useState();
 
     useEffect(() => {
 
@@ -41,6 +55,33 @@ export default function Dashboard() {
 
             const _activeTicketIndex = await helperV2Contract.methods.activeTicketIndex().call()
             setActiveTicketIndex(_activeTicketIndex)
+
+            const _dailyStarSponsorReward = await gameContractR.methods.userRewardTypeAmount(address,1).call()
+            setDailyStarSponsorReward(_dailyStarSponsorReward)
+            const _weeklyStarSponsorReward = await gameContractR.methods.userRewardTypeAmount(address,2).call()
+            setWeeklyStarSponsorReward(_weeklyStarSponsorReward)
+            const _monthlyStarSponsorReward = await gameContractR.methods.userRewardTypeAmount(address,3).call()
+            setMonthlyStarSponsorReward(_monthlyStarSponsorReward)
+            const _dailyProTraderReward = await gameContractR.methods.userRewardTypeAmount(address,4).call()
+            setDailyProTraderReward(_dailyProTraderReward)
+            const _weeklyProTraderReward = await gameContractR.methods.userRewardTypeAmount(address,5).call()
+            setWeeklyProTraderReward(_weeklyProTraderReward)
+            const _monthlyProTraderReward = await gameContractR.methods.userRewardTypeAmount(address,6).call()
+            setMonthlyProTraderReward(_monthlyProTraderReward)
+
+            const _dailyStarRewardInfo = await gameContractR.methods.rewardInfo(1).call()
+            setDailyStarRewardInfo(_dailyStarRewardInfo)
+            const _weeklyStarRewardInfo = await gameContractR.methods.rewardInfo(2).call()
+            setWeeklyStarRewardInfo(_weeklyStarRewardInfo)
+            const _monthlyStarRewardInfo = await gameContractR.methods.rewardInfo(3).call()
+            setMonthlyStarRewardInfo(_monthlyStarRewardInfo)
+            const _dailyProTraderRewardInfo = await gameContractR.methods.rewardInfo(4).call()
+            setDailyProRewardInfo(_dailyProTraderRewardInfo)
+            const _weeklyProTraderRewardInfo = await gameContractR.methods.rewardInfo(5).call()
+            setWeeklyProRewardInfo(_weeklyProTraderRewardInfo)
+            const _monthlyProTraderRewardInfo = await gameContractR.methods.rewardInfo(6).call()
+            setMonthlyProRewardInfo(_monthlyProTraderRewardInfo)
+
         }
 
         abc()
@@ -143,7 +184,9 @@ export default function Dashboard() {
     const now = new Date().getTime()
 
 
-    const isLoading = !Package || !User || !packages;
+    const isLoading = !Package || !User || !packages 
+    || !dailyStarRewardInfo || !weeklyStarRewardInfo || !monthlyStarRewardInfo || 
+    !dailyProRewardInfo || !weeklyProRewardInfo || !monthlyProRewardInfo
 
     const levelBlockSeconds = Number(incomeBlockTime) + 60 * 60 * 48 - now / 1000 < 0 ? 0 : Number(incomeBlockTime) + 60 * 60 * 48 - now / 1000
 
@@ -528,7 +571,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Daily star Sponsor Reward</h4>
                                     <div id="group-trading-bonus" class="text-xl sm:text-2xl font-bold text-green-600">
-                                        Hexa {formatWithCommas(formatEther(User.data.tradingReferralBonus))}
+                                        Hexa {formatWithCommas(formatEther(dailyStarSponsorReward))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -537,7 +580,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Weekly star Sponsor Reward</h4>
                                     <div id="level-income" class="text-xl sm:text-2xl font-bold text-blue-600">
-                                        Hexa {formatWithCommas(formatEther(User.data.packageReferralBonus))}
+                                        Hexa {formatWithCommas(formatEther(weeklyStarSponsorReward))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -546,7 +589,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Monthly star Sponsor Reward</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        Hexa {formatWithCommas(formatEther(User.data.tradingLevelBonus))}
+                                        Hexa {formatWithCommas(formatEther(monthlyStarSponsorReward))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -559,7 +602,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Daily Pro Trader Reward</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        Hexa {formatWithCommas(formatEther(User.data.packageLevelBonus))}
+                                        Hexa {formatWithCommas(formatEther(dailyProTraderReward))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -572,7 +615,7 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Weekly Pro Trader Reward</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        Hexa {formatWithCommas(formatEther(User.data.selfTradingProfit))}
+                                        Hexa {formatWithCommas(formatEther(weeklyProTraderReward))}
                                     </div>
                                 </div>
                                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
@@ -585,12 +628,8 @@ export default function Dashboard() {
                                     </div>
                                     <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Monthly Pro Trader Reward</h4>
                                     <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
-                                        Hexa {formatWithCommas(Number(formatEther(User.data.tradingLevelBonus)) +
-                                            Number(formatEther(User.data.packageLevelBonus)) +
-                                            Number(formatEther(User.data.tradingReferralBonus)) +
-                                            Number(formatEther(User.data.packageReferralBonus)) +
-                                            Number(formatEther(User.data.selfTradingProfit)))
-                                        }
+                                        Hexa {formatWithCommas(Number(formatEther(monthlyProTraderReward)))}
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -698,7 +737,15 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <SchemeIncomes />
+                    <SchemeIncomes
+                    dailyStarRewardInfo={dailyStarRewardInfo}
+                    weeklyStarRewardInfo={weeklyStarRewardInfo}
+                    monthlyStarRewardInfo={monthlyStarRewardInfo}
+                    dailyProTraderRewardInfo={dailyProRewardInfo}
+                    weeklyProTraderRewardInfo={weeklyProRewardInfo}
+                    monthlyProTraderRewardInfo={monthlyProRewardInfo}
+                    
+                    />
                 </div>
             </div>
         </div>
