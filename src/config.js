@@ -7707,6 +7707,21 @@ export const gameAbi = [
 				"internalType": "address",
 				"name": "_2ndRunnerup",
 				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_winnerAchievement",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_runnerupAchievement",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_2ndRunnerupAchievement",
+				"type": "uint256"
 			}
 		],
 		"name": "distributeReward",
@@ -8417,6 +8432,50 @@ export const gameAbi = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "rewardInfo",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_type",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "achievement",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "future1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "future2",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "scheme",
 		"outputs": [
@@ -8586,6 +8645,55 @@ export const gameAbi = [
 				"internalType": "string",
 				"name": "",
 				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "userRewardArray",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_type",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "achievement",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "future1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "future2",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -9568,7 +9676,7 @@ export const bulkAddAbi = [
 //export const erc20Add = "0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9"; //op bnb
 export const erc20Add = mainnet ? "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3" //op bnb mainnet
 : "0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9"
-export const admin = "0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF"  //bulk / lists / admin / suck 
+export const admin = "0xB066Ce4653576C310e9A8502e269fc54E32B28ab"  //bulk / lists / admin / suck 
 
 export const p2pContractR = new web3.eth.Contract(P2PAbi,P2PAdd)
 export const stakinvV2ContractR = new web3.eth.Contract(stakingV2Abi,stakingV2Add)

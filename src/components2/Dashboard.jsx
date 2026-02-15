@@ -14,6 +14,7 @@ import CountdownTimer2 from './Timer2';
 import CountdownTimer3 from './Timer3';
 import IncomeBlockTimer from './Timer3';
 import { Link } from 'react-router-dom';
+import SchemeIncomes from './SchemeIncomes';
 
 export default function Dashboard() {
 
@@ -90,7 +91,7 @@ export default function Dashboard() {
 
         const contract = new web3.eth.Contract(erc20abi, hexaTokenAdd)
         const balance = await contract.methods.balanceOf(address).call();
-        const eligible = await helperV2Contract.methods.checkEligibility(address,pkg.id).call()
+        const eligible = await helperV2Contract.methods.checkEligibility(address, pkg.id).call()
         const User = await helperV2Contract.methods.getUser(address).call()
         console.log("object", formatEther(balance), formatEther(pkg.price));
         if (Number(formatEther(balance)) < Number(formatEther(pkg.price) * 100)) {
@@ -175,12 +176,12 @@ export default function Dashboard() {
                 .sort((a, b) => Number(b.id) - Number(a.id)) // latest first
             : [];
 
-    const latestTrade = tickets &&  sortedPositions.length > 0 ? sortedPositions[0] : null;
+    const latestTrade = tickets && sortedPositions.length > 0 ? sortedPositions[0] : null;
 
-    const position = tickets && 
+    const position = tickets &&
         latestTrade && Number(latestTrade.id) > Number(activeTicketIndex)
-            ? Number(latestTrade.id) - Number(activeTicketIndex)
-            : Number(latestTrade?.id) == Number(activeTicketIndex)
+        ? Number(latestTrade.id) - Number(activeTicketIndex)
+        : Number(latestTrade?.id) == Number(activeTicketIndex)
             ? 1
             : "Not in Queue";
 
@@ -202,35 +203,35 @@ export default function Dashboard() {
                             <p class="text-indigo-100 text-sm sm:text-base">Manage your NFT portfolio and earnings</p>
 
 
-<div className="flex justify-center mt-10">
-  <div className="flex items-center gap-x-14 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-4 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg">
+                            <div className="flex justify-center mt-10">
+                                <div className="flex items-center gap-x-14 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-4 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg">
 
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-    <Link to="/history" className="whitespace-nowrap">
-      Transaction History
-    </Link>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <Link to="/history" className="whitespace-nowrap">
+                                        Transaction History
+                                    </Link>
 
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-    <Link to="/tree" className="whitespace-nowrap">
-      Team Tree
-    </Link>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <Link to="/tree" className="whitespace-nowrap">
+                                        Team Tree
+                                    </Link>
 
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-    <Link to="/teamview" className="whitespace-nowrap">
-      Team View
-    </Link>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <Link to="/teamview" className="whitespace-nowrap">
+                                        Team View
+                                    </Link>
 
-  </div>
-</div>
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -515,6 +516,84 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                                <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
+                                    <div class="flex justify-center mb-2">
+                                        <img
+                                            src="tradingprofit.png"
+                                            alt="Self Trading"
+                                            class="w-8 sm:w-10"
+                                        />
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Daily star Sponsor Reward</h4>
+                                    <div id="group-trading-bonus" class="text-xl sm:text-2xl font-bold text-green-600">
+                                        Hexa {formatWithCommas(formatEther(User.data.tradingReferralBonus))}
+                                    </div>
+                                </div>
+                                <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
+                                    <div class="text-2xl sm:text-3xl mb-2">
+                                        💰
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Weekly star Sponsor Reward</h4>
+                                    <div id="level-income" class="text-xl sm:text-2xl font-bold text-blue-600">
+                                        Hexa {formatWithCommas(formatEther(User.data.packageReferralBonus))}
+                                    </div>
+                                </div>
+                                <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
+                                    <div class="text-2xl sm:text-3xl mb-2">
+                                        📈
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Monthly star Sponsor Reward</h4>
+                                    <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
+                                        Hexa {formatWithCommas(formatEther(User.data.tradingLevelBonus))}
+                                    </div>
+                                </div>
+                                <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
+                                    <div class="flex justify-center mb-2">
+                                        <img
+                                            src="SelfTrading.jpeg"
+                                            alt="Self Trading"
+                                            class="w-24 sm:w-28"
+                                        />
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Daily Pro Trader Reward</h4>
+                                    <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
+                                        Hexa {formatWithCommas(formatEther(User.data.packageLevelBonus))}
+                                    </div>
+                                </div>
+                                <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
+                                    <div class="flex justify-center mb-2">
+                                        <img
+                                            src="NFTCreation.jpeg"
+                                            alt="Self Trading"
+                                            class="w-24 sm:w-28"
+                                        />
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Weekly Pro Trader Reward</h4>
+                                    <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
+                                        Hexa {formatWithCommas(formatEther(User.data.selfTradingProfit))}
+                                    </div>
+                                </div>
+                                <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-4 sm:p-6 text-center">
+                                    <div class="flex justify-center mb-2">
+                                        <img
+                                            src="TotalIncome.jpeg"
+                                            alt="Self Trading"
+                                            class="w-24 sm:w-28"
+                                        />
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Monthly Pro Trader Reward</h4>
+                                    <div id="referral-income" class="text-xl sm:text-2xl font-bold text-purple-600">
+                                        Hexa {formatWithCommas(Number(formatEther(User.data.tradingLevelBonus)) +
+                                            Number(formatEther(User.data.packageLevelBonus)) +
+                                            Number(formatEther(User.data.tradingReferralBonus)) +
+                                            Number(formatEther(User.data.packageReferralBonus)) +
+                                            Number(formatEther(User.data.selfTradingProfit)))
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         {/* <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 mb-6 sm:mb-8">
                             <div class="p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl border border-blue-200">
@@ -618,6 +697,8 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
+
+                    <SchemeIncomes />
                 </div>
             </div>
         </div>

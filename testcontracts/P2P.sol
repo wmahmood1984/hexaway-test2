@@ -88,7 +88,7 @@ contract P2PTrading is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
                 // Calculate total USDT to transfer
                 uint totalUSDT = (settleAmount * sale.price) / 1e18;
-                uint _fee = (totalUSDT * fee) / 100;
+                uint _fee = (totalUSDT * 10) / 100;
                 uint remaining = totalUSDT - _fee;
                 // Transfer USDT from buyer to seller
                 require(
