@@ -7751,6 +7751,19 @@ export const gameAbi = [
 		"type": "error"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_settler",
+				"type": "address[]"
+			}
+		],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "InvalidInitialization",
 		"type": "error"
@@ -7796,6 +7809,24 @@ export const gameAbi = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newImplementation",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "UUPSUnauthorizedCallContext",
 		"type": "error"
@@ -7810,6 +7841,49 @@ export const gameAbi = [
 		],
 		"name": "UUPSUnsupportedProxiableUUID",
 		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "gameId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint8",
+				"name": "color",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "won",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "payout",
+				"type": "uint256"
+			}
+		],
+		"name": "BidSettled",
+		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -7860,19 +7934,6 @@ export const gameAbi = [
 		],
 		"name": "GameSettled",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_settler",
-				"type": "address[]"
-			}
-		],
-		"name": "initialize",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -8007,24 +8068,6 @@ export const gameAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
-			}
-		],
-		"name": "upgradeToAndCall",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "",
 				"type": "address"
 			}
@@ -8139,6 +8182,40 @@ export const gameAbi = [
 				"type": "uint256"
 			}
 		],
+		"name": "gameResults",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "settled",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint8",
+				"name": "winningColor",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalBidded",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalPayout",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"name": "games",
 		"outputs": [
 			{
@@ -8163,6 +8240,77 @@ export const gameAbi = [
 	{
 		"inputs": [],
 		"name": "getBids",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "color",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "time",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "gameId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "won",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint8",
+						"name": "duration",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "slots",
+						"type": "uint8"
+					},
+					{
+						"internalType": "bool",
+						"name": "settled",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct GameEngine.Bid[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "gameId",
+				"type": "uint256"
+			}
+		],
+		"name": "getUserGameBids",
 		"outputs": [
 			{
 				"components": [
@@ -8668,6 +8816,30 @@ export const gameAbi = [
 				"type": "uint256"
 			}
 		],
+		"name": "userGameBidIndexes",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"name": "userRewardArray",
 		"outputs": [
 			{
@@ -9079,12 +9251,12 @@ export const distributionAdd = mainnet ?  "0xaE2A9F5F5AB9f437826D2Ac6173EfB98f86
 export const buySale = mainnet ? "0x052DbC12bac5490e4225042493bF9B438545668E"
 :"0x0b13FbC7d4BF441C5e9f846E7F60846B41eA3cBf"
 export const gameAdd = mainnet ? ""
-: "0x393680C5d13Ce916483dE4833c071FBF8109fB06"
+: "0x562bF12e75382b2D101df6C5889Fa3b674A598d7"
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 
 export const dataFetcherGameAdd = mainnet ? "" : 
-"0xf9B394B77fD96B165F70Fb64836486Ff455C272A"
+"0xef66650476a7F2b33fC1C5380683634313Cde265"
 
 export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"
 export const tokenFeeder = "0xF942224e5D97b78a0C32C7cB9A4Aae8fa602f75C"  //EOA => Doctor sb

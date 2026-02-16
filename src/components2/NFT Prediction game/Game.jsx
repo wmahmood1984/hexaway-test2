@@ -89,6 +89,7 @@ export default function Game() {
       if (diff === 0) {
         fetchGameRan();
         abc()
+        toast.success("game processed")
       }
     }, 1000);
 
