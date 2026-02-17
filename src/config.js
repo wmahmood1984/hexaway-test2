@@ -8203,6 +8203,21 @@ export const gameAbi = [
 				"internalType": "uint256",
 				"name": "totalPayout",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "future1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "future2",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "future3",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -9251,12 +9266,12 @@ export const distributionAdd = mainnet ?  "0xaE2A9F5F5AB9f437826D2Ac6173EfB98f86
 export const buySale = mainnet ? "0x052DbC12bac5490e4225042493bF9B438545668E"
 :"0x0b13FbC7d4BF441C5e9f846E7F60846B41eA3cBf"
 export const gameAdd = mainnet ? ""
-: "0x562bF12e75382b2D101df6C5889Fa3b674A598d7"
+: "0xfCF55f59e064bA09500f5f0e3a50B270E39DE276"
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 
 export const dataFetcherGameAdd = mainnet ? "" : 
-"0xef66650476a7F2b33fC1C5380683634313Cde265"
+"0xd7A692FA70249988a6DF0E72bFC8C10742b5535d"
 
 export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"
 export const tokenFeeder = "0xF942224e5D97b78a0C32C7cB9A4Aae8fa602f75C"  //EOA => Doctor sb
