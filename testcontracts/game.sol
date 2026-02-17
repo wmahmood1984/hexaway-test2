@@ -103,7 +103,6 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     uint public totalLost1;
     mapping(address => mapping(uint => uint)) public userRewardTypeAmount;
     mapping(address => uint) public totalLost;
- 
 
     struct Reward {
         uint time;
@@ -115,7 +114,33 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         uint future2;
     }
     mapping(address => Reward[]) public userRewardArray;
-   mapping(uint=>Reward) public rewardInfo;
+    mapping(uint => Reward) public rewardInfo;
+    mapping(address => uint[]) public userGameBidIndexes;
+    struct GameResult {
+        bool settled;
+        uint8 winningColor;
+        uint totalBidded;
+        uint totalPayout;
+        Winner[] winners;
+        uint future1;
+        uint future2;
+        bool future3;
+    }
+
+    struct Winner {
+        address user;
+        uint amountWon;
+    }
+
+    mapping(uint => GameResult) public gameResults;
+    event BidSettled(
+        uint indexed gameId,
+        address indexed user,
+        uint amount,
+        uint8 color,
+        bool won,
+        uint payout
+    );
     constructor() {
         _disableInitializers();
     }
@@ -213,28 +238,31 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     function placeBid(uint gameId, uint amount, uint8 color) external {
         Game storage g = games[gameId];
+
         require(g.active, "Game inactive");
         require(color < g.slots, "Invalid color");
         require(amount > 0, "Zero bid");
+        require(balance[msg.sender] >= amount, "Insufficient balance");
 
-        require(
-            balance[msg.sender] >= amount,
-            "balance should be more than amount"
-        );
         balance[msg.sender] -= amount;
-        Bid memory tx1 = Bid(
-            msg.sender,
-            amount,
-            color,
-            block.timestamp,
-            gameId,
-            false,
-            g.duration,
-            g.slots,
-            false
+
+        g.bids.push(
+            Bid({
+                user: msg.sender,
+                amount: amount,
+                color: color,
+                time: block.timestamp,
+                gameId: gameId,
+                won: false,
+                duration: g.duration,
+                slots: g.slots,
+                settled: false
+            })
         );
-        g.bids.push(tx1);
-        bids.push(tx1);
+
+        // store index of this bid for user
+        userGameBidIndexes[msg.sender].push(g.bids.length - 1);
+
         totalSpent[msg.sender] += amount;
     }
 
@@ -256,128 +284,102 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         typeAmount[6] += (dist * 5) / 1000;
     }
 
-    // function settleGame(uint gameId) external {
-    //     // require(msg.sender == settler, "Unauthorized");
-    //     gameRan[gameId] = block.timestamp;
-    //     Game storage g = games[gameId];
-    //     if (g.bids.length == 0) {
-    //         emit GameSettled(gameId, type(uint8).max, 0);
-    //         return;
-    //     }
-
-    //     uint[] memory totals = new uint[](g.slots);
-    //     uint totalBidded;
-    //     for (uint i; i < g.bids.length; i++) {
-    //         totals[g.bids[i].color] += g.bids[i].amount;
-    //         totalBidded += g.bids[i].amount;
-    //     }
-
-    //     // RULE 1: zero-bid color => no winners
-    //     for (uint8 c = 0; c < g.slots; c++) {
-    //         if (totals[c] == 0) {
-    //             uint bal = hexa.balanceOf(address(this));
-    //             if (bal > 0)
-    //                 hexa.transfer(incomeWallet, (totalBidded * 80) / 100);
-
-    //             delete g.bids;
-    //             emit GameSettled(gameId, type(uint8).max, 0);
-    //             return;
-    //         }
-    //     }
-
-    //     // RULE 2: lowest total wins
-    //     uint8 winningColor = 0;
-    //     uint lowest = totals[0];
-
-    //     for (uint8 c = 1; c < g.slots; c++) {
-    //         if (totals[c] < lowest) {
-    //             lowest = totals[c];
-    //             winningColor = c;
-    //         }
-    //     }
-
-    //     uint payout;
-    //     for (uint i; i < g.bids.length; i++) {
-    //         Bid memory b = g.bids[i];
-    //         if (b.color == winningColor) {
-    //             uint win = b.amount * 2;
-    //             hexa.transfer(b.user, win);
-    //             totalWon[b.user] += win;
-    //             payout += win;
-    //         }
-    //     }
-
-    //     uint remaining = ((totalBidded - payout) * 80) / 100;
-    //     if (remaining > 0) hexa.transfer(incomeWallet, remaining);
-
-    //     delete g.bids;
-    //     emit GameSettled(gameId, winningColor, payout);
-    // }
-
     function settleGame(uint gameId) external {
         Game storage g = games[gameId];
-        // Bid[] storage bids = g.bids;
-        uint bidLength = bids.length;
+        GameResult storage result = gameResults[gameId];
+
+        require(g.active, "Game inactive");
+        require(!result.settled, "Already settled");
+
+        uint bidLength = g.bids.length;
+        uint slots = g.slots;
 
         gameRan[gameId] = block.timestamp;
 
+        // -------------------------
+        // CASE 1: No bids
+        // -------------------------
         if (bidLength == 0) {
+            result.settled = true;
+            result.winningColor = type(uint8).max;
+            result.totalBidded = 0;
+            result.totalPayout = 0;
+
             emit GameSettled(gameId, type(uint8).max, 0);
             return;
         }
 
-        uint slots = g.slots;
         uint[] memory totals = new uint[](slots);
         uint totalBidded;
 
-        // ---- 1️⃣ Calculate totals ----
+        // -------------------------
+        // STEP 1 — Calculate totals
+        // -------------------------
         for (uint i = 0; i < bidLength; i++) {
-            Bid storage b = bids[i];
+            Bid storage b = g.bids[i];
             totals[b.color] += b.amount;
             totalBidded += b.amount;
         }
 
-        // ---- 2️⃣ Check zero-bid color rule ----
+        // -------------------------
+        // STEP 2 — Zero-color rule
+        // -------------------------
         for (uint8 c = 0; c < slots; c++) {
             if (totals[c] == 0) {
-                // mark all bids as settled and lost
                 for (uint i = 0; i < bidLength; i++) {
-                    Bid storage b = bids[i];
+                    Bid storage b = g.bids[i];
+
                     b.won = false;
                     b.settled = true;
+
                     totalLost[b.user] += b.amount;
+
+                    emit BidSettled(
+                        gameId,
+                        b.user,
+                        b.amount,
+                        b.color,
+                        false,
+                        0
+                    );
                 }
 
                 uint income = (totalBidded * 80) / 100;
-                totalLost1 += totalBidded;
+
                 if (income > 0) {
                     hexa.transfer(incomeWallet, income);
                 }
 
-                delete g.bids;
+                result.settled = true;
+                result.winningColor = type(uint8).max;
+                result.totalBidded = totalBidded;
+                result.totalPayout = 0;
 
                 emit GameSettled(gameId, type(uint8).max, 0);
                 return;
             }
         }
 
-        // ---- 3️⃣ Find winning color ----
+        // -------------------------
+        // STEP 3 — Find lowest pool
+        // -------------------------
         uint8 winningColor;
         uint lowest = totals[0];
 
         for (uint8 c = 1; c < slots; c++) {
-            uint t = totals[c];
-            if (t < lowest) {
-                lowest = t;
+            if (totals[c] < lowest) {
+                lowest = totals[c];
                 winningColor = c;
             }
         }
 
-        // ---- 4️⃣ Settle bids and pay winners ----
+        // -------------------------
+        // STEP 4 — Settle bids
+        // -------------------------
         uint payout;
 
-        for (uint i; i < bidLength; i++) {
-            Bid storage b = bids[i];
+        for (uint i = 0; i < bidLength; i++) {
+            Bid storage b = g.bids[i];
 
             if (b.color == winningColor) {
                 uint winAmount = b.amount * 2;
@@ -388,28 +390,51 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                 hexa.transfer(b.user, winAmount);
 
                 totalWon[b.user] += winAmount;
+
                 payout += winAmount;
-                totalWon1 += payout;
-                totalLost1 += totalBidded - payout;
+
+                result.winners.push(
+                    Winner({user: b.user, amountWon: winAmount})
+                );
+
+                emit BidSettled(
+                    gameId,
+                    b.user,
+                    b.amount,
+                    b.color,
+                    true,
+                    winAmount
+                );
             } else {
                 b.won = false;
                 b.settled = true;
+
                 totalLost[b.user] += b.amount;
+
+                emit BidSettled(gameId, b.user, b.amount, b.color, false, 0);
             }
         }
 
-        // ---- 5️⃣ Send remaining to income wallet ----
+        // -------------------------
+        // STEP 5 — Income logic
+        // -------------------------
         uint remaining = totalBidded - payout;
 
         if (remaining > 0) {
             uint income = (remaining * 80) / 100;
+
             if (income > 0) {
                 hexa.transfer(incomeWallet, income);
             }
         }
 
-        // ---- 6️⃣ Delete game bids safely ----
-        delete g.bids;
+        // -------------------------
+        // FINAL RESULT SAVE
+        // -------------------------
+        result.settled = true;
+        result.winningColor = winningColor;
+        result.totalBidded = totalBidded;
+        result.totalPayout = payout;
 
         emit GameSettled(gameId, winningColor, payout);
     }
@@ -481,9 +506,11 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         hexa.transferFrom(feeder, _winner, (typeAmount[_type] * 50) / 100);
         userRewardTypeAmount[_winner][_type] += (typeAmount[_type] * 50) / 100;
         hexa.transferFrom(feeder, _runnerup, (typeAmount[_type] * 30) / 100);
-        userRewardTypeAmount[_runnerup][_type] += (typeAmount[_type] * 30) / 100;
+        userRewardTypeAmount[_runnerup][_type] +=
+            (typeAmount[_type] * 30) / 100;
         hexa.transferFrom(feeder, _2ndRunnerup, (typeAmount[_type] * 20) / 100);
-        userRewardTypeAmount[_2ndRunnerup][_type] += (typeAmount[_type] * 20) / 100;
+        userRewardTypeAmount[_2ndRunnerup][_type] +=
+            (typeAmount[_type] * 20) / 100;
         Reward memory tx1 = Reward(
             block.timestamp,
             _type,
@@ -499,7 +526,8 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             _type,
             (typeAmount[_type] * 30) / 100,
             _runnerupAchievement,
-            _runnerup,0,
+            _runnerup,
+            0,
             0
         );
         userRewardArray[_runnerup].push(tx2);
@@ -507,12 +535,34 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             block.timestamp,
             _type,
             (typeAmount[_type] * 20) / 100,
-            _2ndRunnerupAchievement,_2ndRunnerup,
+            _2ndRunnerupAchievement,
+            _2ndRunnerup,
             0,
             0
         );
         userRewardArray[_2ndRunnerup].push(tx3);
-        rewardInfo[_type]=tx1;
+        rewardInfo[_type] = tx1;
+    }
+
+    function getUserGameBids(
+        address user,
+        uint gameId
+    ) external view returns (Bid[] memory) {
+        Game storage g = games[gameId];
+
+        uint count;
+
+        for (uint i = 0; i < g.bids.length; i++)
+            if (g.bids[i].user == user) count++;
+
+        Bid[] memory result = new Bid[](count);
+
+        uint j;
+
+        for (uint i = 0; i < g.bids.length; i++)
+            if (g.bids[i].user == user) result[j++] = g.bids[i];
+
+        return result;
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
@@ -538,7 +588,24 @@ interface IGame {
         bool active;
     }
 
+    struct GameResult {
+        bool settled;
+        uint8 winningColor;
+        uint totalBidded;
+        uint totalPayout;
+        Winner[] winners;
+        uint future1;
+        uint future2;
+        bool future3;
+    }
+
+    struct Winner {
+        address user;
+        uint amountWon;
+    }
+
     function getBids() external view returns (Bid[] memory);
+    function gameResults(uint) external view returns (GameResult memory);
 }
 
 contract DataFetcherForGame is
@@ -594,5 +661,32 @@ contract DataFetcherForGame is
         }
 
         return result;
+    }
+
+    function getGameWinnersCount(uint gameId) external view returns (uint) {
+        return game.gameResults(gameId).winners.length;
+    }
+
+    function getGameWinnerByIndex(
+        uint gameId,
+        uint index
+    ) external view returns (address user, uint amountWon) {
+        IGame.Winner memory w = game.gameResults(gameId).winners[index];
+        return (w.user, w.amountWon);
+    }
+
+    function getUserWinningAmount(
+        uint gameId,
+        address user
+    ) external view returns (uint) {
+        IGame.Winner[] memory winners = game.gameResults(gameId).winners;
+
+        for (uint i = 0; i < winners.length; i++) {
+            if (winners[i].user == user) {
+                return winners[i].amountWon;
+            }
+        }
+
+        return 0;
     }
 }

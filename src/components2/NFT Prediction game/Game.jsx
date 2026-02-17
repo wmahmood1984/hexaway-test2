@@ -89,7 +89,7 @@ export default function Game() {
       if (diff === 0) {
         fetchGameRan();
         abc()
-        toast.success("game processed")
+        checkWinner()
       }
     }, 1000);
 
@@ -98,7 +98,41 @@ export default function Game() {
 
 
 
+  const checkWinner = async () => {
+      const gameId = findGame(slot, time);
+    try {
+    if (!address || !gameId) return { won: false };
 
+    // Fetch winners list from contract
+    const winners = await gameFetcherContractR.methods
+      .getUserWinningAmount(gameId,address)
+      .call();
+
+    if (winners === 0) {
+      toast.info("Sorry you have lost. Best of luck next time!");
+    }
+
+    // Find current user in winners list
+    if (winners > 0) {
+      const amountWei = winners.toString();
+      const amountHexa = formatEther(amountWei.toString());
+
+      toast.success(
+        `🎉 You won ${amountHexa} HEXA in Game #${gameId}`      );
+
+      return {
+        won: true,
+        amount: amountHexa,
+      };
+    }
+
+    return { won: false };
+
+  } catch (error) {
+    console.error("Winner check failed:", error);
+    return { won: false };
+  }
+};
 
 
 
