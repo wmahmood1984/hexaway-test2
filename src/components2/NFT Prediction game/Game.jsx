@@ -96,20 +96,23 @@ export default function Game() {
     return () => clearInterval(interval);
   }, [gameRan, time, fetchGameRan]);
 
-
+//console.log("addres",address)
 
   const checkWinner = async () => {
       const gameId = findGame(slot, time);
+
     try {
-    if (!address || !gameId) return { won: false };
+    // if (!address || !gameId) return { won: false };
 
     // Fetch winners list from contract
     const winners = await gameFetcherContractR.methods
       .getUserWinningAmount(gameId,address)
       .call();
 
-    if (winners === 0) {
-      toast.info("Sorry you have lost. Best of luck next time!");
+      console.log("object",gameId,address,winners)
+
+    if (winners === "0") {
+      toast.error("Sorry you have lost. Best of luck next time!");
     }
 
     // Find current user in winners list
@@ -234,7 +237,7 @@ export default function Game() {
     );
   }
 
-   console.log("prediction", { myBids })
+   //console.log("prediction", { myBids })
 
   return (
     <div>
