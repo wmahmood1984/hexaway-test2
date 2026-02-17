@@ -250,7 +250,7 @@ export default function Game() {
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "24px", gap: "12px" }}>
                 <div style={{ width: "100%", textAlign: "center" }}>
                   <h1 style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "28px", color: "#0f172a", fontWeight: 900, marginBottom: "8px", textShadow: "0 4px 20px #8b5cf6" }}>
-                    Colour Prediction Game
+                    Color Prediction Game
                   </h1>
                   <p style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#06b6d4", fontWeight: 700 }}>
                     Win 2x Your Hexa!
@@ -455,14 +455,14 @@ export default function Game() {
 
 
                 <div id="hexaTokenDisplay" style={{ marginTop: "12px", textAlign: "center", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#06b6d4", fontWeight: 700 }}>
-                  💎 Spend: <span id="hexaAmount">0.6</span> HEXA
+                  💎 Spend: <span id="hexaAmount">{amount/price}</span> HEXA
                 </div>
               </div>
 
 
               <div id="nftSlotsContainer" style={{ marginBottom: "16px", display: "block", width: "100%", boxSizing: "border-box", overflow: "hidden" }}>
                 <h3 style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "16px", color: "#0f172a", fontWeight: 700, marginBottom: "12px", textAlign: "center" }}>
-                  🎰 Select Your Colour
+                  🎰 Select Your Color
                 </h3>
                 <div id="nftSlotsGrid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", width: "100%", boxSizing: "border-box", maxWidth: "100%" }}>
                   {colors.map((v, e) => {
