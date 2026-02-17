@@ -237,7 +237,7 @@ export default function Game() {
     );
   }
 
-   //console.log("prediction", { myBids })
+   console.log("prediction", { myBids })
 
   return (
     <div>
@@ -455,7 +455,7 @@ export default function Game() {
 
 
                 <div id="hexaTokenDisplay" style={{ marginTop: "12px", textAlign: "center", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#06b6d4", fontWeight: 700 }}>
-                  💎 Spend: <span id="hexaAmount">{amount/price}</span> HEXA
+                  💎 Spend: <span id="hexaAmount">{Number(amount/price).toFixed(0)}</span> HEXA
                 </div>
               </div>
 
