@@ -24,7 +24,7 @@ export default function Game() {
   const [selectedColor, setSelectedColor] = useState(null)
   const [showDeposit, setShowDeposit] = useState(false);
   const ROUND_BUFFER = 1; // safety buffer
-
+  const [allBids,setAllBids] = useState([])
   const [gameRan, setGameRan] = useState(0);
   const [myBids, setMyBids] = useState();
   const [remaining, setRemaining] = useState(0);
@@ -154,6 +154,9 @@ export default function Game() {
     // const _game = await gameContractR.methods.getGame().call()
     const _myBids = await gameFetcherContractR.methods.getBidsByUser(address).call()
     setMyBids(_myBids)
+
+    const _allBids = await gameContractR.methods.getBids().call()
+    setAllBids(_allBids)
    
   
   }
@@ -221,7 +224,7 @@ export default function Game() {
 
 
 
-  const isLoading = false//!myBids;
+  const isLoading = !myBids;
   const now = new Date().getTime() / 1000;
 
   const duration = ((Number(gameRan) + Number(time * 60)) - now).toFixed(0)
@@ -237,7 +240,7 @@ export default function Game() {
     );
   }
 
-   console.log("prediction", { myBids })
+   console.log("prediction", { allBids })
 
   return (
     <div>
@@ -628,7 +631,7 @@ export default function Game() {
               <div id="predictionHistoryContent">
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                {/* {myBids.map((bid, index) => {
+                 {myBids.map((bid, index) => {
                   return(
                  <div style={{ background: "#10b98120", padding: "12px 16px", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: "4px solid #10b981" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -655,7 +658,7 @@ export default function Game() {
                     </div>
                   </div>
                   )
-                })}  */}
+                })}  
  
 
                   {/* <div style={{ background: "#ef444420", padding: "12px 16px", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: "4px solid #ef4444" }}>

@@ -55,7 +55,7 @@ export default function Auth({ setCreateActive, createActive }) {
         }
     }, [User?.registered, navigate, isConnected, address]);
 
-
+    console.log("aut",User)
 
     return (
         <div>
