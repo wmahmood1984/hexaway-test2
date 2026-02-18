@@ -87,9 +87,9 @@ export default function Game() {
 
       // 🔁 Round ended → refetch once
       if (diff === 0) {
-  //      fetchGameRan();
-   //     abc()
-//        checkWinner()
+       fetchGameRan();
+       abc()
+       checkWinner()
       }
     }, 1000);
 
@@ -141,19 +141,19 @@ export default function Game() {
 
 
   const abc = async () => {
-    // const _hexaBalance = await HEXAContractR.methods.balanceOf(address).call()
-    // setHexaBalance((_hexaBalance / 1e18).toFixed(0))
-    // const _price = await priceOracleContractR.methods.price().call()
-    // setPrice((_price / 1e18).toFixed(4))
-    // const _spent = await gameContractR.methods.totalSpent(address).call()
-    // setSpent((_spent / 1e18).toFixed(4))
-    // const _won = await gameContractR.methods.totalWon(address).call()
-    // setWon((_won / 1e18).toFixed(4))
-    // const _depositBalance = await gameContractR.methods.balance(address).call()
-    // setDepositBalance((_depositBalance / 1e18).toFixed(4))
-    // // const _game = await gameContractR.methods.getGame().call()
-    // const _myBids = await gameFetcherContractR.methods.getBidsByUser(address).call()
-    // setMyBids(_myBids)
+    const _hexaBalance = await HEXAContractR.methods.balanceOf(address).call()
+    setHexaBalance((_hexaBalance / 1e18).toFixed(0))
+    const _price = await priceOracleContractR.methods.price().call()
+    setPrice((_price / 1e18).toFixed(4))
+    const _spent = await gameContractR.methods.totalSpent(address).call()
+    setSpent((_spent / 1e18).toFixed(4))
+    const _won = await gameContractR.methods.totalWon(address).call()
+    setWon((_won / 1e18).toFixed(4))
+    const _depositBalance = await gameContractR.methods.balance(address).call()
+    setDepositBalance((_depositBalance / 1e18).toFixed(4))
+    // const _game = await gameContractR.methods.getGame().call()
+    const _myBids = await gameFetcherContractR.methods.getBidsByUser(address).call()
+    setMyBids(_myBids)
    
   
   }
