@@ -87,9 +87,9 @@ export default function Game() {
 
       // 🔁 Round ended → refetch once
       if (diff === 0) {
-        fetchGameRan();
-        abc()
-        checkWinner()
+  //      fetchGameRan();
+   //     abc()
+//        checkWinner()
       }
     }, 1000);
 
@@ -141,19 +141,19 @@ export default function Game() {
 
 
   const abc = async () => {
-    const _hexaBalance = await HEXAContractR.methods.balanceOf(address).call()
-    setHexaBalance((_hexaBalance / 1e18).toFixed(0))
-    const _price = await priceOracleContractR.methods.price().call()
-    setPrice((_price / 1e18).toFixed(4))
-    const _spent = await gameContractR.methods.totalSpent(address).call()
-    setSpent((_spent / 1e18).toFixed(4))
-    const _won = await gameContractR.methods.totalWon(address).call()
-    setWon((_won / 1e18).toFixed(4))
-    const _depositBalance = await gameContractR.methods.balance(address).call()
-    setDepositBalance((_depositBalance / 1e18).toFixed(4))
-    // const _game = await gameContractR.methods.getGame().call()
-    const _myBids = await gameFetcherContractR.methods.getBidsByUser(address).call()
-    setMyBids(_myBids)
+    // const _hexaBalance = await HEXAContractR.methods.balanceOf(address).call()
+    // setHexaBalance((_hexaBalance / 1e18).toFixed(0))
+    // const _price = await priceOracleContractR.methods.price().call()
+    // setPrice((_price / 1e18).toFixed(4))
+    // const _spent = await gameContractR.methods.totalSpent(address).call()
+    // setSpent((_spent / 1e18).toFixed(4))
+    // const _won = await gameContractR.methods.totalWon(address).call()
+    // setWon((_won / 1e18).toFixed(4))
+    // const _depositBalance = await gameContractR.methods.balance(address).call()
+    // setDepositBalance((_depositBalance / 1e18).toFixed(4))
+    // // const _game = await gameContractR.methods.getGame().call()
+    // const _myBids = await gameFetcherContractR.methods.getBidsByUser(address).call()
+    // setMyBids(_myBids)
    
   
   }
@@ -221,7 +221,7 @@ export default function Game() {
 
 
 
-  const isLoading = !myBids;
+  const isLoading = false//!myBids;
   const now = new Date().getTime() / 1000;
 
   const duration = ((Number(gameRan) + Number(time * 60)) - now).toFixed(0)
@@ -628,7 +628,7 @@ export default function Game() {
               <div id="predictionHistoryContent">
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                {myBids.map((bid, index) => {
+                {/* {myBids.map((bid, index) => {
                   return(
                  <div style={{ background: "#10b98120", padding: "12px 16px", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: "4px solid #10b981" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -655,7 +655,7 @@ export default function Game() {
                     </div>
                   </div>
                   )
-                })} 
+                })}  */}
  
 
                   {/* <div style={{ background: "#ef444420", padding: "12px 16px", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: "4px solid #ef4444" }}>
