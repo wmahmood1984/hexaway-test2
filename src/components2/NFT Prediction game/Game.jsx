@@ -105,18 +105,20 @@ export default function Game() {
     // if (!address || !gameId) return { won: false };
 
     // Fetch winners list from contract
-    const winners = await gameFetcherContractR.methods
+    const {winners,isInTheGame} = await gameFetcherContractR.methods
       .getUserWinningAmount(gameId,address)
       .call();
 
-      console.log("object",gameId,address,winners)
-
-    if (winners === "0") {
+      console.log("object",gameId,address,winners,isInTheGame)
+    
+    if(!isInTheGame){
+      
+    }else if (isInTheGame && winners === "0") {
       toast.error("Sorry you have lost. Best of luck next time!");
     }
 
     // Find current user in winners list
-    if (winners > 0) {
+    if (winners > 0 && isInTheGame) {
       const amountWei = winners.toString();
       const amountHexa = formatEther(amountWei.toString());
 
