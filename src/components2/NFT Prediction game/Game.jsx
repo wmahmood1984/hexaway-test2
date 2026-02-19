@@ -319,7 +319,7 @@ export default function Game() {
               </h2>
 
 
-              <div style={{ marginBottom: "16px" }}>
+              {/* <div style={{ marginBottom: "16px" }}>
                 <label style={{ display: "block", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#0f172a", fontWeight: 700, marginBottom: "8px" }}>
                   🎰 Select Color
                 </label>
@@ -352,7 +352,7 @@ export default function Game() {
                     9 Colors
                   </button>
                 </div>
-              </div>
+              </div> */}
 
 
               <div style={{ marginBottom: "16px" }}>
@@ -378,7 +378,7 @@ export default function Game() {
                   >
                     3 min
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => { setTime(5) }}
                     id="time300Btn"
                     class="time-btn"
@@ -395,7 +395,7 @@ export default function Game() {
                     style={{ padding: "10px", borderRadius: "10px", border: time == 10 ? "2px solid #06b6d4" : "2px solid #06b6d440", background: time == 10 ? "#06b6d4" : "#f8fafc", color: time == 10 ? "white" : "#0f172a", cursor: "pointer", fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", fontWeight: 700, transition: "all 0.2s" }}
                   >
                     10 min
-                  </button>
+                  </button> */}
                 </div>
               </div>
 

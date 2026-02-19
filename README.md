@@ -5,8 +5,8 @@ done) change color of lost to red.
 done) show minus sign in lost. 
 6) time matching in both machine
 done) show color sign in the prediction history 
-8) show all admin report and make the prediction and slot as a tab. 
-9) add a page to start / end scheme. 
+done) show all admin report and make the prediction and slot as a tab. 
+done) add a page to start / end scheme. 
 
 
 
