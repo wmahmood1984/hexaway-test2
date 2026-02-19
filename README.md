@@ -1,10 +1,14 @@
-to eleminiate all arrays and bring them into fetcher contract. 
-do the migrate function 
-to generate P2p smart contract
-to integrate price oracle
-to change the structs to bytes. 
-to make fetcher contract 
-admin distribution contracts 
+done) deposit need to be at 3$
+done) lost show amount in hexa 
+done) win show amount in hexa
+done) change color of lost to red. 
+done) show minus sign in lost. 
+6) time matching in both machine
+done) show color sign in the prediction history 
+8) show all admin report and make the prediction and slot as a tab. 
+9) add a page to start / end scheme. 
+
+
 
 
 

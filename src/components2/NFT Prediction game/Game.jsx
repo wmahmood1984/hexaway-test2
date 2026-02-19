@@ -242,7 +242,7 @@ export default function Game() {
     );
   }
 
-   console.log("prediction", { allBids })
+   console.log("prediction", { myBids })
 
   return (
     <div>
@@ -439,6 +439,7 @@ export default function Game() {
                     id="wagerInput"
                     min="0.05"
                     max="100"
+                    onChange={(e)=>{setAmount(e.target.value)}}
                     value={(amount).toFixed(2)}
                     step="0.1"
                     placeholder="Enter amount"
@@ -634,8 +635,11 @@ export default function Game() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                  {myBids.map((bid, index) => {
+                  let result = bid.settled && bid.won ? "WON" : bid.settled && !bid.won ? "LOST" : "PENDING"
                   return(
-                 <div style={{ background: "#10b98120", padding: "12px 16px", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: "4px solid #10b981" }}>
+                 <div style={{ background:
+                 bid.settled && bid.won ? "#10b98120" : bid.settled && !bid.won ? "#be227220" :
+                 "#10b98120", padding: "12px 16px", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: "4px solid #10b981" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                       <div style={{ width: "40px", height: "40px", background: "#10b98140", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "#10b981" }}>
                         {index+1}
@@ -645,16 +649,19 @@ export default function Game() {
                           Prediction #{index+1}
                         </div>
                         <div style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "12px", color: "#0f172a", opacity: 0.7 }}>
-                          {formatEther(bid.amount)} USDT
+                          {formatEther(bid.amount)/price} HEXA
+                        </div>
+                        <div style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "12px", color: colors[Number(bid.color)], opacity: 0.7 }}>
+                          Color: {colors[Number(bid.color)] }
                         </div>
                       </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
                       <div style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "16px", color: "#10b981", fontWeight: 900 }}>
-                        {bid.settled && bid.won ? "WON" : bid.settled && !bid.won ? "LOST" : "PENDING"}
+                        {result}
                       </div>
                       <div style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif", fontSize: "14px", color: "#10b981", fontWeight: 700 }}>
-                        {bid.settled && bid.won ? `+${Number(formatEther(bid.amount))*2} USDT` : bid.settled && !bid.won ? "$ 0" : "PENDING"}
+                        {bid.settled && bid.won ? `+${Number(formatEther(bid.amount))*2/price} HEXA` : bid.settled && !bid.won ? `-${Number(formatEther(bid.amount))/price} HEXA` : "PENDING"}
                         
                       </div>
                     </div>
@@ -718,7 +725,7 @@ export default function Game() {
         </div>
 
 
-        <div id="adminPage" class="min-h-full w-full p-4 md:p-8" style={{ background: "linear-gradient(135deg, #f8fafc, #e0e7ff)", display: "none" }}>
+        {/* <div id="adminPage" class="min-h-full w-full p-4 md:p-8" style={{ background: "linear-gradient(135deg, #f8fafc, #e0e7ff)", display: "none" }}>
           <div class="max-w-7xl mx-auto">
 
             <div class="mb-8">
@@ -858,10 +865,10 @@ export default function Game() {
 
             </div>
           </div>
-        </div>
+        </div> */}
 
 
-        <div id="hexaHistoryPage" class="min-h-full w-full p-4 md:p-8" style={{ background: "linear-gradient(135deg, #f8fafc, #ddd6fe)", display: "none" }}>
+        {/* <div id="hexaHistoryPage" class="min-h-full w-full p-4 md:p-8" style={{ background: "linear-gradient(135deg, #f8fafc, #ddd6fe)", display: "none" }}>
           <div class="max-w-6xl mx-auto">
 
             <div class="mb-8">
@@ -964,7 +971,7 @@ export default function Game() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <DepositModal

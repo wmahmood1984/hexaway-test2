@@ -18,7 +18,7 @@ export default function SchemeIncomes({
                 <div class="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8">
                     <div class="flex items-center space-x-3 mb-4">
                         <div class="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">🚀</div>
-                        <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Start Sponsor (Worldwide)</h3>
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Star Sponsor (Worldwide)</h3>
                     </div>
 
 
