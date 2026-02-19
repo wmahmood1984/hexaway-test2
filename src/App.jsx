@@ -27,6 +27,8 @@ import Game from './components2/NFT Prediction game/Game'
 import ColorPredictionAdmin from './components2/NFT Prediction game/ColorPredictionAdmin'
 import ColorSlotAdmin from './components2/NFT Prediction game/ColorSlotAdmin'
 
+import SetScheme from './components2/SchemeAdmin'
+
 export default function App() {
 
     const dispatch = useDispatch()
@@ -63,6 +65,7 @@ export default function App() {
                 <Route path="/game" element={<Game />} />
                 <Route path="/predictionadmin" element={<ColorPredictionAdmin />} />
                 <Route path="/slotadmin" element={<ColorSlotAdmin />} />
+                              <Route path="/admin" element={<SetScheme />} />
             </Routes>
         </div >
     )

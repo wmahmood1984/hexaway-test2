@@ -7,6 +7,8 @@ import NormalList from "./NormalList";
 import Admin_staking from "./Staking page/Admin_staking";
 import Admin_staking_earning from "./Staking page/Admin_staking_earning";
 import ExchangeAdmin from "./reports/ExchangeAdmin";
+import ColorSlotAdmin from "./NFT Prediction game/ColorSlotAdmin";
+import ColorPredictionAdmin from "./NFT Prediction game/ColorPredictionAdmin";
 
 export default function Lists() {
     const [activeTab, setActiveTab] = useState("admin1");
@@ -66,6 +68,24 @@ export default function Lists() {
                 >
                     Trading
                 </button>
+                                <button
+                    onClick={() => setActiveTab("prediction")}
+                    className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "prediction"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700"
+                        }`}
+                >
+                    Prediction Admin
+                </button>
+                            <button
+                    onClick={() => setActiveTab("slotadmin")}
+                    className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "slotadmin"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700"
+                        }`}
+                >
+                    Slot Admin
+                </button>    
 
 
 
@@ -78,6 +98,8 @@ export default function Lists() {
             {activeTab === "admin1" && <ExchangeAdmin />}
             {activeTab === "admin2" && <Admin_staking />}
             {activeTab === "admin3" && <Admin_staking_earning />}
+                       {activeTab === "prediction" && <ColorPredictionAdmin />}
+                                  {activeTab === "slotadmin" && <ColorSlotAdmin/>}
 
         </div>
     );

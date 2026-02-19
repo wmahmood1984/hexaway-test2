@@ -143,20 +143,23 @@ export default function Nav({ setCreateActive, createActive }) {
                 {showAdminPage &&
                   <>
 
-                    <Link
-                      to="/predictionadmin"
+                                      <Link
+                      to="/admin"
                       onClick={() => setMobileOpen(false)}
                       className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                     >
-                      Prediction Admin
+                      Admin form
                     </Link>
                     <Link
-                      to="/slotadmin"
+                      to="/lists"
                       onClick={() => setMobileOpen(false)}
                       className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                     >
-                      Slot Admin
+                      Lists
                     </Link>
+                    <Link to="/bulk" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Bulk Upload</Link>
+
+
                     {/* <Link to="/bulk" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Bulk Upload</Link> */}
                   </>
                 }
@@ -243,29 +246,31 @@ export default function Nav({ setCreateActive, createActive }) {
 
                 {showAdminPage &&
                   <>
-                    <Link
-                      to="/predictionadmin"
+
+
+                                     <Link
+                      to="/admin"
                       onClick={() => setMobileOpen(false)}
                       className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                     >
-                      Prediction Admin
+                      Admin form
                     </Link>
 
                     <Link
-                      to="/slotadmin"
+                      to="/lists"
                       onClick={() => setMobileOpen(false)}
                       className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                     >
-                      Slot Admin
+                      Lists
                     </Link>
 
-                    {/* <Link
+                    <Link
                       to="/bulk"
                       onClick={() => setMobileOpen(false)}
                       className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                     >
                       Bulk Upload
-                    </Link> */}
+                    </Link>
                   </>
 
 
