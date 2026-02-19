@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { gameContractR } from "../../config";
 
 export default function RoundCountdown({
-  seconds, warningAt = 10
+  seconds, warningAt = 10, serverStatus
 }) {
 
 
@@ -32,7 +32,7 @@ export default function RoundCountdown({
         ⏰ Round Countdown
       </div>
 
-      <div
+{serverStatus ?      <div
         id="mainCountdownTime"
         style={{
           fontFamily: "Inter, system-ui, -apple-system, sans-serif",
@@ -43,7 +43,7 @@ export default function RoundCountdown({
         }}
       >
         {seconds}s
-      </div>
+      </div>:<div style={{color:"red"}}>Server Offline</div>}
 
       {seconds <= warningAt && seconds > 0 && (
         <div

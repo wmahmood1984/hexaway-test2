@@ -15,6 +15,7 @@ export default function Game() {
   const { address } = useAppKitAccount();
   const [slot, setSlots] = useState(3)
   const [time, setTime] = useState(1)
+    const [serverStatus, setServerStatus] = useState(true)
   const [amount, setAmount] = useState(0.1)
   const [hexaBalance, setHexaBalance] = useState(0.1)
   const [price, setPrice] = useState(0.01)
@@ -94,12 +95,33 @@ useEffect(() => {
 
       fetchGameRan();
       abc();
-      checkWinner();
+      // checkWinner();
+      checkHealth();
     }
   }, 1000);
 
   return () => clearInterval(interval);
 }, [gameRan, time, fetchGameRan]);
+
+
+const checkHealth = async () => {
+  try {
+    const response = await fetch("http://srv1358236.hstgr.cloud:4000/health");
+    if (!response.ok) throw new Error("Server error");
+
+    const data = await response.json();
+    if(response.ok){
+      setServerStatus(true);
+      checkWinner();
+    } else {
+      setServerStatus(false);
+    }
+    console.log("health check", data.status); // "ok"
+  } catch (err) {
+    console.error("Health check failed:", err);
+  }
+};
+
 
 
 //console.log("addres",address)
@@ -418,7 +440,7 @@ useEffect(() => {
                 </div>
               </div> */}
 
-              <RoundCountdown seconds={remaining}
+              <RoundCountdown seconds={remaining} serverStatus={serverStatus}
 
               />
 
