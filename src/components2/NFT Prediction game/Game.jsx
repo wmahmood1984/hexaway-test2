@@ -1,5 +1,5 @@
 import { AbiCoder, formatEther, parseEther } from 'ethers'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { gameAdd, gameContract, gameContractR, gameFetcherContractR, HexaContract, HEXAContractR, priceOracleContractR } from '../../config'
 import { useAppKitAccount } from '@reown/appkit/react'
@@ -30,6 +30,7 @@ export default function Game() {
   const [remaining, setRemaining] = useState(0);
   const [predictionHistory, setPredictionHistory] = useState()
   const [loading, setLoading] = useState(false)
+const hasCheckedRef = useRef(false);
 
 
   const findGame = (slots, time) => {
@@ -61,13 +62,16 @@ export default function Game() {
   }, [address])
 
 
-  const fetchGameRan = useCallback(async () => {
-    const gameAddr = findGame(slot, time);
+const fetchGameRan = useCallback(async () => {
+  const gameAddr = findGame(slot, time);
 
-    const ran = await gameContractR.methods.gameRan(gameAddr).call();
-       console.log("remaining", {gameAddr,ran})
-    setGameRan(Number(ran));
-  }, [slot, time]);
+  const ran = await gameContractR.methods.gameRan(gameAddr).call();
+  setGameRan(Number(ran));
+
+  // 🔁 Reset winner check for new round
+  hasCheckedRef.current = false;
+}, [slot, time]);
+
 
 
   useEffect(() => {
@@ -75,26 +79,28 @@ export default function Game() {
   }, [fetchGameRan]);
 
 
-  useEffect(() => {
-    if (!gameRan) return;
+useEffect(() => {
+  if (!gameRan) return;
 
-    const interval = setInterval(() => {
-      const now = Math.floor(Date.now() / 1000);
-      const end = gameRan + time * 60;
-      const diff = Math.max(end - now, 0);
+  const interval = setInterval(() => {
+    const now = Math.floor(Date.now() / 1000);
+    const end = gameRan + time * 60;
+    const diff = Math.max(end - now, 0);
 
-      setRemaining(diff);
+    setRemaining(diff);
 
-      // 🔁 Round ended → refetch once
-      if (diff === 0) {
-       fetchGameRan();
-       abc()
-       checkWinner()
-      }
-    }, 1000);
+    if (diff === 0 && !hasCheckedRef.current) {
+      hasCheckedRef.current = true;   // ✅ prevent duplicate runs
 
-    return () => clearInterval(interval);
-  }, [gameRan, time, fetchGameRan]);
+      fetchGameRan();
+      abc();
+      checkWinner();
+    }
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, [gameRan, time, fetchGameRan]);
+
 
 //console.log("addres",address)
 
