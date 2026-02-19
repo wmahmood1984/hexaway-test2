@@ -105,21 +105,21 @@ export default function Game() {
     // if (!address || !gameId) return { won: false };
 
     // Fetch winners list from contract
-    const {winners,isInTheGame} = await gameFetcherContractR.methods
+    const _result = await gameFetcherContractR.methods
       .getUserWinningAmount(gameId,address)
       .call();
 
-      console.log("object",gameId,address,winners,isInTheGame)
+      console.log("object",gameId,address,_result)
     
-    if(!isInTheGame){
-      
-    }else if (isInTheGame && winners === "0") {
+    if(!_result[1]){
+      toast.error("You did not participate in this game. Better luck next time!");
+    }else if (_result[1] && _result[0] === "0") {
       toast.error("Sorry you have lost. Best of luck next time!");
     }
 
     // Find current user in winners list
-    if (winners > 0 && isInTheGame) {
-      const amountWei = winners.toString();
+    if (_result[0] > 0 && _result[1]) {
+      const amountWei = _result[0].toString() // Convert to string if it's a BigNumber;
       const amountHexa = formatEther(amountWei.toString());
 
       toast.success(
@@ -157,7 +157,7 @@ export default function Game() {
     const _myBids = await gameFetcherContractR.methods.getBidsByUser(address).call()
     setMyBids(_myBids)
 
-    const _allBids = await gameContractR.methods.getBids().call()
+    const _allBids = await gameContractR.methods.getGameResult(0).call()
     setAllBids(_allBids)
    
   
