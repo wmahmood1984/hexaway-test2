@@ -89,33 +89,63 @@ export default function DepositModal({
     };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-white w-[360px] rounded-lg p-6">
-        <h2 className="text-lg font-semibold mb-4">Deposit Amount</h2>
+    // <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+    //   <div className="bg-white w-[360px] rounded-lg p-6">
+    //     <h2 className="text-lg font-semibold mb-4">Deposit Amount</h2>
 
-        <input
-          type="number"
-          placeholder="Enter amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="w-full border rounded px-3 py-2 mb-4"
-        />
+    //     <input
+    //       type="number"
+    //       placeholder="Enter amount"
+    //       value={amount}
+    //       onChange={(e) => setAmount(e.target.value)}
+    //       className="w-full border rounded px-3 py-2 mb-4"
+    //     />
 
-        <button
-          onClick={onDepositClick}
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-50"
-        >
-          {loading ? "Depositing..." : "Deposit"}
-        </button>
+    //     <button
+    //       onClick={onDepositClick}
+    //       disabled={loading}
+    //       className="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-50"
+    //     >
+    //       {loading ? "Depositing..." : "Deposit"}
+    //     </button>
 
-        <button
-          onClick={onClose}
-          className="w-full mt-3 text-sm text-gray-500"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
+    //     <button
+    //       onClick={onClose}
+    //       className="w-full mt-3 text-sm text-gray-500"
+    //     >
+    //       Cancel
+    //     </button>
+    //   </div>
+    // </div>
+
+                <div id="depositModal" className="modal-overlay">
+                <div className="deposit-modal">
+                    <div className="modal-title">💰 Deposit HEXA</div>
+                    <input
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    type="number" id="depositAmount" className="modal-input"min="1" step="1" />
+
+                    <div className="slider-container">
+                        <div className="slider-label">
+                            <span
+                            onClick={()=>{setAmount(hexaBalance*0)}}
+                            >0%</span>
+                            <span 
+                                                        onClick={()=>{setAmount(hexaBalance*.5)}}
+                            id="sliderPercent">50%</span>
+                            <span
+                                                        onClick={()=>{setAmount(hexaBalance)}}
+                            >100%</span>
+                        </div>
+                        <input type="range" id="depositSlider" className="percentage-slider" min="0" max="100" value="50" />
+                    </div>
+
+                    <div className="modal-buttons">
+                        <button id="confirmDeposit" className="modal-confirm" onClick={onDepositClick}>Deposit</button>
+                        <button id="cancelDeposit" className="modal-cancel" onClick={onClose}>Cancel</button>
+                    </div>
+                </div>
+            </div>
   );
 }

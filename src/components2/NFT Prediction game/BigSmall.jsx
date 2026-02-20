@@ -1,0 +1,223 @@
+import React, { useState } from 'react'
+import './ColorGame.css'
+import RoundCountdown from './Countdown2'
+import toast from 'react-hot-toast'
+import { formatEther } from 'ethers'
+import { secondsToDMY } from '../../utils/contractExecutor'
+
+export default function BigSmall({ price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+    const [page, setPage] = useState(1)
+    const [showLive, setShowLive] = useState(false)
+    const pageSize = 10;
+    const totalPages = Math.ceil(myBids.length / pageSize);
+
+    return (
+        <div>
+            <div class="game-wrapper">
+
+                <div style={{ marginBottom: "12px", textAlign: "center" }}>
+                    <h1 style={{ fontSize: "32px", fontWeight: 900, letterSpacing: "-1px", color: "#1e293b" }}>
+                        <span style={{ color: "#8b5cf6" }}>BIG </span>· SMALL
+                    </h1>
+                    <p style={{ color: "#0891b2", fontWeight: 600, fontSize: "12px" }}><i class="fas fa-bolt"></i> instant bid · 2x win</p>
+
+                </div>
+
+
+                <div class="deposit-wallet-row">
+                    <button
+                        onClick={() => setShowDeposit(true)}
+                        id="depositBtn" class="deposit-btn">
+                        <i class="fas fa-plus-circle"></i> Deposit
+                    </button>
+                    <div class="hexa-wallet">
+                        <span class="hexa-label"><i class="fas fa-gem"></i> HEXA</span>
+                        <span class="hexa-balance" id="walletHexaBalance">{depositBalance}</span>
+                    </div>
+                </div>
+
+
+                <div class="light-card">
+
+                    <RoundCountdown seconds={remaining} serverStatus={serverStatus} />
+
+
+                    <div className="time-selector">
+                        <button
+                            onClick={() => { setTime(1) }}
+                            id="time60Btn" className={time == 1 ? "time-option active" : "time-option"}>1 min</button>
+                        <button
+                            onClick={() => { setTime(3) }}
+                            id="time180Btn" className={time == 3 ? "time-option active" : "time-option"}>3 min</button>
+                    </div>
+
+
+                    <div style={{ marginBottom: "20px" }}>
+                        <div style={{ color: "#475569", fontWeight: 600, marginBottom: "8px" }}><i class="fas fa-coins"></i> wager</div>
+                        <div className="wager-control">
+                            <button
+                                onClick={() => {
+                                    if (amount <= 0.1) {
+                                        toast.error("Cannot set below 0.1 HEXA")
+                                    } else {
+                                        setAmount(amount - 0.1)
+                                    }
+                                }}
+
+                                id="decreaseWagerBtn" className="wager-btn">−</button>
+                            <input type="number" id="wagerInput"
+
+                                onChange={(e) => { setAmount(e.target.value) }}
+                                value={amount}
+
+
+                                step="0.1" min="0.1" max="100" className="wager-input" />
+                            <button
+
+                                onClick={() => {
+                                    if (amount >= 100) {
+                                        toast.error("Cannot set above 100 HEXA")
+                                    } else {
+                                        setAmount(amount + 0.1)
+                                    }
+                                }}
+                                id="increaseWagerBtn" className="wager-btn">+</button>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", padding: "0 8px" }}>
+                            <span style={{ color: "#64748b", fontSize: "13px" }}><i class="fas fa-gem" style={{ color: "#8b5cf6" }}></i> <span id="hexaAmount">{Number(amount / price).toFixed(0)}</span> HEXA</span>
+                            <span style={{ color: "#8b5cf6", fontSize: "13px" }}>2x win</span>
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <div style={{ color: "#475569", fontWeight: 600, marginBottom: "8px" }}><i class="fas fa-arrows-up-down"></i> type</div>
+                        <div class="slots-grid">
+
+                            <div
+                                                            onClick={() => { handleClick("Red") }}
+                            class="big-slot" id="big-slot">
+                                <div class="slot-emoji">🐘</div>
+                                <div class="slot-label">BIG</div>
+                            </div>
+
+                            <div
+                                                            onClick={() => { handleClick("Green") }}
+                            class="small-slot" id="small-slot">
+                                <div class="slot-emoji">🐁</div>
+                                <div class="slot-label">SMALL</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div style={{ display: "flex", justifyContent: "flex-end", margin: "6px 0 8px" }}>
+                    <button
+                        onClick={() => setShowLive(!showLive)}
+                        id="toggleLiveOrderBtn" style={{ background: "#f97316", color: "white", border: "none", padding: "10px 22px", borderRadius: "40px", fontWeight: 700, fontSize: "14px", display: "flex", alignItems: "center", gap: "6px", boxShadow: "0 5px 0 #c2410c" }}>
+                        <i className="fas fa-chart-line"></i> Live order
+                    </button>
+                </div>
+
+
+                <div id="liveOrdersSection" style={{ display: showLive ? "block" : "none", marginBottom: "16px" }}>
+                    <div className="light-card" style={{ padding: "16px" }}>
+                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                            <div style={{ width: "48px", height: "48px", background: "#2563eb", borderRadius: "20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", color: "white" }}>🐘</div>
+                            <div><div style={{ color: "#64748b", fontSize: "12px" }}>wager</div><div style={{ color: "#1e293b", fontSize: "20px", fontWeight: 800 }}>2.0 USDT</div></div>
+                            <div style={{ marginLeft: "auto", textAlign: "right" }}><div style={{ color: "#f97316" }}>⏳ 1 min</div><div style={{ color: "#64748b", fontSize: "12px" }}>in progress</div></div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="light-card" style={{ padding: "18px 12px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                        <h3 style={{ color: "#1e293b", fontSize: "18px", fontWeight: 800 }}><i className="fas fa-history" style={{ color: "#8b5cf6" }}></i> history</h3>
+                        <div className="history-tabs">
+                            <button id="myHistoryTab" className="tab-btn active">My</button>
+                            <button id="gameHistoryTab" className="tab-btn">Game</button>
+                        </div>
+                    </div>
+
+
+                    <div id="myHistoryList" style={{ display: "block" }}>
+                        <div class="history-header">
+                            <span>SNo</span><span>Time</span><span>Type</span><span>Spent</span><span>Earn</span>
+                        </div>
+
+                               {myBids.map((bid, index) => {
+                                   const startIndex = (page - 1) * pageSize;
+                                   const endIndex = startIndex + pageSize;
+                                   if (index < startIndex || index >= endIndex) return null;
+                                   let result = bid.settled && bid.won ? "WON" : bid.settled && !bid.won ? "LOST" : "PENDING"
+                                   return (
+                                       <div className="history-row"><span>#{index + 1}</span>
+                                           <span>{secondsToDMY(bid.time)}</span>
+                                           <span style={{ color: bid.color === "Red" ? "#b91c1c" : bid.color === "Green" ? "#166534" : "#6b21a5" }}>{bid.color}</span><span>{formatEther(bid.amount)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${formatEther(bid.amount) * 2}` : result === "LOST" ? "0" : "-"}</span></div>
+                                   )
+                               })}
+                    </div>
+
+
+                    <div id="gameHistoryList" style={{ display: "none" }}>
+                        <div class="game-header"><span>SNo</span><span>Time</span><span>Result</span></div>
+                        <div class="game-row"><span>#187</span><span>11:05</span><span style={{ color: "#1e3a8a", fontWeight: 800 }}>BIG</span></div>
+                        <div class="game-row"><span>#186</span><span>11:02</span><span style={{ color: "#7b341e", fontWeight: 800 }}>SMALL</span></div>
+                        <div class="game-row"><span>#185</span><span>10:58</span><span style={{ color: "#1e3a8a", fontWeight: 800 }}>BIG</span></div>
+                        <div class="game-row"><span>#184</span><span>10:55</span><span style={{ color: "#7b341e", fontWeight: 800 }}>SMALL</span></div>
+                        <div class="game-row"><span>#183</span><span>10:51</span><span style={{ color: "#1e3a8a", fontWeight: 800 }}>BIG</span></div>
+                    </div>
+
+
+                   <div
+                        id="paginationContainer"
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "6px",
+                            marginTop: "16px",
+                        }}
+                    >
+                        {[...Array(totalPages)].map((_, index) => {
+                            const pageNumber = index + 1;
+                            return (
+                                <div
+                                    key={pageNumber}
+                                    className={`page-dot ${page === pageNumber ? "active-page" : ""}`}
+                                    onClick={() => setPage(pageNumber)}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    {pageNumber}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="depositModal" class="modal-overlay" style={{ display: "none" }}>
+                <div class="deposit-modal">
+                    <div class="modal-title">💰 Deposit HEXA</div>
+                    <input type="number" id="depositAmount" class="modal-input" value="1000" min="1" step="1" />
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>0%</span>
+                            <span id="sliderPercent">50%</span>
+                            <span>100%</span>
+                        </div>
+                        <input type="range" id="depositSlider" class="percentage-slider" min="0" max="100" value="50" />
+                    </div>
+
+                    <div class="modal-buttons">
+                        <button id="confirmDeposit" class="modal-confirm">Deposit</button>
+                        <button id="cancelDeposit" class="modal-cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
