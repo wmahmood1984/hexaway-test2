@@ -113,8 +113,8 @@ useEffect(() => {
 const checkHealth = async () => {
   try {
     const response = await fetch(
-    //  "http://srv1358236.hstgr.cloud:4000/health"
-  "http://localhost:4000/health"  
+      "http://srv1358236.hstgr.cloud:4000/health"
+  //"http://localhost:4000/health"  
   );
     if (!response.ok) throw new Error("Server error");
 
