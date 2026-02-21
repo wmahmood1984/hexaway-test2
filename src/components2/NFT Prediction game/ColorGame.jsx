@@ -97,27 +97,29 @@ export default function ColorGame({config,executeContract, hexaBalance,showDepos
                     <div>
                         <div style={{ color: "#475569", fontWeight: 600, marginBottom: "8px" }}><i className="fas fa-palette"></i> tap colour</div>
                         <div className="slots-grid">
-                            <div
+                            <button
+                                disabled={remaining <=10}
                                 onClick={() => { handleClick("Red") }}
                                 className="color-slot slot-red" id="nft-slot-0">
                                 <div className="slot-emoji">🔴</div>
                                 <div className="slot-label">RED</div>
                                 <div className="slot-number">1</div>
-                            </div>
-                            <div
+                            </button>
+                            <button
+                                disabled={remaining <=10}
                                 onClick={() => { handleClick("Green") }}
                                 className="color-slot slot-green" id="nft-slot-1">
                                 <div className="slot-emoji">🟢</div>
                                 <div className="slot-label">GREEN</div>
                                 <div className="slot-number">2</div>
-                            </div>
-                            <div
+                            </button>
+                            <button                                disabled={remaining <=10}
                                 onClick={() => { handleClick("Purple") }}
                                 className="color-slot slot-purple" id="nft-slot-2">
                                 <div className="slot-emoji">🟣</div>
                                 <div className="slot-label">PURPLE</div>
                                 <div className="slot-number">3</div>
-                            </div>
+                            </button>
                         </div>
                     </div>
                 </div>

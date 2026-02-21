@@ -9,7 +9,7 @@ export default function RoundCountdown({
   return (
     <div className="round-container final-call" id="roundContainer">
         <span className="round-label">round</span>
-        <span className="round-timer" id="mainCountdownTime">{seconds}s</span>
+        <span className="round-timer" id="mainCountdownTime">{serverStatus ? `${seconds}s`: "Server Down"}</span>
       </div>
   );
 }

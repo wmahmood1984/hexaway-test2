@@ -101,23 +101,25 @@ export default function BigSmall({config,executeContract, hexaBalance,showDeposi
                         </div>
 
                         <div className="slots-grid1">
-                            <div
+                            <button
+                                                            disabled={remaining <=10}
                                 onClick={() => handleClick("Red")}
                                 className="big-slot"
                                 id="big-slot"
                             >
                                 <div className="slot-emoji">🐘</div>
                                 <div className="slot-label">BIG</div>
-                            </div>
+                            </button>
 
-                            <div
+                            <button
+                                                            disabled={remaining <=10}
                                 onClick={() => handleClick("Green")}
                                 className="small-slot"
                                 id="small-slot"
                             >
                                 <div className="slot-emoji">🐁</div>
                                 <div className="slot-label">SMALL</div>
-                            </div>
+                            </button>
                         </div>
                     </div>
                 </div>

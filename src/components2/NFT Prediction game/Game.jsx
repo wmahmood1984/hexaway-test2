@@ -25,7 +25,6 @@ export default function Game() {
   const [Spent, setSpent] = useState(0)
   const [Won, setWon] = useState(0)
   const [depositBalance, setDepositBalance] = useState(0)
-  const [selectedColor, setSelectedColor] = useState(null)
   const [showDeposit, setShowDeposit] = useState(false);
   const ROUND_BUFFER = 1; // safety buffer
   const [allBids,setAllBids] = useState([])
@@ -102,8 +101,8 @@ useEffect(() => {
 
       fetchGameRan();
       abc();
-       checkWinner();
-      //checkHealth();
+      // checkWinner();
+      checkHealth();
     }
   }, 1000);
 
@@ -113,19 +112,33 @@ useEffect(() => {
 
 const checkHealth = async () => {
   try {
-    const response = await fetch("http://srv1358236.hstgr.cloud:4000/health");
+    const response = await fetch(
+    //  "http://srv1358236.hstgr.cloud:4000/health"
+  "http://localhost:4000/health"  
+  );
     if (!response.ok) throw new Error("Server error");
 
     const data = await response.json();
-    if(response.ok){
+
+    // Validate status
+    const isStatusOk = data.status === "ok";
+
+    // Validate all health checks are true
+    const allHealthy =
+      data.healthy &&
+      Object.values(data.healthy).every(value => value === true);
+
+    if (isStatusOk && allHealthy) {
       setServerStatus(true);
       checkWinner();
     } else {
       setServerStatus(false);
+      console.warn("Server unhealthy:", data.healthy);
     }
-    console.log("health check", data.status); // "ok"
+
   } catch (err) {
     console.error("Health check failed:", err);
+    setServerStatus(false);
   }
 };
 
@@ -254,7 +267,7 @@ const value = amount / price;
     );
   }
 
-   console.log("prediction", { status:showResultModal.show })
+//   console.log("prediction", { status:showResultModal.show })
 
   return (
     <div>
