@@ -7,7 +7,7 @@ import { secondsToDMY } from '../../utils/contractExecutor'
 import DepositModal from './Modal'
 import { gameContract } from '../../config'
 
-export default function BigSmall({showDeposit,hexaBalance, config,price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+export default function BigSmall({showDeposit,hexaBalance,executeContract, config,price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
     const pageSize = 10;
