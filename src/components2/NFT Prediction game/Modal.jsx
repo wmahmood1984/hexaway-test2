@@ -17,7 +17,7 @@ export default function DepositModal({
   if (!isOpen) return null;
 
   const onDepositClick1 = async () => {
-    if (!amount || Number(amount*price) <= 3) {
+    if (!amount || Number(amount*price) < 3) {
       toast.error("Enter a valid amount(> $5 equivalent)");
       return;
     }
