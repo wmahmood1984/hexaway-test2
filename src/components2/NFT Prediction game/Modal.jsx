@@ -77,13 +77,13 @@ export default function DepositModal({
           onSuccess: () => onDepositClick1(),
           onError: () => {
             setLoading(false);
-            toast.error("Approval failed");
+            // toast.error("Approval failed");
           }
         });
   
       } catch (err) {
         setLoading(false);
-        toast.error("Unexpected error occurred");
+        // toast.error("Unexpected error occurred");
         console.error(err);
       }
     };

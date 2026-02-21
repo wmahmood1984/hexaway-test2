@@ -40,7 +40,11 @@ export default function App() {
 
     return (
         <div>
-            <Toaster position="top-right" reverseOrder={false} />
+            <Toaster position="top-right" reverseOrder={false} 
+             containerStyle={{
+    zIndex: 99999
+  }}
+            />
             <Nav createActive={createActive} setCreateActive={setCreateActive} />
             <NoteMarquee />
 

@@ -3,12 +3,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { gameAdd, gameContract, gameContractR, gameFetcherContractR, HexaContract, HEXAContractR, priceOracleContractR } from '../../config'
 import { useAppKitAccount } from '@reown/appkit/react'
-import { useConfig } from 'wagmi'
+import { useConfig, useShowCallsStatus } from 'wagmi'
 import { executeContract } from '../../utils/contractExecutor'
 import RoundCountdown from './Countdown'
 import DepositModal from './Modal'
 import ColorGame from './ColorGame'
 import BigSmall from './BigSmall'
+import ResultModal from './ResultModal'
 
 const colors = ['Red', 'Green', 'Purple', "black", "yellow", "blue", "pink", "grey", "orange"]
 
@@ -33,8 +34,12 @@ export default function Game() {
   const [remaining, setRemaining] = useState(0);
   const [predictionHistory, setPredictionHistory] = useState()
   const [loading, setLoading] = useState(false)
-const hasCheckedRef = useRef(false);
+
     const [activeTab, setActiveTab] = useState("color");
+const [showResultModal, setShowResultModal] = useState({
+  show:false,
+  result: {resultEmoji: "", resultText: "", resultColor: "", selectedType: "", wagerVal: 0, payout: 0, won: false}
+})
 
   const findGame = (slots, time) => {
     switch (true) {
@@ -70,9 +75,9 @@ const fetchGameRan = useCallback(async () => {
 
   const ran = await gameContractR.methods.gameRan(gameAddr).call();
   setGameRan(Number(ran));
-
+  setShowResultModal({show:false, result: {resultEmoji: "", resultText: "", resultColor: "", selectedType: "Nothing", wagerVal: 0, payout: 0, won: false}})
   // 🔁 Reset winner check for new round
-  hasCheckedRef.current = false;
+
 }, [slot, time]);
 
 
@@ -92,8 +97,8 @@ useEffect(() => {
 
     setRemaining(diff);
 
-    if (diff === 0 && !hasCheckedRef.current) {
-      hasCheckedRef.current = true;   // ✅ prevent duplicate runs
+    if (diff === 0 ) {
+
 
       fetchGameRan();
       abc();
@@ -129,7 +134,8 @@ const checkHealth = async () => {
 //console.log("addres",address)
 
   const checkWinner = async () => {
-      const gameId = findGame(slot, time);
+    
+    const gameId = findGame(slot, time);
 
     try {
     // if (!address || !gameId) return { won: false };
@@ -142,9 +148,15 @@ const checkHealth = async () => {
       console.log("object",gameId,address,_result)
     
     if(!_result[1]){
-      toast.error("You did not participate in this game. Better luck next time!");
+      setShowResultModal({
+        show:true,
+        result: {resultEmoji: '😞', resultText: "You Have Missed it!", resultColor: '#dc2626', selectedType: "Nothing", wagerVal: formatEther(_result[3]), payout: 0, won: false}
+      });
     }else if (_result[1] && _result[0] === "0") {
-      toast.error("Sorry you have lost. Best of luck next time!");
+      setShowResultModal({
+        show:true,
+        result: {resultEmoji: '😞', resultText: "YOU LOST", resultColor: '#dc2626', selectedType: colors[_result[2]], wagerVal: formatEther(_result[3]), payout: 0, won: false}
+      });
     }
 
     // Find current user in winners list
@@ -152,8 +164,11 @@ const checkHealth = async () => {
       const amountWei = _result[0].toString() // Convert to string if it's a BigNumber;
       const amountHexa = formatEther(amountWei.toString());
 
-      toast.success(
-        `🎉 You won ${amountHexa} HEXA in Game #${gameId}`      );
+      setShowResultModal({
+        show:true,
+        result: {resultEmoji: '🎉', resultText: "YOU WON", resultColor: '#10b981', selectedType: colors[_result[2]], wagerVal: formatEther(_result[3]), payout: amountHexa, won: true}
+      });
+
 
       return {
         won: true,
@@ -200,10 +215,11 @@ const checkHealth = async () => {
 
     let gameAddr = findGame(slot, time);
 //    console.log("object", gameAddr)
+const value = amount / price;
     await executeContract({
       config,
       functionName: "placeBid",
-      args: [gameAddr, parseEther(amount.toString()), colors.indexOf(v)],
+      args: [gameAddr, parseEther(value.toString()), colors.indexOf(v)],
       onSuccess: (txHash, receipt) => {
         console.log("🎉 Tx Hash:", txHash);
         console.log("🚀 Tx Receipt:", receipt);
@@ -238,7 +254,7 @@ const checkHealth = async () => {
     );
   }
 
-   console.log("prediction", { myBids })
+   console.log("prediction", { status:showResultModal.show })
 
   return (
     <div>
@@ -557,7 +573,16 @@ const checkHealth = async () => {
           </div>
         </div> */}
       </div>
-
+<ResultModal
+  show={showResultModal.show}
+  result={showResultModal.result}
+  onClose={() =>
+    setShowResultModal({
+      show:false,
+      result: {resultEmoji: "", resultText: "", resultColor: "", selectedType: "", wagerVal: 0, payout: 0, won: false}
+    })
+  }
+/>
 
     </div>
   )

@@ -7676,6 +7676,62 @@ export const gameAbi = [
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "deposit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_type",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_winner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_runnerup",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_2ndRunnerup",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_winnerAchievement",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_runnerupAchievement",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_2ndRunnerupAchievement",
+				"type": "uint256"
+			}
+		],
+		"name": "distributeReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "implementation",
 				"type": "address"
@@ -7693,6 +7749,19 @@ export const gameAbi = [
 		"inputs": [],
 		"name": "FailedCall",
 		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_settler",
+				"type": "address[]"
+			}
+		],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -7725,6 +7794,37 @@ export const gameAbi = [
 		],
 		"name": "OwnableUnauthorizedAccount",
 		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newImplementation",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -7868,6 +7968,90 @@ export const gameAbi = [
 		"type": "event"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint8",
+				"name": "color",
+				"type": "uint8"
+			}
+		],
+		"name": "placeBid",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_start",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_end",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_perToDepositor",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_perToReferrer",
+				"type": "uint256"
+			}
+		],
+		"name": "setScheme",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_settler",
+				"type": "address[]"
+			}
+		],
+		"name": "setSettlers",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameId",
+				"type": "uint256"
+			}
+		],
+		"name": "settleGame",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -7879,19 +8063,6 @@ export const gameAbi = [
 		],
 		"name": "Upgraded",
 		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "UPGRADE_INTERFACE_VERSION",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
 	},
 	{
 		"inputs": [
@@ -7987,62 +8158,6 @@ export const gameAbi = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "deposit",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_type",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_winner",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_runnerup",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_2ndRunnerup",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_winnerAchievement",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_runnerupAchievement",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_2ndRunnerupAchievement",
-				"type": "uint256"
-			}
-		],
-		"name": "distributeReward",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -8262,6 +8377,16 @@ export const gameAbi = [
 							{
 								"internalType": "uint256",
 								"name": "amountWon",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint8",
+								"name": "color",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount",
 								"type": "uint256"
 							}
 						],
@@ -8542,19 +8667,6 @@ export const gameAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_settler",
-				"type": "address[]"
-			}
-		],
-		"name": "initialize",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "owner",
 		"outputs": [
@@ -8565,29 +8677,6 @@ export const gameAbi = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint8",
-				"name": "color",
-				"type": "uint8"
-			}
-		],
-		"name": "placeBid",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -8614,13 +8703,6 @@ export const gameAbi = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -8698,60 +8780,6 @@ export const gameAbi = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_start",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_end",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_perToDepositor",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_perToReferrer",
-				"type": "uint256"
-			}
-		],
-		"name": "setScheme",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_settler",
-				"type": "address[]"
-			}
-		],
-		"name": "setSettlers",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameId",
-				"type": "uint256"
-			}
-		],
-		"name": "settleGame",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -8872,19 +8900,6 @@ export const gameAbi = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
@@ -8902,21 +8917,16 @@ export const gameAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "UPGRADE_INTERFACE_VERSION",
+		"outputs": [
 			{
-				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
-		"name": "upgradeToAndCall",
-		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -9374,6 +9384,16 @@ export const dataFetcherGameAbi = [
 				"internalType": "bool",
 				"name": "",
 				"type": "bool"
+			},
+			{
+				"internalType": "uint8",
+				"name": "",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -9449,12 +9469,12 @@ export const distributionAdd = mainnet ?  "0xaE2A9F5F5AB9f437826D2Ac6173EfB98f86
 export const buySale = mainnet ? "0x052DbC12bac5490e4225042493bF9B438545668E"
 :"0x0b13FbC7d4BF441C5e9f846E7F60846B41eA3cBf"
 export const gameAdd = mainnet ? ""
-: "0xb2E1a8eAaCc07bc58fdbD68Ce3ed8A4dFbeF9011"
+: "0x36e8675a6f068e995296AA38b6068B83A9e4B517"
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 
 export const dataFetcherGameAdd = mainnet ? "" : 
-"0xdB9476A98EdbDb683D03DbEa2111f6694E6bAbb6"
+"0x7b47578611B30Df032D2Bd76f3caa32c1151BEB5"
 
 export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"
 export const tokenFeeder = "0xF942224e5D97b78a0C32C7cB9A4Aae8fa602f75C"  //EOA => Doctor sb
