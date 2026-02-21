@@ -303,6 +303,7 @@ const value = amount / price;
                     {activeTab === "color" && <ColorGame 
             setShowDeposit={setShowDeposit}
             showDeposit={showDeposit}
+            colors={colors}
             depositBalance={depositBalance}
             remaining={duration}
             serverStatus={serverStatus}
@@ -321,6 +322,7 @@ const value = amount / price;
             setShowDeposit={setShowDeposit}
             depositBalance={depositBalance}
             remaining={duration}
+            colors={colors}
             serverStatus={serverStatus}
             setTime={setTime}
             amount={amount}
