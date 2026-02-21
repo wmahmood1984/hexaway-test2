@@ -9,7 +9,8 @@ export default function DepositModal({
   executeContract,
   config,
   gameContract,
-  hexaBalance,price
+  hexaBalance,price,
+  onSuccess
 }) {
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -36,6 +37,7 @@ export default function DepositModal({
           toast.success("Deposit successful");
           setAmount("");
           onClose();
+          onSuccess();
         },
         onError: (err) => {
           console.error("🔥 Deposit error:", err);

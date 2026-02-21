@@ -316,6 +316,8 @@ const value = amount / price;
             myBids={myBids}
             price={price}
             config={config}
+            onSuccess={abc}
+
             hexaBalance={hexaBalance}
             />}
             {activeTab === "bigsmall" && <BigSmall 
@@ -323,6 +325,7 @@ const value = amount / price;
             depositBalance={depositBalance}
             remaining={duration}
             colors={colors}
+            onSuccess={abc}
             serverStatus={serverStatus}
             setTime={setTime}
             amount={amount}

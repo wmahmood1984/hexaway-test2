@@ -8,7 +8,7 @@ import DepositModal from './Modal'
 import { gameContract } from '../../config'
 
 
-export default function ColorGame({colors, config, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+export default function ColorGame({colors,onSuccess, config, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
     const pageSize = 5;
@@ -219,6 +219,7 @@ export default function ColorGame({colors, config, executeContract, hexaBalance,
                     setShowDeposit(false)
                     abc()
                 }}
+                onSuccess={onSuccess}
                 executeContract={executeContract}
                 config={config}
                 gameContract={gameContract}
