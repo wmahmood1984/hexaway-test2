@@ -280,10 +280,13 @@ const checkHealth = async () => {
             setTime={setTime}
             time={time}
             amount={amount}
+                        executeContract={executeContract}
             setAmount={setAmount}
             handleClick={handleClick}
             myBids={myBids}
             price={price}
+            config={config}
+            hexaBalance={hexaBalance}
             />}
             {activeTab === "bigsmall" && <BigSmall 
             setShowDeposit={setShowDeposit}
@@ -292,12 +295,16 @@ const checkHealth = async () => {
             serverStatus={serverStatus}
             setTime={setTime}
             amount={amount}
+            executeContract={executeContract}
             showDeposit={showDeposit}
             setAmount={setAmount}
             handleClick={handleClick}
              price={price}
              myBids={myBids}
              time={time}
+                         hexaBalance={hexaBalance}
+                         config={config}
+              
             />}
 
 
