@@ -101,8 +101,8 @@ useEffect(() => {
 
       fetchGameRan();
       abc();
-      // checkWinner();
-      checkHealth();
+       checkWinner();
+      //checkHealth();
     }
   }, 1000);
 
