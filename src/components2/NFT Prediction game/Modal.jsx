@@ -67,7 +67,7 @@ export default function DepositModal({
         return
       }
   
-      const value = amount / price;
+      const value = amount;
       console.log("value", value)
       try {
         setLoading(true);
