@@ -72,7 +72,7 @@ export default function ColorGame({config,executeContract, hexaBalance,showDepos
                             <input type="number" id="wagerInput"
 
                                 onChange={(e) => { setAmount(e.target.value) }}
-                                value={amount}
+                                value={Number(amount).toFixed(2)}
 
 
                                 step="0.1" min="0.1" max="100" className="wager-input" />
