@@ -6,7 +6,7 @@ import { formatEther } from 'ethers'
 import { secondsToDMY } from '../../utils/contractExecutor'
 
 
-export default function ColorGame({ price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+export default function ColorGame({showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
     const pageSize = 10;
@@ -205,26 +205,17 @@ export default function ColorGame({ price, myBids, time, setShowDeposit, deposit
             </div>
 
 
-            <div id="depositModal" className="modal-overlay" style={{ display: "none" }}>
-                <div className="deposit-modal">
-                    <div className="modal-title">💰 Deposit HEXA</div>
-                    <input type="number" id="depositAmount" className="modal-input" value="1000" min="1" step="1" />
-
-                    <div className="slider-container">
-                        <div className="slider-label">
-                            <span>0%</span>
-                            <span id="sliderPercent">50%</span>
-                            <span>100%</span>
-                        </div>
-                        <input type="range" id="depositSlider" className="percentage-slider" min="0" max="100" value="50" />
-                    </div>
-
-                    <div className="modal-buttons">
-                        <button id="confirmDeposit" className="modal-confirm">Deposit</button>
-                        <button id="cancelDeposit" className="modal-cancel">Cancel</button>
-                    </div>
-                </div>
-            </div>
+      <DepositModal
+        isOpen={showDeposit}
+        onClose={() => {setShowDeposit(false)
+          abc()
+        }}
+        executeContract={executeContract}
+        config={config}
+        gameContract={gameContract}
+        hexaBalance={hexaBalance}
+        price={price}
+      />
         </div>
     )
 }

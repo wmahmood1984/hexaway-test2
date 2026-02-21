@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { formatEther } from 'ethers'
 import { secondsToDMY } from '../../utils/contractExecutor'
 
-export default function BigSmall({ price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+export default function BigSmall({showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
     const pageSize = 10;
@@ -206,26 +206,17 @@ export default function BigSmall({ price, myBids, time, setShowDeposit, depositB
             </div>
 
 
-            <div id="depositModal" class="modal-overlay" style={{ display: "none" }}>
-                <div class="deposit-modal">
-                    <div class="modal-title">💰 Deposit HEXA</div>
-                    <input type="number" id="depositAmount" class="modal-input" value="1000" min="1" step="1" />
-
-                    <div class="slider-container">
-                        <div class="slider-label">
-                            <span>0%</span>
-                            <span id="sliderPercent">50%</span>
-                            <span>100%</span>
-                        </div>
-                        <input type="range" id="depositSlider" class="percentage-slider" min="0" max="100" value="50" />
-                    </div>
-
-                    <div class="modal-buttons">
-                        <button id="confirmDeposit" class="modal-confirm">Deposit</button>
-                        <button id="cancelDeposit" class="modal-cancel">Cancel</button>
-                    </div>
-                </div>
-            </div>
+      <DepositModal
+        isOpen={showDeposit}
+        onClose={() => {setShowDeposit(false)
+          abc()
+        }}
+        executeContract={executeContract}
+        config={config}
+        gameContract={gameContract}
+        hexaBalance={hexaBalance}
+        price={price}
+      />
         </div>
     )
 }

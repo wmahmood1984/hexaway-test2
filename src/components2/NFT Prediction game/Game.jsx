@@ -273,6 +273,7 @@ const checkHealth = async () => {
 
                     {activeTab === "color" && <ColorGame 
             setShowDeposit={setShowDeposit}
+            showDeposit={showDeposit}
             depositBalance={depositBalance}
             remaining={duration}
             serverStatus={serverStatus}
@@ -291,6 +292,7 @@ const checkHealth = async () => {
             serverStatus={serverStatus}
             setTime={setTime}
             amount={amount}
+            showDeposit={showDeposit}
             setAmount={setAmount}
             handleClick={handleClick}
              price={price}
@@ -549,17 +551,7 @@ const checkHealth = async () => {
         </div> */}
       </div>
 
-      <DepositModal
-        isOpen={showDeposit}
-        onClose={() => {setShowDeposit(false)
-          abc()
-        }}
-        executeContract={executeContract}
-        config={config}
-        gameContract={gameContract}
-        hexaBalance={hexaBalance}
-        price={price}
-      />
+
     </div>
   )
 }
