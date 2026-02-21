@@ -8,7 +8,7 @@ import DepositModal from './Modal'
 import { gameContract } from '../../config'
 
 
-export default function ColorGame({config,executeContract, hexaBalance,showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+export default function ColorGame({ config, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
     const pageSize = 5;
@@ -97,29 +97,29 @@ export default function ColorGame({config,executeContract, hexaBalance,showDepos
                     <div>
                         <div style={{ color: "#475569", fontWeight: 600, marginBottom: "8px" }}><i className="fas fa-palette"></i> tap colour</div>
                         <div className="slots-grid">
-                            <button
-                                disabled={remaining <=10}
+                            <div
+                                disabled={remaining <= 10}
                                 onClick={() => { handleClick("Red") }}
                                 className="color-slot slot-red" id="nft-slot-0">
                                 <div className="slot-emoji">🔴</div>
                                 <div className="slot-label">RED</div>
                                 <div className="slot-number">1</div>
-                            </button>
-                            <button
-                                disabled={remaining <=10}
+                            </div>
+                            <div
+                                disabled={remaining <= 10}
                                 onClick={() => { handleClick("Green") }}
                                 className="color-slot slot-green" id="nft-slot-1">
                                 <div className="slot-emoji">🟢</div>
                                 <div className="slot-label">GREEN</div>
                                 <div className="slot-number">2</div>
-                            </button>
-                            <button                                disabled={remaining <=10}
+                            </div>
+                            <div disabled={remaining <= 10}
                                 onClick={() => { handleClick("Purple") }}
                                 className="color-slot slot-purple" id="nft-slot-2">
                                 <div className="slot-emoji">🟣</div>
                                 <div className="slot-label">PURPLE</div>
                                 <div className="slot-number">3</div>
-                            </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -135,15 +135,15 @@ export default function ColorGame({config,executeContract, hexaBalance,showDepos
 
 
                 <div id="liveOrdersSection" style={{ display: showLive ? "block" : "none", marginBottom: "16px" }}>
-                     { pending.length > 0 && 
-                     pending.map((bid, index) => 
-                     <div className="light-card" style={{ padding: "16px" }}>
-                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                            <div style={{ width: "48px", height: "48px", background: "#fee2e2", borderRadius: "20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", color: "#991b1b" }}>1</div>
-                            <div><div style={{ color: "#64748b", fontSize: "12px" }}>wager</div><div style={{ color: "#1e293b", fontSize: "20px", fontWeight: 800 }}>{formatEther(bid.amount)} HEXA</div></div>
-                            <div style={{ marginLeft: "auto", textAlign: "right" }}><div style={{ color: "#f97316" }}>⏳ {time} min</div><div style={{ color: "#64748b", fontSize: "12px" }}>in progress</div></div>
-                        </div>
-                    </div>)}
+                    {pending.length > 0 &&
+                        pending.map((bid, index) =>
+                            <div className="light-card" style={{ padding: "16px" }}>
+                                <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                                    <div style={{ width: "48px", height: "48px", background: "#fee2e2", borderRadius: "20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", color: "#991b1b" }}>1</div>
+                                    <div><div style={{ color: "#64748b", fontSize: "12px" }}>wager</div><div style={{ color: "#1e293b", fontSize: "20px", fontWeight: 800 }}>{formatEther(bid.amount)} HEXA</div></div>
+                                    <div style={{ marginLeft: "auto", textAlign: "right" }}><div style={{ color: "#f97316" }}>⏳ {time} min</div><div style={{ color: "#64748b", fontSize: "12px" }}>in progress</div></div>
+                                </div>
+                            </div>)}
 
                 </div>
 
@@ -213,17 +213,18 @@ export default function ColorGame({config,executeContract, hexaBalance,showDepos
             </div>
 
 
-      <DepositModal
-        isOpen={showDeposit}
-        onClose={() => {setShowDeposit(false)
-          abc()
-        }}
-        executeContract={executeContract}
-        config={config}
-        gameContract={gameContract}
-        hexaBalance={hexaBalance}
-        price={price}
-      />
+            <DepositModal
+                isOpen={showDeposit}
+                onClose={() => {
+                    setShowDeposit(false)
+                    abc()
+                }}
+                executeContract={executeContract}
+                config={config}
+                gameContract={gameContract}
+                hexaBalance={hexaBalance}
+                price={price}
+            />
         </div>
     )
 }
