@@ -97,7 +97,7 @@ export default function BigSmall({ price, myBids, time, setShowDeposit, depositB
                             <i className="fas fa-arrows-up-down"></i> type
                         </div>
 
-                        <div className="slots-grid">
+                        <div className="slots-grid1">
                             <div
                                 onClick={() => handleClick("Red")}
                                 className="big-slot"
