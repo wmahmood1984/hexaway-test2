@@ -39,7 +39,7 @@ export default function DepositModal({
         },
         onError: (err) => {
           console.error("🔥 Deposit error:", err);
-          toast.error("Deposit failed");
+         // toast.error("Deposit failed");
         },
       });
     } finally {
