@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import './ColorGame.css'
+import './BigSmall.css'
 import RoundCountdown from './Countdown2'
 import toast from 'react-hot-toast'
 import { formatEther } from 'ethers'
@@ -91,21 +91,29 @@ export default function BigSmall({ price, myBids, time, setShowDeposit, depositB
 
 
                     <div>
-                        <div style={{ color: "#475569", fontWeight: 600, marginBottom: "8px" }}><i class="fas fa-arrows-up-down"></i> type</div>
-                        <div class="slots-grid">
+                        <div
+                            style={{ color: "#475569", fontWeight: 600, marginBottom: "8px" }}
+                        >
+                            <i className="fas fa-arrows-up-down"></i> type
+                        </div>
 
+                        <div className="slots-grid">
                             <div
-                                                            onClick={() => { handleClick("Red") }}
-                            class="big-slot" id="big-slot">
-                                <div class="slot-emoji">🐘</div>
-                                <div class="slot-label">BIG</div>
+                                onClick={() => handleClick("Red")}
+                                className="big-slot"
+                                id="big-slot"
+                            >
+                                <div className="slot-emoji">🐘</div>
+                                <div className="slot-label">BIG</div>
                             </div>
 
                             <div
-                                                            onClick={() => { handleClick("Green") }}
-                            class="small-slot" id="small-slot">
-                                <div class="slot-emoji">🐁</div>
-                                <div class="slot-label">SMALL</div>
+                                onClick={() => handleClick("Green")}
+                                className="small-slot"
+                                id="small-slot"
+                            >
+                                <div className="slot-emoji">🐁</div>
+                                <div className="slot-label">SMALL</div>
                             </div>
                         </div>
                     </div>
@@ -147,17 +155,17 @@ export default function BigSmall({ price, myBids, time, setShowDeposit, depositB
                             <span>SNo</span><span>Time</span><span>Type</span><span>Spent</span><span>Earn</span>
                         </div>
 
-                               {myBids.map((bid, index) => {
-                                   const startIndex = (page - 1) * pageSize;
-                                   const endIndex = startIndex + pageSize;
-                                   if (index < startIndex || index >= endIndex) return null;
-                                   let result = bid.settled && bid.won ? "WON" : bid.settled && !bid.won ? "LOST" : "PENDING"
-                                   return (
-                                       <div className="history-row"><span>#{index + 1}</span>
-                                           <span>{secondsToDMY(bid.time)}</span>
-                                           <span style={{ color: bid.color === "Red" ? "#b91c1c" : bid.color === "Green" ? "#166534" : "#6b21a5" }}>{bid.color}</span><span>{formatEther(bid.amount)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${formatEther(bid.amount) * 2}` : result === "LOST" ? "0" : "-"}</span></div>
-                                   )
-                               })}
+                        {myBids.map((bid, index) => {
+                            const startIndex = (page - 1) * pageSize;
+                            const endIndex = startIndex + pageSize;
+                            if (index < startIndex || index >= endIndex) return null;
+                            let result = bid.settled && bid.won ? "WON" : bid.settled && !bid.won ? "LOST" : "PENDING"
+                            return (
+                                <div className="history-row"><span>#{index + 1}</span>
+                                    <span>{secondsToDMY(bid.time)}</span>
+                                    <span style={{ color: bid.color === "Red" ? "#b91c1c" : bid.color === "Green" ? "#166534" : "#6b21a5" }}>{bid.color}</span><span>{formatEther(bid.amount)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${formatEther(bid.amount) * 2}` : result === "LOST" ? "0" : "-"}</span></div>
+                            )
+                        })}
                     </div>
 
 
@@ -171,7 +179,7 @@ export default function BigSmall({ price, myBids, time, setShowDeposit, depositB
                     </div>
 
 
-                   <div
+                    <div
                         id="paginationContainer"
                         style={{
                             display: "flex",
