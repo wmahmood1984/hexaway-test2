@@ -59,9 +59,9 @@ export default function DepositModal({
       }
 
       if (
-        (amount * price ) < 5 
+        (amount * price ) < 3 
       ) {
-        toast.error("the amount should at lease be equivalent to $5")
+        toast.error("the amount should at lease be equivalent to $3")
         return
       }
   
