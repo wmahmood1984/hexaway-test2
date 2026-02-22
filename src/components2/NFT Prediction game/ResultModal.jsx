@@ -1,8 +1,11 @@
 import React from 'react'
 
-export default function ResultModal({ result, show, onClose }) {
-    const { resultEmoji, resultText, resultColor, selectedType, wagerVal, payout, won, activeTab, colors } = result
+export default function ResultModal({ result, show,activeTab, onClose,colors }) {
+    const { resultEmoji, resultText, resultColor, selectedType, wagerVal, payout, won } = result
+    const picked = activeTab == "color" ? colors[selectedType] :
+                                selectedType == "0" ? "BIG" : selectedType == "1" ? "SMALL" : "Nothing"
 
+    console.log("object",{picked,activeTab,selectedType})
 
     return (
         show && (
@@ -62,8 +65,7 @@ export default function ResultModal({ result, show, onClose }) {
                                 color: resultColor
                             }}
                         >
-                            {activeTab == "color" ? colors[selectedType] :
-                                selectedType == "0" ? "BIG" : selectedType == "1" ? "SMALL" : "Nothing"}
+                            {picked}
                         </div>
 
                         {selectedType != "Nothing" && <div style={{ fontSize: "22px" }}>
