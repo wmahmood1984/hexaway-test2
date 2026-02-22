@@ -179,7 +179,8 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                                     <span>{secondsToDMY(bid.time)}</span>
                                     <span style={{ color: bid.color }}>
                                         {colors[bid.color]} </span>
-                                    <span>{formatEther(bid.amount)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${formatEther(bid.amount) * 2}` : result === "LOST" ? "0" : "-"}</span></div>
+                                    <span>{Number(formatEther(bid.amount)).toFixed(2)}</span>
+                                    <span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${Number(formatEther(bid.amount) * 2).toFixed(2)}` : result === "LOST" ? "0" : "-"}</span></div>
                             )
                         })}
                     </div>

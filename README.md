@@ -1,5 +1,8 @@
+color game ==> big small in result
+
 History of deposit 
-to add sound. 
+to add sound.
+
 
 
 
