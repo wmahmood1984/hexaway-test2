@@ -12,7 +12,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
     const [showLive, setShowLive] = useState(false)
     const [showList, setShowList] = useState("my")
     const pageSize = 5;
-    const totalPages = Math.ceil(myBids.length / pageSize);
+    const totalPages = showList == "my" ?  Math.ceil(myBids.length / pageSize):Math.ceil(allResults.length / pageSize)
     const pending = myBids.filter(bid => !bid.settled)
     const reversed = [...myBids].reverse();
 
@@ -184,6 +184,10 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                     <div id="gameHistoryList" style={{ display: showList === "game" ? "block" : "none" }}>
                         <div class="game-header"><span>SNo</span><span>Time</span><span>Result</span></div>
                         {allResults && allResultsReversed.map((result, index) => {
+
+                                                        const startIndex = (page - 1) * pageSize;
+                            const endIndex = startIndex + pageSize;
+                            if (index < startIndex || index >= endIndex) return null;
                             return (
                                 <div className="game-row"><span>#{index + 1}</span>
                                     <span>{secondsToDMY(result.future1)}</span>
