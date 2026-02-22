@@ -91,7 +91,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", padding: "0 8px" }}>
                             <span style={{ color: "#64748b", fontSize: "13px" }}><i class="fas fa-gem" style={{ color: "#8b5cf6" }}></i> <span id="hexaAmount">{Number(amount / price).toFixed(0)}</span> HEXA</span>
-                            <span style={{ color: "#8b5cf6", fontSize: "13px" }}>2x win</span>
+                            <span style={{ color: "#8b5cf6", fontSize: "13px" }}>1.8x win</span>
                         </div>
                     </div>
 
