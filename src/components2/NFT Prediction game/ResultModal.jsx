@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function ResultModal({ result, show, onClose }) {
-    const { resultEmoji, resultText, resultColor, selectedType, wagerVal, payout, won,activeTab,colors } = result
+    const { resultEmoji, resultText, resultColor, selectedType, wagerVal, payout, won, activeTab, colors } = result
 
 
     return (
@@ -62,15 +62,15 @@ export default function ResultModal({ result, show, onClose }) {
                                 color: resultColor
                             }}
                         >
-                            {activeTab=="color"?  colors[selectedType]:
-                             selectedType == 0 ? "BIG" : "SMALL"}
+                            {activeTab == "color" ? colors[selectedType] :
+                                selectedType == "0" ? "BIG" : selectedType == "1" ? "SMALL" : "Nothing"}
                         </div>
 
-                        <div style={{ fontSize: "22px" }}>
+                        {selectedType != "Nothing" && <div style={{ fontSize: "22px" }}>
                             {wagerVal} USDT
-                        </div>
+                        </div>}
 
-                        <div
+                        {selectedType != "Nothing" && <div
                             style={{
                                 fontSize: "24px",
                                 fontWeight: 800,
@@ -79,7 +79,7 @@ export default function ResultModal({ result, show, onClose }) {
                             }}
                         >
                             {won ? "+" + payout : "0"}
-                        </div>
+                        </div>}
                     </div>
 
                     <button

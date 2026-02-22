@@ -6,6 +6,7 @@ import { formatEther } from 'ethers'
 import { secondsToDMY } from '../../utils/contractExecutor'
 import DepositModal from './Modal'
 import { gameContract } from '../../config'
+import { all } from 'axios'
 
 
 export default function ColorGame({ colors, onSuccess, allResults, config, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
@@ -13,7 +14,8 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
     const [showLive, setShowLive] = useState(false)
     const [showList, setShowList] = useState("my")
     const pageSize = 5;
-    const totalPages = Math.ceil(myBids.length / pageSize);
+    const totalPages = showList == "my" ?  Math.ceil(myBids.length / pageSize):Math.ceil(allResults.length / pageSize) 
+    
     const pending = myBids.filter(bid => !bid.settled)
     const isDisabled = remaining <= 10;
         const reversed = [...myBids].reverse();
@@ -186,7 +188,11 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                     <div id="gameHistoryList" style={{ display: showList === "game" ? "block" : "none" }}>
                         <div className="game-header"><span>SNo</span><span>Time</span><span>Colour</span></div>
                         {allResults && allResultsReversed.map((result, index) => {
+                            const startIndex = (page - 1) * pageSize;
+                            const endIndex = startIndex + pageSize;
+                            if (index < startIndex || index >= endIndex) return null;
                             return (
+                                
                                 <div className="game-row"><span>#{index + 1}</span>
                                     <span>{secondsToDMY(result.future1)}</span>
                                     <span style={{ color: result.winningColor }}>{colors[result.winningColor]}
