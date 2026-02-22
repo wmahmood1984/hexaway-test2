@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useConfig } from "wagmi";
 
-import { gameContract, gameContractR } from "../config"; // adjust path if needed
-import { executeContract, secondsToDMY } from "../utils/contractExecutor";
+import { gameContract } from "../config"; // adjust path if needed
+import { executeContract } from "../utils/contractExecutor";
 import toast from "react-hot-toast";
-import { isFileLoadingAllowed } from "vite";
 
 
 const SetScheme = () => {
@@ -15,20 +14,10 @@ const SetScheme = () => {
   const [perToDepositor, setPerToDepositor] = useState("");
   const [perToReferrer, setPerToReferrer] = useState("");
   const [loading, setLoading] = useState(false);
-  const [scheme, setScheme] = useState();
 
   const convertToSeconds = (dateTime) => {
     return Math.floor(new Date(dateTime).getTime() / 1000);
   };
-
-  useEffect(()=>{
-    const abc = async ()=>{
-        const _scheme = gameContractR.methods.scheme().call()
-        setScheme
-    }
-
-    abc()
-  },[loading])
 
   const handleSetScheme = async () => {
     if (!start || !end || !perToDepositor || !perToReferrer) {
@@ -86,7 +75,7 @@ const SetScheme = () => {
     }
   };
 
-  return (scheme && 
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-6 space-y-6">
         <h2 className="text-2xl font-semibold text-gray-800 text-center">
@@ -165,11 +154,10 @@ const SetScheme = () => {
 
 
         <div>
-            <p>Start Date: <span>{secondsToDMY(scheme.start)}</span></p>
-            <p>End Date: <span>{secondsToDMY(scheme.end)}</span></p>
-
-            <p>% to Depositor: <span>{scheme.perToDepositor}</span></p>
-                        <p>% to Referrer: <span>{scheme.perToReferrer}</span></p>
+            <p></p>
+                        <p></p>
+                                    <p></p>
+                                                <p></p>
         </div>
       </div>
     </div>

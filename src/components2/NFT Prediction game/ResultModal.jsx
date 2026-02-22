@@ -67,7 +67,7 @@ export default function ResultModal({ result, show, onClose }) {
                         </div>
 
                         {selectedType != "Nothing" && <div style={{ fontSize: "22px" }}>
-                            {wagerVal} USDT
+                            {wagerVal} HEXA
                         </div>}
 
                         {selectedType != "Nothing" && <div

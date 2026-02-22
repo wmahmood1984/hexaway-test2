@@ -242,7 +242,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                 isOpen={showDeposit}
                 onClose={() => {
                     setShowDeposit(false)
-                    abc()
+                
                 }}
                 onSuccess={onSuccess}
                 executeContract={executeContract}
