@@ -16,6 +16,9 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
     const totalPages = Math.ceil(myBids.length / pageSize);
     const pending = myBids.filter(bid => !bid.settled)
     const isDisabled = remaining <= 10;
+        const reversed = [...myBids].reverse();
+
+   const allResultsReversed = [...allResults].reverse();
     return (
         <div>
             <div className="game-wrapper">
@@ -164,7 +167,7 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                         <div className="history-header">
                             <span>SNo</span><span>Time</span><span>Colour</span><span>Spent</span><span>Earn</span>
                         </div>
-                        {myBids.map((bid, index) => {
+                        {reversed.map((bid, index) => {
                             const startIndex = (page - 1) * pageSize;
                             const endIndex = startIndex + pageSize;
                             if (index < startIndex || index >= endIndex) return null;
@@ -182,7 +185,7 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
 
                     <div id="gameHistoryList" style={{ display: showList === "game" ? "block" : "none" }}>
                         <div className="game-header"><span>SNo</span><span>Time</span><span>Colour</span></div>
-                        {allResults && allResults.map((result, index) => {
+                        {allResults && allResultsReversed.map((result, index) => {
                             return (
                                 <div className="game-row"><span>#{index + 1}</span>
                                     <span>{secondsToDMY(result.future1)}</span>
