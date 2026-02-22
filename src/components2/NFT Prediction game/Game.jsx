@@ -226,6 +226,13 @@ const checkHealth = async () => {
 
   const handleClick = async (v) => {
 
+          if (
+            Number(depositBalance) < amount
+          ) {
+            toast.error("Insufficient Deposit Balance")
+            return
+          }
+
     let gameAddr = findGame(slot, time);
 //    console.log("object", gameAddr)
 const value = amount / price;
