@@ -166,7 +166,7 @@ const checkHealth = async () => {
     if(!_result[1]){
       setShowResultModal({
         show:true,
-        result: {resultEmoji: '😞', resultText: "You Have Missed it!", resultColor: '#dc2626', selectedType: "Nothing", wagerVal: formatEther(_result[3]), payout: 0, won: false}
+        result: {resultEmoji: '😞', resultText: "You Have Missed it!", resultColor: '#dc2626', selectedType: "Nothing", wagerVal: 0, payout: 0, won: false}
       });
     }else if (_result[1] && _result[0] === "0") {
       setShowResultModal({
