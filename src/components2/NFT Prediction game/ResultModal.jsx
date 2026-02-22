@@ -67,7 +67,7 @@ export default function ResultModal({ result, show, onClose }) {
                         </div>
 
                         {selectedType != "Nothing" && <div style={{ fontSize: "22px" }}>
-                            {wagerVal} HEXA
+                            {Number(wagerVal).toFixed(2)} HEXA
                         </div>}
 
                         {selectedType != "Nothing" && <div
@@ -78,7 +78,7 @@ export default function ResultModal({ result, show, onClose }) {
                                 color: resultColor
                             }}
                         >
-                            {won ? "+" + payout : "0"}
+                            {won ? "+" + Number(payout).toFixed(0) : "0"}
                         </div>}
                     </div>
 
