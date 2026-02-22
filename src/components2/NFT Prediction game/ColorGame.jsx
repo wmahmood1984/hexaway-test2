@@ -15,7 +15,7 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
     const pageSize = 5;
     const totalPages = Math.ceil(myBids.length / pageSize);
     const pending = myBids.filter(bid => !bid.settled)
-
+    const isDisabled = remaining <= 10;
     return (
         <div>
             <div className="game-wrapper">
@@ -100,7 +100,7 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                         <div className="slots-grid">
                             <div
                                 disabled={remaining <= 10}
-                                onClick={() => { handleClick("Red") }}
+                                onClick={!isDisabled ? () => handleClick("Red") : undefined}
                                 className="color-slot slot-red" id="nft-slot-0">
                                 <div className="slot-emoji">🔴</div>
                                 <div className="slot-label">RED</div>
@@ -108,14 +108,14 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                             </div>
                             <div
                                 disabled={remaining <= 10}
-                                onClick={() => { handleClick("Green") }}
+                                onClick={!isDisabled ? () => handleClick("Green") : undefined}
                                 className="color-slot slot-green" id="nft-slot-1">
                                 <div className="slot-emoji">🟢</div>
                                 <div className="slot-label">GREEN</div>
                                 <div className="slot-number">2</div>
                             </div>
                             <div disabled={remaining <= 10}
-                                onClick={() => { handleClick("Purple") }}
+                                onClick={!isDisabled ? () => handleClick("Purple") : undefined}
                                 className="color-slot slot-purple" id="nft-slot-2">
                                 <div className="slot-emoji">🟣</div>
                                 <div className="slot-label">PURPLE</div>
