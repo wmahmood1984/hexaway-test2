@@ -8,9 +8,10 @@ import DepositModal from './Modal'
 import { gameContract } from '../../config'
 
 
-export default function ColorGame({colors,onSuccess, config, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+export default function ColorGame({colors,onSuccess,allResults, config, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
+    const [showList, setShowList] = useState("my")
     const pageSize = 5;
     const totalPages = Math.ceil(myBids.length / pageSize);
     const pending = myBids.filter(bid => !bid.settled)
@@ -21,7 +22,7 @@ export default function ColorGame({colors,onSuccess, config, executeContract, he
 
                 <div style={{ marginBottom: "12px", textAlign: "center" }}>
                     <h1 style={{ fontSize: "32px", fontWeight: 900, letterSpacing: "-1px", color: "#1e293b" }}>
-                        <span style={{ color: "#8b5cf6" }}>COLOUR</span> SNAP
+                        <span style={{ color: "#8b5cf6" }}>COLOUR</span> GAME
                     </h1>
                     <p style={{ color: "#0891b2", fontWeight: 600, fontSize: "12px" }}><i className="fas fa-bolt"></i> instant bid · 2x win</p>
 
@@ -152,13 +153,15 @@ export default function ColorGame({colors,onSuccess, config, executeContract, he
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                         <h3 style={{ color: "#1e293b", fontSize: "18px", fontWeight: 800 }}><i className="fas fa-history" style={{ color: "#8b5cf6" }}></i> history</h3>
                         <div className="history-tabs">
-                            <button id="myHistoryTab" className="tab-btn active">My</button>
-                            <button id="gameHistoryTab" className="tab-btn">Game</button>
+                            <button
+                            onClick={()=>{setShowList("my")}}
+                            id="myHistoryTab" className="tab-btn active">My</button>
+                            <button onClick={()=>{setShowList("game")}} id="gameHistoryTab" className="tab-btn">Game</button>
                         </div>
                     </div>
 
 
-                    <div id="myHistoryList" style={{ display: "block" }}>
+                    <div id="myHistoryList" style={{ display: showList === "my" ? "block" : "none" }}>
                         <div className="history-header">
                             <span>SNo</span><span>Time</span><span>Colour</span><span>Spent</span><span>Earn</span>
                         </div>
@@ -170,19 +173,24 @@ export default function ColorGame({colors,onSuccess, config, executeContract, he
                             return (
                                 <div className="history-row"><span>#{index + 1}</span>
                                     <span>{secondsToDMY(bid.time)}</span>
-                                    <span style={{ color: bid.color === "Red" ? "#b91c1c" : bid.color === "Green" ? "#166534" : "#6b21a5" }}>{colors[bid.color]}</span><span>{formatEther(bid.amount)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${formatEther(bid.amount) * 2}` : result === "LOST" ? "0" : "-"}</span></div>
+                                    <span style={{ color: bid.color }}>
+                                        {colors[bid.color]} </span>
+                                        <span>{formatEther(bid.amount)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${formatEther(bid.amount) * 2}` : result === "LOST" ? "0" : "-"}</span></div>
                             )
                         })}
                     </div>
 
 
-                    <div id="gameHistoryList" style={{ display: "none" }}>
+                    <div id="gameHistoryList" style={{ display: showList === "game" ? "block" : "none" }}>
                         <div className="game-header"><span>SNo</span><span>Time</span><span>Colour</span></div>
-                        <div className="game-row"><span>#207</span><span>10:15</span><span style={{ color: "#b91c1c" }}>red</span></div>
-                        <div className="game-row"><span>#206</span><span>10:12</span><span style={{ color: "#166534" }}>green</span></div>
-                        <div className="game-row"><span>#205</span><span>10:09</span><span style={{ color: "#6b21a5" }}>purple</span></div>
-                        <div className="game-row"><span>#204</span><span>10:06</span><span style={{ color: "#b91c1c" }}>red</span></div>
-                        <div className="game-row"><span>#203</span><span>10:03</span><span style={{ color: "#166534" }}>green</span></div>
+                            {allResults && allResults.map((result, index) => {
+                                return (
+                                    <div className="game-row"><span>#{index + 1}</span>
+                                    <span>{secondsToDMY(result.time)}</span>
+                                    <span style={{ color: result.color }}>{colors[result.color]}
+                                    </span></div>
+                                )
+                            })}
                     </div>
 
 

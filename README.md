@@ -1,12 +1,5 @@
-done) deposit need to be at 3$
-done) lost show amount in hexa 
-done) win show amount in hexa
-done) change color of lost to red. 
-done) show minus sign in lost. 
-6) time matching in both machine
-done) show color sign in the prediction history 
-done) show all admin report and make the prediction and slot as a tab. 
-done) add a page to start / end scheme. 
+develop game window.
+
 
 
 

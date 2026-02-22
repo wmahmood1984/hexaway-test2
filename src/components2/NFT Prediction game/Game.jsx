@@ -27,7 +27,7 @@ export default function Game() {
   const [depositBalance, setDepositBalance] = useState(0)
   const [showDeposit, setShowDeposit] = useState(false);
   const ROUND_BUFFER = 1; // safety buffer
-  const [allBids,setAllBids] = useState([])
+  const [allResults,setAllResults] = useState()
   const [gameRan, setGameRan] = useState(0);
   const [myBids, setMyBids] = useState();
   const [remaining, setRemaining] = useState(0);
@@ -101,8 +101,8 @@ useEffect(() => {
 
       fetchGameRan();
       abc();
-       checkWinner();
-      //checkHealth();
+      // checkWinner();
+      checkHealth();
     }
   }, 1000);
 
@@ -113,7 +113,7 @@ useEffect(() => {
 const checkHealth = async () => {
   try {
     const response = await fetch(
-      "http://srv1358236.hstgr.cloud:4000/health"
+      "https://api.hexaway.org/health"
   //"http://localhost:4000/health"  
   );
     if (!response.ok) throw new Error("Server error");
@@ -215,8 +215,8 @@ const checkHealth = async () => {
     const _myBids = await gameFetcherContractR.methods.getBidsByUser(address).call()
     setMyBids(_myBids)
 
-    const _allBids = await gameContractR.methods.getGameResult(0).call()
-    setAllBids(_allBids)
+    const _allResults = await gameContractR.methods.getGameResult().call()
+    setAllResults(_allResults)
    
   
   }
@@ -251,7 +251,7 @@ const value = amount / price;
 
 
 
-  const isLoading = !myBids;
+  const isLoading = !myBids || !allResults;
   const now = new Date().getTime() / 1000;
 
   const duration = ((Number(gameRan) + Number(time * 60)) - now).toFixed(0)
@@ -291,7 +291,7 @@ const value = amount / price;
                         : "bg-gray-200 text-gray-700"
                         }`}
                 >
-                    Big Small
+                    Tom & Jerry
                 </button>
 
     
@@ -302,6 +302,7 @@ const value = amount / price;
 
                     {activeTab === "color" && <ColorGame 
             setShowDeposit={setShowDeposit}
+            allResults={allResults}
             showDeposit={showDeposit}
             colors={colors}
             depositBalance={depositBalance}
@@ -322,6 +323,7 @@ const value = amount / price;
             />}
             {activeTab === "bigsmall" && <BigSmall 
             setShowDeposit={setShowDeposit}
+            allResults={allResults}
             depositBalance={depositBalance}
             remaining={duration}
             colors={colors}

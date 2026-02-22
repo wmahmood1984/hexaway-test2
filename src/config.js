@@ -8249,6 +8249,55 @@ export const gameAbi = [
 				"type": "uint256"
 			}
 		],
+		"name": "gameResultsArray",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "settled",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint8",
+				"name": "winningColor",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalBidded",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalPayout",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "future1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "future2",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "future3",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"name": "games",
 		"outputs": [
 			{
@@ -8328,6 +8377,83 @@ export const gameAbi = [
 					}
 				],
 				"internalType": "struct GameEngine.Bid[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getGameResult",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "bool",
+						"name": "settled",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint8",
+						"name": "winningColor",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalBidded",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalPayout",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "user",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amountWon",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint8",
+								"name": "color",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct GameEngine.Winner[]",
+						"name": "winners",
+						"type": "tuple[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "future1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "future2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "future3",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct GameEngine.GameResult[]",
 				"name": "",
 				"type": "tuple[]"
 			}

@@ -7,12 +7,13 @@ import { secondsToDMY } from '../../utils/contractExecutor'
 import DepositModal from './Modal'
 import { gameContract } from '../../config'
 
-export default function BigSmall({config,onSuccess, colors,executeContract, hexaBalance,showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+export default function BigSmall({ config, allResults, onSuccess, colors, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
+    const [showList, setShowList] = useState("my")
     const pageSize = 10;
     const totalPages = Math.ceil(myBids.length / pageSize);
-        const pending = myBids.filter(bid => !bid.settled)
+    const pending = myBids.filter(bid => !bid.settled)
 
     return (
         <div>
@@ -20,7 +21,7 @@ export default function BigSmall({config,onSuccess, colors,executeContract, hexa
 
                 <div style={{ marginBottom: "12px", textAlign: "center" }}>
                     <h1 style={{ fontSize: "32px", fontWeight: 900, letterSpacing: "-1px", color: "#1e293b" }}>
-                        <span style={{ color: "#8b5cf6" }}>BIG </span>· SMALL
+                        <span style={{ color: "#8b5cf6" }}>TOM </span>· JERRY
                     </h1>
                     <p style={{ color: "#0891b2", fontWeight: 600, fontSize: "12px" }}><i class="fas fa-bolt"></i> instant bid · 2x win</p>
 
@@ -71,7 +72,7 @@ export default function BigSmall({config,onSuccess, colors,executeContract, hexa
                             <input type="number" id="wagerInput"
 
                                 onChange={(e) => { setAmount(e.target.value) }}
-value={Number(amount).toFixed(2)}
+                                value={Number(amount).toFixed(2)}
 
 
                                 step="0.1" min="0.1" max="100" className="wager-input" />
@@ -102,22 +103,22 @@ value={Number(amount).toFixed(2)}
 
                         <div className="slots-grid1">
                             <button
-                                                            disabled={remaining <=10}
+                                disabled={remaining <= 10}
                                 onClick={() => handleClick("Red")}
                                 className="big-slot"
                                 id="big-slot"
                             >
-                                <div className="slot-emoji">🐘</div>
+                                <div className="slot-emoji"><img src="/Tom.png" alt="TOM" width="32" height="32" /></div>
                                 <div className="slot-label">BIG</div>
                             </button>
 
                             <button
-                                                            disabled={remaining <=10}
+                                disabled={remaining <= 10}
                                 onClick={() => handleClick("Green")}
                                 className="small-slot"
                                 id="small-slot"
                             >
-                                <div className="slot-emoji">🐁</div>
+                                <div className="slot-emoji"><img src="/Jerry.png" alt="JERRY" width="32" height="32" /></div>
                                 <div className="slot-label">SMALL</div>
                             </button>
                         </div>
@@ -135,15 +136,15 @@ value={Number(amount).toFixed(2)}
 
 
                 <div id="liveOrdersSection" style={{ display: showLive ? "block" : "none", marginBottom: "16px" }}>
-                     { pending.length > 0 && 
-                     pending.map((bid, index) => 
-                     <div className="light-card" style={{ padding: "16px" }}>
-                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                            <div style={{ width: "48px", height: "48px", background: "#fee2e2", borderRadius: "20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", color: "#991b1b" }}>1</div>
-                            <div><div style={{ color: "#64748b", fontSize: "12px" }}>wager</div><div style={{ color: "#1e293b", fontSize: "20px", fontWeight: 800 }}>{formatEther(bid.amount)} HEXA</div></div>
-                            <div style={{ marginLeft: "auto", textAlign: "right" }}><div style={{ color: "#f97316" }}>⏳ {time} min</div><div style={{ color: "#64748b", fontSize: "12px" }}>in progress</div></div>
-                        </div>
-                    </div>)}
+                    {pending.length > 0 &&
+                        pending.map((bid, index) =>
+                            <div className="light-card" style={{ padding: "16px" }}>
+                                <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                                    <div style={{ width: "48px", height: "48px", background: "#fee2e2", borderRadius: "20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", color: "#991b1b" }}>1</div>
+                                    <div><div style={{ color: "#64748b", fontSize: "12px" }}>wager</div><div style={{ color: "#1e293b", fontSize: "20px", fontWeight: 800 }}>{formatEther(bid.amount)} HEXA</div></div>
+                                    <div style={{ marginLeft: "auto", textAlign: "right" }}><div style={{ color: "#f97316" }}>⏳ {time} min</div><div style={{ color: "#64748b", fontSize: "12px" }}>in progress</div></div>
+                                </div>
+                            </div>)}
 
                 </div>
 
@@ -152,13 +153,14 @@ value={Number(amount).toFixed(2)}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                         <h3 style={{ color: "#1e293b", fontSize: "18px", fontWeight: 800 }}><i className="fas fa-history" style={{ color: "#8b5cf6" }}></i> history</h3>
                         <div className="history-tabs">
-                            <button id="myHistoryTab" className="tab-btn active">My</button>
-                            <button id="gameHistoryTab" className="tab-btn">Game</button>
+                            <button
+                                id="myHistoryTab" className="tab-btn active" onClick={() => setShowList("my")}>My</button>
+                            <button id="gameHistoryTab" className="tab-btn" onClick={() => setShowList("game")}>Game</button>
                         </div>
                     </div>
 
 
-                    <div id="myHistoryList" style={{ display: "block" }}>
+                    <div id="myHistoryList" style={{ display: showList === "my" ? "block" : "none" }}>
                         <div class="history-header">
                             <span>SNo</span><span>Time</span><span>Type</span><span>Spent</span><span>Earn</span>
                         </div>
@@ -177,13 +179,16 @@ value={Number(amount).toFixed(2)}
                     </div>
 
 
-                    <div id="gameHistoryList" style={{ display: "none" }}>
+                    <div id="gameHistoryList" style={{ display: showList === "game" ? "block" : "none" }}>
                         <div class="game-header"><span>SNo</span><span>Time</span><span>Result</span></div>
-                        <div class="game-row"><span>#187</span><span>11:05</span><span style={{ color: "#1e3a8a", fontWeight: 800 }}>BIG</span></div>
-                        <div class="game-row"><span>#186</span><span>11:02</span><span style={{ color: "#7b341e", fontWeight: 800 }}>SMALL</span></div>
-                        <div class="game-row"><span>#185</span><span>10:58</span><span style={{ color: "#1e3a8a", fontWeight: 800 }}>BIG</span></div>
-                        <div class="game-row"><span>#184</span><span>10:55</span><span style={{ color: "#7b341e", fontWeight: 800 }}>SMALL</span></div>
-                        <div class="game-row"><span>#183</span><span>10:51</span><span style={{ color: "#1e3a8a", fontWeight: 800 }}>BIG</span></div>
+                        {allResults && allResults.map((result, index) => {
+                            return (
+                                <div className="game-row"><span>#{index + 1}</span>
+                                    <span>{secondsToDMY(result.time)}</span>
+                                    <span style={{ color: result.color }}>{colors[result.color]}
+                                    </span></div>
+                            )
+                        })}
                     </div>
 
 
@@ -214,18 +219,19 @@ value={Number(amount).toFixed(2)}
             </div>
 
 
-      <DepositModal
-        isOpen={showDeposit}
-        onClose={() => {setShowDeposit(false)
-          abc()
-        }}
-                        onSuccess={onSuccess}
-        executeContract={executeContract}
-        config={config}
-        gameContract={gameContract}
-        hexaBalance={hexaBalance}
-        price={price}
-      />
+            <DepositModal
+                isOpen={showDeposit}
+                onClose={() => {
+                    setShowDeposit(false)
+                    abc()
+                }}
+                onSuccess={onSuccess}
+                executeContract={executeContract}
+                config={config}
+                gameContract={gameContract}
+                hexaBalance={hexaBalance}
+                price={price}
+            />
         </div>
     )
 }
