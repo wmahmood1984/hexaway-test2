@@ -154,8 +154,8 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                         <h3 style={{ color: "#1e293b", fontSize: "18px", fontWeight: 800 }}><i className="fas fa-history" style={{ color: "#8b5cf6" }}></i> history</h3>
                         <div className="history-tabs">
                             <button
-                                id="myHistoryTab" className="tab-btn active" onClick={() => setShowList("my")}>My</button>
-                            <button id="gameHistoryTab" className="tab-btn" onClick={() => setShowList("game")}>Game</button>
+                                id="myHistoryTab" className={showList === "my" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("my")}>My</button>
+                            <button id="gameHistoryTab" className={showList === "game" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("game")}>Game</button>
                         </div>
                     </div>
 

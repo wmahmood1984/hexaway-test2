@@ -8,7 +8,7 @@ import DepositModal from './Modal'
 import { gameContract } from '../../config'
 
 
-export default function ColorGame({colors,onSuccess,allResults, config, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+export default function ColorGame({ colors, onSuccess, allResults, config, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
     const [showList, setShowList] = useState("my")
@@ -154,9 +154,8 @@ export default function ColorGame({colors,onSuccess,allResults, config, executeC
                         <h3 style={{ color: "#1e293b", fontSize: "18px", fontWeight: 800 }}><i className="fas fa-history" style={{ color: "#8b5cf6" }}></i> history</h3>
                         <div className="history-tabs">
                             <button
-                            onClick={()=>{setShowList("my")}}
-                            id="myHistoryTab" className="tab-btn active">My</button>
-                            <button onClick={()=>{setShowList("game")}} id="gameHistoryTab" className="tab-btn">Game</button>
+                                id="myHistoryTab" className={showList === "my" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("my")}>My</button>
+                            <button id="gameHistoryTab" className={showList === "game" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("game")}>Game</button>
                         </div>
                     </div>
 
@@ -175,7 +174,7 @@ export default function ColorGame({colors,onSuccess,allResults, config, executeC
                                     <span>{secondsToDMY(bid.time)}</span>
                                     <span style={{ color: bid.color }}>
                                         {colors[bid.color]} </span>
-                                        <span>{formatEther(bid.amount)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${formatEther(bid.amount) * 2}` : result === "LOST" ? "0" : "-"}</span></div>
+                                    <span>{formatEther(bid.amount)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${formatEther(bid.amount) * 2}` : result === "LOST" ? "0" : "-"}</span></div>
                             )
                         })}
                     </div>
@@ -183,14 +182,14 @@ export default function ColorGame({colors,onSuccess,allResults, config, executeC
 
                     <div id="gameHistoryList" style={{ display: showList === "game" ? "block" : "none" }}>
                         <div className="game-header"><span>SNo</span><span>Time</span><span>Colour</span></div>
-                            {allResults && allResults.map((result, index) => {
-                                return (
-                                    <div className="game-row"><span>#{index + 1}</span>
+                        {allResults && allResults.map((result, index) => {
+                            return (
+                                <div className="game-row"><span>#{index + 1}</span>
                                     <span>{secondsToDMY(result.future1)}</span>
                                     <span style={{ color: result.winningColor }}>{colors[result.winningColor]}
                                     </span></div>
-                                )
-                            })}
+                            )
+                        })}
                     </div>
 
 
