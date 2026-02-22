@@ -34,7 +34,7 @@ export default function Game() {
   const [predictionHistory, setPredictionHistory] = useState()
   const [loading, setLoading] = useState(false)
 
-    const [activeTab, setActiveTab] = useState("color");
+    const [activeTab, setActiveTab] = useState("bigsmall");
 const [showResultModal, setShowResultModal] = useState({
   show:false,
   result: {resultEmoji: "", resultText: "", resultColor: "", selectedType: "", wagerVal: 0, payout: 0, won: false}
@@ -42,20 +42,23 @@ const [showResultModal, setShowResultModal] = useState({
 
   const findGame = (slots, time) => {
     switch (true) {
-      case slots === 3 && time === 1: return 0;
-      case slots === 3 && time === 3: return 1;
-      case slots === 3 && time === 5: return 2;
-      case slots === 3 && time === 10: return 3;
+      case activeTab === "color" && slots === 3 && time === 1: return 0;
+      case activeTab === "color" && slots === 3 && time === 3: return 1;
+      case activeTab === "color" && slots === 3 && time === 5: return 2;
+      case activeTab === "color" && slots === 3 && time === 10: return 3;
 
-      case slots === 6 && time === 1: return 4;
-      case slots === 6 && time === 3: return 5;
-      case slots === 6 && time === 5: return 6;
-      case slots === 6 && time === 10: return 7;
+      case activeTab === "color" && slots === 6 && time === 1: return 4;
+      case activeTab === "color" && slots === 6 && time === 3: return 5;
+      case activeTab === "color" && slots === 6 && time === 5: return 6;
+      case activeTab === "color" && slots === 6 && time === 10: return 7;
 
-      case slots === 9 && time === 1: return 8;
-      case slots === 9 && time === 3: return 9;
-      case slots === 9 && time === 5: return 10;
-      case slots === 9 && time === 10: return 11;
+      case activeTab === "color" && slots === 9 && time === 1: return 8;
+      case activeTab === "color" && slots === 9 && time === 3: return 9;
+      case activeTab === "color" && slots === 9 && time === 5: return 10;
+      case activeTab === "color" && slots === 9 && time === 10: return 11;
+
+      case activeTab === "bigsmall" && slots === 3 && time === 1: return 12;
+      case activeTab === "bigsmall" && slots === 3 && time === 3: return 13;
 
       default:
         throw new Error("Invalid slots or time combination");
@@ -218,7 +221,7 @@ const checkHealth = async () => {
     const _allResults = await gameContractR.methods.getGameResult().call()
     setAllResults(_allResults)
 
-    const gameresult = await gameContractR.methods.getGameResult(12).call()
+    const gameresult = await gameContractR.methods.getBids().call()
     console.log("game result of game 12",gameresult)
    
   
@@ -237,7 +240,7 @@ const checkHealth = async () => {
           }
 
     let gameAddr = findGame(slot, time);
-//    console.log("object", gameAddr)
+   console.log("object", gameAddr)
 const value = amount / price;
     await executeContract({
       config,
