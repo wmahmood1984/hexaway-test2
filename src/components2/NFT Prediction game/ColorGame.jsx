@@ -186,8 +186,8 @@ export default function ColorGame({colors,onSuccess,allResults, config, executeC
                             {allResults && allResults.map((result, index) => {
                                 return (
                                     <div className="game-row"><span>#{index + 1}</span>
-                                    <span>{secondsToDMY(result.time)}</span>
-                                    <span style={{ color: result.color }}>{colors[result.color]}
+                                    <span>{secondsToDMY(result.future1)}</span>
+                                    <span style={{ color: result.winningColor }}>{colors[result.winningColor]}
                                     </span></div>
                                 )
                             })}

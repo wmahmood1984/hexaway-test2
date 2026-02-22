@@ -184,8 +184,8 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                         {allResults && allResults.map((result, index) => {
                             return (
                                 <div className="game-row"><span>#{index + 1}</span>
-                                    <span>{secondsToDMY(result.time)}</span>
-                                    <span style={{ color: result.color }}>{colors[result.color]}
+                                    <span>{secondsToDMY(result.future1)}</span>
+                                    <span style={{ color: result.winningColor }}>{result.winningColor == 0 ? "BIG" : "SMALL"}
                                     </span></div>
                             )
                         })}
