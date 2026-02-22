@@ -141,7 +141,7 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                             <div className="light-card" style={{ padding: "16px" }}>
                                 <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                                     <div style={{ width: "48px", height: "48px", background: "#fee2e2", borderRadius: "20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", color: "#991b1b" }}>1</div>
-                                    <div><div style={{ color: "#64748b", fontSize: "12px" }}>wager</div><div style={{ color: "#1e293b", fontSize: "20px", fontWeight: 800 }}>{formatEther(bid.amount)} HEXA</div></div>
+                                    <div><div style={{ color: "#64748b", fontSize: "12px" }}>{colors[bid.color]}</div><div style={{ color: "#1e293b", fontSize: "20px", fontWeight: 800 }}>{formatEther(bid.amount)} HEXA</div></div>
                                     <div style={{ marginLeft: "auto", textAlign: "right" }}><div style={{ color: "#f97316" }}>⏳ {time} min</div><div style={{ color: "#64748b", fontSize: "12px" }}>in progress</div></div>
                                 </div>
                             </div>)}
