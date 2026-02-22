@@ -217,6 +217,9 @@ const checkHealth = async () => {
 
     const _allResults = await gameContractR.methods.getGameResult().call()
     setAllResults(_allResults)
+
+    const gameresult = await gameContractR.methods.getGameResult(12).call()
+    console.log("game result of game 12",gameresult)
    
   
   }
@@ -274,7 +277,7 @@ const value = amount / price;
     );
   }
 
-   console.log("prediction", { allResults })
+//   console.log("prediction", { allResults })
 
   return (
     <div>

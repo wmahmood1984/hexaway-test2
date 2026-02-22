@@ -11,7 +11,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
     const [showList, setShowList] = useState("my")
-    const pageSize = 10;
+    const pageSize = 5;
     const totalPages = Math.ceil(myBids.length / pageSize);
     const pending = myBids.filter(bid => !bid.settled)
 
