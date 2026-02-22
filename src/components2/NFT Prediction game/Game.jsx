@@ -267,7 +267,7 @@ const value = amount / price;
     );
   }
 
-//   console.log("prediction", { status:showResultModal.show })
+   console.log("prediction", { allResults })
 
   return (
     <div>

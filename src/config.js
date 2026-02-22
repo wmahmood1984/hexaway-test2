@@ -8411,33 +8411,6 @@ export const gameAbi = [
 						"type": "uint256"
 					},
 					{
-						"components": [
-							{
-								"internalType": "address",
-								"name": "user",
-								"type": "address"
-							},
-							{
-								"internalType": "uint256",
-								"name": "amountWon",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint8",
-								"name": "color",
-								"type": "uint8"
-							},
-							{
-								"internalType": "uint256",
-								"name": "amount",
-								"type": "uint256"
-							}
-						],
-						"internalType": "struct GameEngine.Winner[]",
-						"name": "winners",
-						"type": "tuple[]"
-					},
-					{
 						"internalType": "uint256",
 						"name": "future1",
 						"type": "uint256"
@@ -8453,7 +8426,7 @@ export const gameAbi = [
 						"type": "bool"
 					}
 				],
-				"internalType": "struct GameEngine.GameResult[]",
+				"internalType": "struct GameEngine.GameResult2[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -9595,12 +9568,12 @@ export const distributionAdd = mainnet ?  "0xaE2A9F5F5AB9f437826D2Ac6173EfB98f86
 export const buySale = mainnet ? "0x052DbC12bac5490e4225042493bF9B438545668E"
 :"0x0b13FbC7d4BF441C5e9f846E7F60846B41eA3cBf"
 export const gameAdd = mainnet ? ""
-: "0x36e8675a6f068e995296AA38b6068B83A9e4B517"
+: "0xc34fF7c11AF9292Afa380D215711779df8AF73A7"
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 
 export const dataFetcherGameAdd = mainnet ? "" : 
-"0x7b47578611B30Df032D2Bd76f3caa32c1151BEB5"
+"0x4890A7876e6c7Fa35B5474567d58fB0E89C1Cd4a"
 
 export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"
 export const tokenFeeder = "0xF942224e5D97b78a0C32C7cB9A4Aae8fa602f75C"  //EOA => Doctor sb
