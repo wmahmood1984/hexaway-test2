@@ -168,7 +168,7 @@ const checkHealth = async () => {
     }else if (_result[1] && _result[0] === "0") {
       setShowResultModal({
         show:true,
-        result: {resultEmoji: '😞', resultText: "YOU LOST", resultColor: '#dc2626', selectedType: colors[_result[2]], wagerVal: formatEther(_result[3]), payout: 0, won: false}
+        result: {resultEmoji: '😞', resultText: "YOU LOST", resultColor: '#dc2626', selectedType: _result[2], wagerVal: formatEther(_result[3]), payout: 0, won: false}
       });
     }
 
@@ -179,7 +179,7 @@ const checkHealth = async () => {
 
       setShowResultModal({
         show:true,
-        result: {resultEmoji: '🎉', resultText: "YOU WON", resultColor: '#10b981', selectedType: colors[_result[2]], wagerVal: formatEther(_result[3]), payout: amountHexa, won: true}
+        result: {resultEmoji: '🎉', resultText: "YOU WON", resultColor: '#10b981', selectedType: _result[2], wagerVal: formatEther(_result[3]), payout: amountHexa, won: true}
       });
 
 
@@ -603,6 +603,8 @@ const value = amount / price;
 <ResultModal
   show={showResultModal.show}
   result={showResultModal.result}
+  activeTab={activeTab}
+  colors={colors}
   onClose={() =>
     setShowResultModal({
       show:false,

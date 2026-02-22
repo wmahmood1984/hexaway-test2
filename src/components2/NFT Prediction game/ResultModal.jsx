@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function ResultModal({ result, show, onClose }) {
-    const { resultEmoji, resultText, resultColor, selectedType, wagerVal, payout, won } = result
+    const { resultEmoji, resultText, resultColor, selectedType, wagerVal, payout, won,activeTab,colors } = result
 
 
     return (
@@ -62,7 +62,8 @@ export default function ResultModal({ result, show, onClose }) {
                                 color: resultColor
                             }}
                         >
-                            {selectedType}
+                            {activeTab=="color"?  colors[selectedType]:
+                             selectedType == 0 ? "BIG" : "SMALL"}
                         </div>
 
                         <div style={{ fontSize: "22px" }}>
