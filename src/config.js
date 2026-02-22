@@ -10199,7 +10199,9 @@ export const bulkAddAbi = [
 //export const erc20Add = "0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9"; //op bnb
 export const erc20Add = mainnet ? "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3" //op bnb mainnet
 : "0x2907DA57598e5dd349d768FbC0e6BC3D2CF66cB9"
-export const admin = "0x41f70Fb34aa42d239ef0F8Dad037dEae9e9b9744"//"0xB066Ce4653576C310e9A8502e269fc54E32B28ab"  //bulk / lists / admin / suck 
+export const admin = "0xB066Ce4653576C310e9A8502e269fc54E32B28ab"
+
+//"0x41f70Fb34aa42d239ef0F8Dad037dEae9e9b9744"//"0xB066Ce4653576C310e9A8502e269fc54E32B28ab"  //bulk / lists / admin / suck 
 
 export const p2pContractR = new web3.eth.Contract(P2PAbi,P2PAdd)
 export const stakinvV2ContractR = new web3.eth.Contract(stakingV2Abi,stakingV2Add)
