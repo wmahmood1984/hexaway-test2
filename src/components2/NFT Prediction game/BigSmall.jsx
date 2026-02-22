@@ -175,7 +175,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                             return (
                                 <div className="history-row"><span>#{index + 1}</span>
                                     <span>{secondsToDMY(bid.time)}</span>
-                                    <span style={{ color: bid.color === "Red" ? "#b91c1c" : bid.color === "Green" ? "#166534" : "#6b21a5" }}>{bid.color== 0 ? "BIG" : "SMALL"}</span><span>{formatEther(bid.amount)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${formatEther(bid.amount) * 2}` : result === "LOST" ? "0" : "-"}</span></div>
+                                    <span style={{ color: bid.color === "Red" ? "#b91c1c" : bid.color === "Green" ? "#166534" : "#6b21a5" }}>{bid.color== 0 ? "BIG" : "SMALL"}</span><span>{formatEther(bid.amount)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${formatEther(bid.amount) * 1.8}` : result === "LOST" ? "0" : "-"}</span></div>
                             )
                         })}
                     </div>
