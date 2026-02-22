@@ -23,7 +23,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                     <h1 style={{ fontSize: "32px", fontWeight: 900, letterSpacing: "-1px", color: "#1e293b" }}>
                         <span style={{ color: "#8b5cf6" }}>TOM </span>· JERRY
                     </h1>
-                    <p style={{ color: "#0891b2", fontWeight: 600, fontSize: "12px" }}><i class="fas fa-bolt"></i> instant bid · 2x win</p>
+                    <p style={{ color: "#0891b2", fontWeight: 600, fontSize: "12px" }}><i class="fas fa-bolt"></i> instant bid · 1.8x win</p>
 
                 </div>
 
