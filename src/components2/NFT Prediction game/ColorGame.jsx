@@ -14,13 +14,13 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
     const [showLive, setShowLive] = useState(false)
     const [showList, setShowList] = useState("my")
     const pageSize = 5;
-    const totalPages = showList == "my" ?  Math.ceil(myBids.length / pageSize):Math.ceil(allResults.length / pageSize) 
-    
+    const totalPages = showList == "my" ? Math.ceil(myBids.length / pageSize) : Math.ceil(allResults.length / pageSize)
+
     const pending = myBids.filter(bid => !bid.settled)
     const isDisabled = remaining <= 10;
-        const reversed = [...myBids].reverse();
+    const reversed = [...myBids].reverse();
 
-   const allResultsReversed = [...allResults].reverse();
+    const allResultsReversed = [...allResults].reverse();
     return (
         <div>
             <div className="game-wrapper">
@@ -95,7 +95,7 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", padding: "0 8px" }}>
                             <span style={{ color: "#64748b", fontSize: "13px" }}><i className="fas fa-gem" style={{ color: "#8b5cf6" }}></i> <span id="hexaAmount">{Number(amount / price).toFixed(0)}</span> HEXA</span>
-                            <span style={{ color: "#8b5cf6", fontSize: "13px" }}>2x win</span>
+                            <span style={{ color: "#8b5cf6", fontSize: "13px" }}> win</span>
                         </div>
                     </div>
 
@@ -192,7 +192,7 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                             const endIndex = startIndex + pageSize;
                             if (index < startIndex || index >= endIndex) return null;
                             return (
-                                
+
                                 <div className="game-row"><span>#{index + 1}</span>
                                     <span>{secondsToDMY(result.future1)}</span>
                                     <span style={{ color: result.winningColor }}>{colors[result.winningColor]}
@@ -211,19 +211,32 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                             marginTop: "16px",
                         }}
                     >
-                        {[...Array(totalPages)].map((_, index) => {
-                            const pageNumber = index + 1;
-                            return (
-                                <div
-                                    key={pageNumber}
-                                    className={`page-dot ${page === pageNumber ? "active-page" : ""}`}
-                                    onClick={() => setPage(pageNumber)}
-                                    style={{ cursor: "pointer" }}
-                                >
-                                    {pageNumber}
-                                </div>
-                            );
-                        })}
+ <>
+  {[...Array(Math.min(totalPages, 5))].map((_, index) => {
+    const pageNumber = index + 1;
+
+    return (
+      <div
+        key={pageNumber}
+        className={`page-dot ${page === pageNumber ? "active-page" : ""}`}
+        onClick={() => setPage(pageNumber)}
+        style={{ cursor: "pointer" }}
+      >
+        {pageNumber}
+      </div>
+    );
+  })}
+
+  {totalPages > 5 && (
+    <div
+      className={`page-dot ${page === totalPages ? "active-page" : ""}`}
+      onClick={() => setPage(totalPages)}
+      style={{ cursor: "pointer" }}
+    >
+      {totalPages}
+    </div>
+  )}
+</>
                     </div>
                 </div>
             </div>

@@ -207,19 +207,32 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                             marginTop: "16px",
                         }}
                     >
-                        {[...Array(totalPages)].map((_, index) => {
-                            const pageNumber = index + 1;
-                            return (
-                                <div
-                                    key={pageNumber}
-                                    className={`page-dot ${page === pageNumber ? "active-page" : ""}`}
-                                    onClick={() => setPage(pageNumber)}
-                                    style={{ cursor: "pointer" }}
-                                >
-                                    {pageNumber}
-                                </div>
-                            );
-                        })}
+<>
+  {[...Array(Math.min(totalPages, 5))].map((_, index) => {
+    const pageNumber = index + 1;
+
+    return (
+      <div
+        key={pageNumber}
+        className={`page-dot ${page === pageNumber ? "active-page" : ""}`}
+        onClick={() => setPage(pageNumber)}
+        style={{ cursor: "pointer" }}
+      >
+        {pageNumber}
+      </div>
+    );
+  })}
+
+  {totalPages > 5 && (
+    <div
+      className={`page-dot ${page === totalPages ? "active-page" : ""}`}
+      onClick={() => setPage(totalPages)}
+      style={{ cursor: "pointer" }}
+    >
+      {totalPages}
+    </div>
+  )}
+</>
                     </div>
                 </div>
             </div>
