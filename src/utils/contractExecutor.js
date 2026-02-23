@@ -5,6 +5,11 @@ import {
 
 import { mlmContract } from "../config.js";
 import toast from "react-hot-toast";
+import { formatEther } from "ethers";
+
+export function tn(amount, decimals=2 ){
+  return Number(formatEther(amount)).toFixed(decimals)
+}
 
 
 export async function executeContract({
