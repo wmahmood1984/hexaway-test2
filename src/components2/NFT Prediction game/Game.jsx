@@ -66,6 +66,18 @@ const [showResultModal, setShowResultModal] = useState({
   };
 
 
+  const countdownAudioRef = useRef(null);
+
+useEffect(() => {
+  countdownAudioRef.current = new Audio("/sound.mp3");
+  countdownAudioRef.current.loop = true; // if you want continuous sound
+
+  return () => {
+    countdownAudioRef.current?.pause();
+  };
+}, []);
+
+
 
   useEffect(() => {
     abc()
@@ -99,12 +111,27 @@ useEffect(() => {
 
     setRemaining(diff);
 
-    if (diff === 0 ) {
+  // 🔊 Start sound at 10 seconds
+    if (diff === 10) {
+      const audio = countdownAudioRef.current;
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(() => {
+          console.log("Autoplay blocked until user interaction");
+        });
+      }
+    }
 
+    // 🔇 Stop sound at 0
+    if (diff === 0) {
+      const audio = countdownAudioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
 
       fetchGameRan();
       abc();
-      // checkWinner();
       checkHealth();
     }
   }, 1000);
