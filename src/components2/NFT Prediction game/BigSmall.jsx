@@ -110,7 +110,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                                 className="big-slot"
                                 id="big-slot"
                             >
-                                <div className="slot-emoji"><img src="/tom.jpg" alt="TOM" width="32" height="32" /></div>
+                                <div className="slot-emoji"><img src="/2.png" alt="TOM" width="200" height="200" /></div>
                                 <div className="slot-label">BIG</div>
                             </button>
 
@@ -120,7 +120,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                                 className="small-slot"
                                 id="small-slot"
                             >
-                                <div className="slot-emoji"><img src="/Jerry.png" alt="JERRY" width="32" height="32" /></div>
+                                <div className="slot-emoji"><img src="/1.png" alt="JERRY" width="150" height="150" /></div>
                                 <div className="slot-label">SMALL</div>
                             </button>
                         </div>

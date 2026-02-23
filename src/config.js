@@ -9568,12 +9568,12 @@ export const distributionAdd = mainnet ?  "0xaE2A9F5F5AB9f437826D2Ac6173EfB98f86
 export const buySale = mainnet ? "0x052DbC12bac5490e4225042493bF9B438545668E"
 :"0x0b13FbC7d4BF441C5e9f846E7F60846B41eA3cBf"
 export const gameAdd = mainnet ? ""
-: "0xc34fF7c11AF9292Afa380D215711779df8AF73A7"
+: "0xB397Df6888F021C446f5D72b55ed3B42C7A592a3"
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 
 export const dataFetcherGameAdd = mainnet ? "" : 
-"0x4890A7876e6c7Fa35B5474567d58fB0E89C1Cd4a"
+"0x4a9DB257a8320aF3A558c7a4Cf848a80555EEf95"
 
 export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"
 export const tokenFeeder = "0xF942224e5D97b78a0C32C7cB9A4Aae8fa602f75C"  //EOA => Doctor sb
