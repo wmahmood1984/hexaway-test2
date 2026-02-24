@@ -111,8 +111,10 @@ export default function Game() {
       const diff = Math.max(end - now, 0);
 
 
-
+      if(diff>0){
       setRemaining(diff);
+      }
+
 
       // 🔊 Start sound at 10 seconds
       if (diff === 10) {
