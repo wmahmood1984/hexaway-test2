@@ -61,7 +61,7 @@ export default function Trade({ setCreateActive }) {
     const revisedLimitUtilized =
         now - Number(User.data.userTradingLimitTime) > 60 * 60 * 24 ? 0 : User.data.userLimitUtilized;
 
-    console.log("object", User);
+//    console.log("object", User);
     const canBuy = () => {
         const nowSec = Math.floor(Date.now() / 1000); // current time in seconds
 

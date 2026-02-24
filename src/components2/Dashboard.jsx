@@ -183,10 +183,13 @@ export default function Dashboard() {
 
     const now = new Date().getTime()
 
+       console.log("dashboard", {
+        Package, User, packages
+    });
+
 
     const isLoading = !Package || !User || !packages 
-    || !dailyStarRewardInfo || !weeklyStarRewardInfo || !monthlyStarRewardInfo || 
-    !dailyProRewardInfo || !weeklyProRewardInfo || !monthlyProRewardInfo
+  
 
     const levelBlockSeconds = Number(incomeBlockTime) + 60 * 60 * 48 - now / 1000 < 0 ? 0 : Number(incomeBlockTime) + 60 * 60 * 48 - now / 1000
 
@@ -228,9 +231,7 @@ export default function Dashboard() {
             ? 1
             : "Not in Queue";
 
-    console.log("dashboard", {
-        User
-    });
+ 
 
 
 
@@ -737,6 +738,8 @@ export default function Dashboard() {
                         </div>
                     </div>
 
+ {
+   dailyStarRewardInfo && weeklyStarRewardInfo  && monthlyStarRewardInfo && dailyProRewardInfo && weeklyProRewardInfo && monthlyProRewardInfo &&
                     <SchemeIncomes
                     dailyStarRewardInfo={dailyStarRewardInfo}
                     weeklyStarRewardInfo={weeklyStarRewardInfo}
@@ -745,7 +748,7 @@ export default function Dashboard() {
                     weeklyProTraderRewardInfo={weeklyProRewardInfo}
                     monthlyProTraderRewardInfo={monthlyProRewardInfo}
                     
-                    />
+                    />}
                 </div>
             </div>
         </div>

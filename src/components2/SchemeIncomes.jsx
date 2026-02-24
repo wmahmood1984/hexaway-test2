@@ -14,14 +14,14 @@ export default function SchemeIncomes({
     const [data, setData] = useState(dailyStarRewardInfo)
     const [data1, setData1] = useState(dailyProTraderRewardInfo)
 
-    console.log("object",{
-    dailyStarRewardInfo,
-    weeklyStarRewardInfo,
-    monthlyStarRewardInfo,
-    dailyProTraderRewardInfo,
-    weeklyProTraderRewardInfo,
-    monthlyProTraderRewardInfo
-})
+//     console.log("object",{
+//     dailyStarRewardInfo,
+//     weeklyStarRewardInfo,
+//     monthlyStarRewardInfo,
+//     dailyProTraderRewardInfo,
+//     weeklyProTraderRewardInfo,
+//     monthlyProTraderRewardInfo
+// })
     return (
         <div>
             <div class="box-container">
