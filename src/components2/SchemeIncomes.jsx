@@ -90,7 +90,7 @@ export default function SchemeIncomes({
                         </div>
                         <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-200 flex flex-col items-center">
                             <div class="text-sm font-medium text-amber-600 uppercase tracking-wider">Volume</div>
-                            <div class="text-2xl font-bold text-gray-800 my-1">{formatEther(data1.achievement)}</div>
+                            <div class="text-2xl font-bold text-gray-800 my-1">{data1.achievement}</div>
                             <div class="text-xs text-gray-500">this period</div>
                         </div>
                         <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-200 flex flex-col items-center">
