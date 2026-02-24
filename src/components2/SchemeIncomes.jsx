@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { formatAddress, tn } from '../utils/contractExecutor'
+import { formatEther } from 'ethers'
 
 export default function SchemeIncomes({
     dailyStarRewardInfo,
@@ -48,7 +49,7 @@ export default function SchemeIncomes({
                             </div>
                             <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200 flex flex-col items-center">
                                 <div class="text-sm font-medium text-green-600 uppercase tracking-wider">Referrals</div>
-                                <div class="text-2xl font-bold text-gray-800 my-1">{data.achievement}</div>
+                                <div class="text-2xl font-bold text-gray-800 my-1">{formatEther(data.achievement)}</div>
                                 <div class="text-xs text-gray-500">this period</div>
                             </div>
                             <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-200 flex flex-col items-center">
@@ -89,7 +90,7 @@ export default function SchemeIncomes({
                         </div>
                         <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-200 flex flex-col items-center">
                             <div class="text-sm font-medium text-amber-600 uppercase tracking-wider">Volume</div>
-                            <div class="text-2xl font-bold text-gray-800 my-1">{data1.achievement}</div>
+                            <div class="text-2xl font-bold text-gray-800 my-1">{formatEther(data1.achievement)}</div>
                             <div class="text-xs text-gray-500">this period</div>
                         </div>
                         <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-200 flex flex-col items-center">
