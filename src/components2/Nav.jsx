@@ -97,7 +97,7 @@ export default function Nav({ setCreateActive, createActive }) {
   };
 
 
-  console.log("admin",showAdminPage,address===admin,address,admin);
+//  console.log("admin",showAdminPage,address===admin,address,admin);
 
 
   return (

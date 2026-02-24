@@ -3,20 +3,20 @@ import './BigSmall.css'
 import RoundCountdown from './Countdown2'
 import toast from 'react-hot-toast'
 import { formatEther } from 'ethers'
-import { secondsToDMY } from '../../utils/contractExecutor'
+import { formatAddress, secondsToDMY } from '../../utils/contractExecutor'
 import DepositModal from './Modal'
 import { gameContract } from '../../config'
 
-export default function BigSmall({ config, allResults, onSuccess, colors, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+export default function BigSmall({ config, allResults, depositHistory, onSuccess, colors, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
     const [showList, setShowList] = useState("my")
     const pageSize = 5;
-    const totalPages = showList == "my" ?  Math.ceil(myBids.length / pageSize):Math.ceil(allResults.length / pageSize)
+    const totalPages = showList == "my" ? Math.ceil(myBids.length / pageSize) : Math.ceil(allResults.length / pageSize)
     const pending = myBids.filter(bid => !bid.settled)
     const reversed = [...myBids].reverse();
 
-   const allResultsReversed = [...allResults].reverse();
+    const allResultsReversed = [...allResults].reverse();
     return (
         <div>
             <div class="game-wrapper">
@@ -143,7 +143,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                             <div className="light-card" style={{ padding: "16px" }}>
                                 <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                                     <div style={{ width: "48px", height: "48px", background: "#fee2e2", borderRadius: "20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", color: "#991b1b" }}>1</div>
-                                    <div><div style={{ color: "#64748b", fontSize: "12px" }}>{bid.color ==="0" ? "BIG" : "SMALL"}</div><div style={{ color: "#1e293b", fontSize: "20px", fontWeight: 800 }}>{Number(formatEther(bid.amount)).toFixed(2)} HEXA</div></div>
+                                    <div><div style={{ color: "#64748b", fontSize: "12px" }}>{bid.color === "0" ? "BIG" : "SMALL"}</div><div style={{ color: "#1e293b", fontSize: "20px", fontWeight: 800 }}>{Number(formatEther(bid.amount)).toFixed(2)} HEXA</div></div>
                                     <div style={{ marginLeft: "auto", textAlign: "right" }}><div style={{ color: "#f97316" }}>⏳ {time} min</div><div style={{ color: "#64748b", fontSize: "12px" }}>in progress</div></div>
                                 </div>
                             </div>)}
@@ -158,6 +158,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                             <button
                                 id="myHistoryTab" className={showList === "my" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("my")}>My</button>
                             <button id="gameHistoryTab" className={showList === "game" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("game")}>Game</button>
+                                                    <button id="depositHistoryTab" className={showList === "deposit" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("deposit")}>Deposit</button>
                         </div>
                     </div>
 
@@ -176,8 +177,8 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                                 <div className="history-row"><span>#{index + 1}</span>
                                     <span>{secondsToDMY(bid.time)}</span>
                                     <span style={{ color: bid.color === "Red" ? "#b91c1c" : bid.color === "Green" ? "#166534" : "#6b21a5" }}>
-                                        {bid.color== 0 ? "BIG" : "SMALL"}</span>
-                                        <span>{Number(formatEther(bid.amount)).toFixed(2)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${Number(formatEther(bid.amount) * 1.8).toFixed(2)}` : result === "LOST" ? "0" : "-"}</span></div>
+                                        {bid.color == 0 ? "BIG" : "SMALL"}</span>
+                                    <span>{Number(formatEther(bid.amount)).toFixed(2)}</span><span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${Number(formatEther(bid.amount) * 1.8).toFixed(2)}` : result === "LOST" ? "0" : "-"}</span></div>
                             )
                         })}
                     </div>
@@ -187,7 +188,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                         <div class="game-header"><span>SNo</span><span>Time</span><span>Result</span></div>
                         {allResults && allResultsReversed.map((result, index) => {
 
-                                                        const startIndex = (page - 1) * pageSize;
+                            const startIndex = (page - 1) * pageSize;
                             const endIndex = startIndex + pageSize;
                             if (index < startIndex || index >= endIndex) return null;
                             return (
@@ -195,6 +196,28 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                                     <span>{secondsToDMY(result.future1)}</span>
                                     <span style={{ color: result.winningColor }}>{result.winningColor == 0 ? "BIG" : "SMALL"}
                                     </span></div>
+                            )
+                        })}
+                    </div>
+
+
+                    <div id="depositHistoryList" style={{ display: showList === "deposit" ? "block" : "none" }}>
+                        <div className="history-header2"><span>SNo</span><span>Time</span><span>Amount</span>
+                            <span>Sender</span><span>%</span><span>Scheme ending</span>
+                        </div>
+                        {depositHistory && depositHistory.map((deposit, index) => {
+                            const startIndex = (page - 1) * pageSize;
+                            const endIndex = startIndex + pageSize;
+                            if (index < startIndex || index >= endIndex) return null;
+                            return (
+
+                                <div className="history-row2"><span>#{index + 1}</span>
+                                    <span>{secondsToDMY(deposit.time)}</span>
+                                    <span>{Number(formatEther(deposit.amount)).toFixed(2)}</span>
+                                    <span>{formatAddress(deposit.depositor)}</span>
+                                    <span>{deposit.percentage}</span>
+                                    <span>{deposit.eventType == "0" ? "N/A" : secondsToDMY(deposit.eventType)}</span>
+                                </div>
                             )
                         })}
                     </div>
@@ -209,32 +232,32 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                             marginTop: "16px",
                         }}
                     >
-<>
-  {[...Array(Math.min(totalPages, 5))].map((_, index) => {
-    const pageNumber = index + 1;
+                        <>
+                            {[...Array(Math.min(totalPages, 5))].map((_, index) => {
+                                const pageNumber = index + 1;
 
-    return (
-      <div
-        key={pageNumber}
-        className={`page-dot ${page === pageNumber ? "active-page" : ""}`}
-        onClick={() => setPage(pageNumber)}
-        style={{ cursor: "pointer" }}
-      >
-        {pageNumber}
-      </div>
-    );
-  })}
+                                return (
+                                    <div
+                                        key={pageNumber}
+                                        className={`page-dot ${page === pageNumber ? "active-page" : ""}`}
+                                        onClick={() => setPage(pageNumber)}
+                                        style={{ cursor: "pointer" }}
+                                    >
+                                        {pageNumber}
+                                    </div>
+                                );
+                            })}
 
-  {totalPages > 5 && (
-    <div
-      className={`page-dot ${page === totalPages ? "active-page" : ""}`}
-      onClick={() => setPage(totalPages)}
-      style={{ cursor: "pointer" }}
-    >
-      {totalPages}
-    </div>
-  )}
-</>
+                            {totalPages > 5 && (
+                                <div
+                                    className={`page-dot ${page === totalPages ? "active-page" : ""}`}
+                                    onClick={() => setPage(totalPages)}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    {totalPages}
+                                </div>
+                            )}
+                        </>
                     </div>
                 </div>
             </div>
@@ -244,7 +267,7 @@ export default function BigSmall({ config, allResults, onSuccess, colors, execut
                 isOpen={showDeposit}
                 onClose={() => {
                     setShowDeposit(false)
-                
+
                 }}
                 onSuccess={onSuccess}
                 executeContract={executeContract}

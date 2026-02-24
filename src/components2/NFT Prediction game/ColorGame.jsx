@@ -3,13 +3,13 @@ import './ColorGame.css'
 import RoundCountdown from './Countdown2'
 import toast from 'react-hot-toast'
 import { formatEther } from 'ethers'
-import { secondsToDMY } from '../../utils/contractExecutor'
+import { formatAddress, secondsToDMY } from '../../utils/contractExecutor'
 import DepositModal from './Modal'
 import { gameContract } from '../../config'
 import { all } from 'axios'
 
 
-export default function ColorGame({ colors, onSuccess, allResults, config, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
+export default function ColorGame({ colors, depositHistory, onSuccess, allResults, config, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
     const [showList, setShowList] = useState("my")
@@ -19,6 +19,7 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
     const pending = myBids.filter(bid => !bid.settled)
     const isDisabled = remaining <= 10;
     const reversed = [...myBids].reverse();
+        console.log("time",{depositHistory})
 
     const allResultsReversed = [...allResults].reverse();
     return (
@@ -161,6 +162,7 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                             <button
                                 id="myHistoryTab" className={showList === "my" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("my")}>My</button>
                             <button id="gameHistoryTab" className={showList === "game" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("game")}>Game</button>
+                            <button id="depositHistoryTab" className={showList === "deposit" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("deposit")}>Deposit</button>
                         </div>
                     </div>
 
@@ -202,6 +204,27 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                         })}
                     </div>
 
+                    <div id="depositHistoryList" style={{ display: showList === "deposit" ? "block" : "none" }}>
+                        <div className="history-header2"><span>SNo</span><span>Time</span><span>Amount</span>
+                            <span>Sender</span><span>%</span><span>Scheme ending</span>
+                        </div>
+                        {depositHistory && depositHistory.map((deposit, index) => {
+                            const startIndex = (page - 1) * pageSize;
+                            const endIndex = startIndex + pageSize;
+                            if (index < startIndex || index >= endIndex) return null;
+                            return (
+
+                                <div className="history-row2"><span>#{index + 1}</span>
+                                    <span>{secondsToDMY(deposit.time)}</span>
+                                    <span>{Number(formatEther(deposit.amount)).toFixed(2)}</span>
+                                    <span>{formatAddress(deposit.depositor)}</span>
+                                    <span>{deposit.percentage}</span>
+                                    <span>{deposit.eventType=="0"?"N/A": secondsToDMY(deposit.eventType)}</span>
+                                </div>
+                            )
+                        })}
+                    </div>
+
 
                     <div
                         id="paginationContainer"
@@ -212,32 +235,32 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                             marginTop: "16px",
                         }}
                     >
- <>
-  {[...Array(Math.min(totalPages, 5))].map((_, index) => {
-    const pageNumber = index + 1;
+                        <>
+                            {[...Array(Math.min(totalPages, 5))].map((_, index) => {
+                                const pageNumber = index + 1;
 
-    return (
-      <div
-        key={pageNumber}
-        className={`page-dot ${page === pageNumber ? "active-page" : ""}`}
-        onClick={() => setPage(pageNumber)}
-        style={{ cursor: "pointer" }}
-      >
-        {pageNumber}
-      </div>
-    );
-  })}
+                                return (
+                                    <div
+                                        key={pageNumber}
+                                        className={`page-dot ${page === pageNumber ? "active-page" : ""}`}
+                                        onClick={() => setPage(pageNumber)}
+                                        style={{ cursor: "pointer" }}
+                                    >
+                                        {pageNumber}
+                                    </div>
+                                );
+                            })}
 
-  {totalPages > 5 && (
-    <div
-      className={`page-dot ${page === totalPages ? "active-page" : ""}`}
-      onClick={() => setPage(totalPages)}
-      style={{ cursor: "pointer" }}
-    >
-      {totalPages}
-    </div>
-  )}
-</>
+                            {totalPages > 5 && (
+                                <div
+                                    className={`page-dot ${page === totalPages ? "active-page" : ""}`}
+                                    onClick={() => setPage(totalPages)}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    {totalPages}
+                                </div>
+                            )}
+                        </>
                     </div>
                 </div>
             </div>
@@ -247,7 +270,7 @@ export default function ColorGame({ colors, onSuccess, allResults, config, execu
                 isOpen={showDeposit}
                 onClose={() => {
                     setShowDeposit(false)
-                    abc()
+
                 }}
                 onSuccess={onSuccess}
                 executeContract={executeContract}

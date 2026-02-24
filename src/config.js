@@ -7699,28 +7699,8 @@ export const gameAbi = [
 				"type": "address"
 			},
 			{
-				"internalType": "address",
-				"name": "_runnerup",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_2ndRunnerup",
-				"type": "address"
-			},
-			{
 				"internalType": "uint256",
 				"name": "_winnerAchievement",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_runnerupAchievement",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_2ndRunnerupAchievement",
 				"type": "uint256"
 			}
 		],
@@ -8161,19 +8141,6 @@ export const gameAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "feeder",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -8512,6 +8479,52 @@ export const gameAbi = [
 				"internalType": "struct GameEngine.GameResult",
 				"name": "",
 				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "getUserDepositArray",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "depositor",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "time",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "eventType",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "percentage",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct GameEngine.Deposit[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -9023,6 +9036,50 @@ export const gameAbi = [
 				"internalType": "string",
 				"name": "",
 				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "userDepositArray",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "depositor",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "eventType",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "percentage",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",

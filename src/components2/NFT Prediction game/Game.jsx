@@ -33,6 +33,7 @@ export default function Game() {
   const [remaining, setRemaining] = useState(0);
   const [predictionHistory, setPredictionHistory] = useState()
   const [loading, setLoading] = useState(false)
+  const [depositHistory,setDepositHistory] = useState([])
 
     const [activeTab, setActiveTab] = useState("bigsmall");
 const [showResultModal, setShowResultModal] = useState({
@@ -109,6 +110,8 @@ useEffect(() => {
     const end = gameRan + time * 60;
     const diff = Math.max(end - now, 0);
 
+
+
     setRemaining(diff);
 
   // 🔊 Start sound at 10 seconds
@@ -163,7 +166,7 @@ const checkHealth = async () => {
       checkWinner();
     } else {
       setServerStatus(false);
-      console.warn("Server unhealthy:", data.healthy);
+  //    console.warn("Server unhealthy:", data.healthy);
     }
 
   } catch (err) {
@@ -188,7 +191,7 @@ const checkHealth = async () => {
       .getUserWinningAmount(gameId,address)
       .call();
 
-      console.log("object",gameId,address,_result)
+    //  console.log("object",gameId,address,_result)
     
     if(!_result[1]){
       setShowResultModal({
@@ -248,8 +251,11 @@ const checkHealth = async () => {
     const _allResults = await gameContractR.methods.getGameResult().call()
     setAllResults(_allResults)
 
+    const _depositHistory = await gameContractR.methods.getUserDepositArray(address).call()
+    setDepositHistory(_depositHistory)
+
     const gameresult = await gameContractR.methods.getBids().call()
-    console.log("game result of game 12",gameresult)
+//    console.log("game result of game 12",gameresult)
    
   
   }
@@ -358,12 +364,14 @@ const value = amount / price;
             price={price}
             config={config}
             onSuccess={abc}
+            depositHistory={depositHistory}
 
             hexaBalance={hexaBalance}
             />}
             {activeTab === "bigsmall" && <BigSmall 
             setShowDeposit={setShowDeposit}
             allResults={allResults}
+                        depositHistory={depositHistory}
             depositBalance={depositBalance}
             remaining={duration}
             colors={colors}
