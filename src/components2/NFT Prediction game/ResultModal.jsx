@@ -5,7 +5,7 @@ export default function ResultModal({ result, show,activeTab, onClose,colors }) 
     const picked = activeTab == "color" ? colors[selectedType] :
                                 selectedType == "0" ? "BIG" : selectedType == "1" ? "SMALL" : "Nothing"
 
-//    console.log("object",{picked,activeTab,selectedType})
+//    console.log("object",{picked,activeTab,selectedType,wagerVal,payout})
 
     return (
         show && (

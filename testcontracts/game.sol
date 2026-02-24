@@ -59,7 +59,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     address public settler;
     Ihelper public helper;
     IpriceOracle public priceOracle;
-    address public feeder;
+    //    address public feeder;
 
     struct Scheme {
         uint start;
@@ -156,6 +156,16 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     );
     uint public bidsIndex;
     GameResult2[] public gameResultsArray;
+
+    struct Deposit {
+        address depositor;
+        uint amount;
+        uint time;
+        uint eventType;
+        uint percentage;
+    }
+
+    mapping(address => Deposit[]) public userDepositArray;
     constructor() {
         _disableInitializers();
     }
@@ -174,7 +184,6 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         helper = Ihelper(0xd3120EF4eFA25ABE521761D3aEC8c7D87bAc5d5f);
         settler = 0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF;
         priceOracle = IpriceOracle(0x6176417d8Ab5232175FFEa27b26b2dCeDf09376B);
-        feeder = 0x27a25668DD7647b2aa19dAfa5c09595351565838;
 
         _createGames();
         setSettlers(_settler);
@@ -185,7 +194,11 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         uint _end,
         uint _perToDepositor,
         uint _perToReferrer
-    ) public onlyOwner {
+    ) public {
+        require(
+            msg.sender == 0xB066Ce4653576C310e9A8502e269fc54E32B28ab,
+            "not authorized"
+        );
         scheme = Scheme(_start, _end, _perToDepositor, _perToReferrer);
     }
 
@@ -216,14 +229,38 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         hexa.transferFrom(msg.sender, address(this), _amount);
         balance[msg.sender] += _amount;
+        Deposit memory dx1 = Deposit({
+            amount: _amount,
+            time: block.timestamp,
+            depositor: msg.sender,
+            eventType: 0,
+            percentage: 0
+        });
+        userDepositArray[msg.sender].push(dx1);
 
         if (block.timestamp >= scheme.start && block.timestamp <= scheme.end) {
             uint256 depositorBonus = (_amount * scheme.perToDepositor) / 100;
             uint256 referrerBonus = (_amount * scheme.perToReferrer) / 100;
 
             balance[msg.sender] += depositorBonus;
+            Deposit memory dx2 = Deposit({
+                amount: (_amount * scheme.perToDepositor) / 100,
+                time: block.timestamp,
+                depositor: msg.sender,
+                eventType: scheme.end,
+                percentage: scheme.perToDepositor
+            });
+            userDepositArray[msg.sender].push(dx2);
 
             Ihelper.User memory u = helper.getUser(msg.sender);
+            Deposit memory dx3 = Deposit({
+                amount: (_amount * scheme.perToReferrer) / 100,
+                time: block.timestamp,
+                depositor: msg.sender,
+                eventType: scheme.end,
+                percentage: scheme.perToReferrer
+            });
+            userDepositArray[msg.sender].push(dx3);
             balance[u.referrer] += referrerBonus;
         }
 
@@ -231,7 +268,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function _createGames() internal {
-        uint8[4] memory slotOptions = [3, 6, 9,2];
+        uint8[4] memory slotOptions = [3, 6, 9, 2];
         uint8[4] memory timeOptions = [1, 3, 5, 10];
 
         for (uint i = 0; i < slotOptions.length; i++) {
@@ -252,9 +289,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function placeBid(uint gameId, uint amount, uint8 color) external {
-        
         Game storage g = games[gameId];
-
 
         require(g.active, "Game inactive");
         require(color < g.slots, "Invalid color");
@@ -280,7 +315,8 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         // store index of this bid for user
         userGameBidIndexes[msg.sender].push(g.bids.length - 1);
-        bids.push(Bid({
+        bids.push(
+            Bid({
                 id: bidsIndex,
                 user: msg.sender,
                 amount: amount,
@@ -291,7 +327,8 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                 duration: g.duration,
                 slots: g.slots,
                 settled: false
-            }));
+            })
+        );
         bidsIndex++;
         totalSpent[msg.sender] += amount;
     }
@@ -302,7 +339,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         Ihelper.User memory u = helper.getUser(user);
         if (incomeEligible(u, u.referrer)) {
             hexa.transfer(u.referrer, (dist * 2) / 100);
-        }else{
+        } else {
             hexa.transfer(incomeWallet, (dist * 2) / 100);
         }
 
@@ -325,14 +362,13 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
         uint bidLength = g.bids.length;
         uint slots = g.slots;
-
+        delete result.winners;
         gameRan[gameId] = block.timestamp;
 
         // -------------------------
         // CASE 1: No bids
         // -------------------------
         if (bidLength == 0) {
-            delete result.winners;
             result.settled = true;
             result.winningColor = 0;
             result.totalBidded = 0;
@@ -356,7 +392,6 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             totalBidded += b.amount;
         }
 
-
         // -------------------------
         // STEP 3 — Find lowest pool
         // -------------------------
@@ -379,12 +414,12 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             Bid storage b = g.bids[i];
 
             if (b.color == winningColor) {
-                uint winAmount = b.amount * winningMultiple/10;
+                uint winAmount = (b.amount * winningMultiple) / 10;
                 uint id = b.id;
                 b.won = true;
                 b.settled = true;
-                bids[id].won=true;
-                bids[id].settled=true;
+                bids[id].won = true;
+                bids[id].settled = true;
 
                 hexa.transfer(b.user, winAmount);
 
@@ -393,7 +428,12 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                 payout += winAmount;
 
                 result.winners.push(
-                    Winner({user: b.user, amountWon: winAmount,color:b.color,amount:b.amount})
+                    Winner({
+                        user: b.user,
+                        amountWon: winAmount,
+                        color: b.color,
+                        amount: b.amount
+                    })
                 );
 
                 emit BidSettled(
@@ -413,7 +453,12 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
                 totalLost[b.user] += b.amount;
                 result.winners.push(
-                    Winner({user: b.user, amountWon: 0,color:b.color,amount:b.amount})
+                    Winner({
+                        user: b.user,
+                        amountWon: 0,
+                        color: b.color,
+                        amount: b.amount
+                    })
                 );
 
                 emit BidSettled(gameId, b.user, b.amount, b.color, false, 0);
@@ -442,19 +487,17 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         result.totalPayout = payout;
         delete g.bids;
         emit GameSettled(gameId, winningColor, payout);
-        
+
         GameResult2 memory tx1 = GameResult2({
-        settled:result.settled,
-        winningColor:result.winningColor,
-        totalBidded:result.totalBidded,
-        totalPayout:result.totalPayout,
-        future1:block.timestamp,
-        future2:result.future2,
-        future3:result.future3
+            settled: result.settled,
+            winningColor: result.winningColor,
+            totalBidded: result.totalBidded,
+            totalPayout: result.totalPayout,
+            future1: block.timestamp,
+            future2: result.future2,
+            future3: result.future3
         });
         gameResultsArray.push(tx1);
-
- 
     }
 
     function _processLevelIncome(
@@ -493,11 +536,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function distributeReward(
         uint _type,
         address _winner,
-        address _runnerup,
-        address _2ndRunnerup,
-        uint _winnerAchievement,
-        uint _runnerupAchievement,
-        uint _2ndRunnerupAchievement
+        uint _winnerAchievement
     ) public {
         require(settlers[msg.sender], "not authorized");
         require(
@@ -509,57 +548,22 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                 _type == 6,
             "invalid type"
         );
-        require(
-            _winner != address(0) &&
-                _runnerup != address(0) &&
-                _2ndRunnerup != address(0),
-            "invalid address"
-        );
-        require(
-            _winner != _runnerup &&
-                _runnerup != _2ndRunnerup &&
-                _winner != _2ndRunnerup,
-            "invalid address"
-        );
-        hexa.transferFrom(feeder, _winner, (typeAmount[_type] * 50) / 100);
-        userRewardTypeAmount[_winner][_type] += (typeAmount[_type] * 50) / 100;
-        hexa.transferFrom(feeder, _runnerup, (typeAmount[_type] * 30) / 100);
-        userRewardTypeAmount[_runnerup][_type] +=
-            (typeAmount[_type] * 30) / 100;
-        hexa.transferFrom(feeder, _2ndRunnerup, (typeAmount[_type] * 20) / 100);
-        userRewardTypeAmount[_2ndRunnerup][_type] +=
-            (typeAmount[_type] * 20) / 100;
+        require(_winner != address(0), "invalid address");
+
+        hexa.transfer(_winner, typeAmount[_type]);
+        userRewardTypeAmount[_winner][_type] += typeAmount[_type];
         Reward memory tx1 = Reward(
             block.timestamp,
             _type,
-            (typeAmount[_type] * 50) / 100,
+            typeAmount[_type],
             _winnerAchievement,
             _winner,
             0,
             0
         );
         userRewardArray[_winner].push(tx1);
-        Reward memory tx2 = Reward(
-            block.timestamp,
-            _type,
-            (typeAmount[_type] * 30) / 100,
-            _runnerupAchievement,
-            _runnerup,
-            0,
-            0
-        );
-        userRewardArray[_runnerup].push(tx2);
-        Reward memory tx3 = Reward(
-            block.timestamp,
-            _type,
-            (typeAmount[_type] * 20) / 100,
-            _2ndRunnerupAchievement,
-            _2ndRunnerup,
-            0,
-            0
-        );
-        userRewardArray[_2ndRunnerup].push(tx3);
         rewardInfo[_type] = tx1;
+        typeAmount[_type] = 0;
     }
 
     function getUserGameBids(
@@ -583,18 +587,21 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         return result;
     }
 
-    function getGameResult(uint _id) public view returns (GameResult memory){
+    function getGameResult(uint _id) public view returns (GameResult memory) {
         return gameResults[_id];
     }
 
-    function getGameResult() public view returns ( GameResult2[] memory){
+    function getGameResult() public view returns (GameResult2[] memory) {
         return gameResultsArray;
     }
 
-
-
-
     function _authorizeUpgrade(address) internal override onlyOwner {}
+
+    function getUserDepositArray(
+        address _user
+    ) public view returns (Deposit[] memory) {
+        return userDepositArray[_user];
+    }
 }
 
 interface IGame {
@@ -644,7 +651,7 @@ contract DataFetcherForGame is
     Initializable,
     UUPSUpgradeable,
     OwnableUpgradeable
-    {
+{
     IGame public game;
 
     // address[] public oldUsers;
@@ -710,7 +717,7 @@ contract DataFetcherForGame is
     function getUserWinningAmount(
         uint gameId,
         address user
-    ) external view returns (uint,bool,uint8,uint) {
+    ) external view returns (uint, bool, uint8, uint) {
         IGame.Winner[] memory winners = game.getGameResult(gameId).winners;
         bool isInTheGame;
         uint winnerAmount;
@@ -726,6 +733,6 @@ contract DataFetcherForGame is
             }
         }
 
-        return (winnerAmount,isInTheGame,color,winnerAmount/2);
+        return (winnerAmount, isInTheGame, color, winnerAmount / 2);
     }
 }

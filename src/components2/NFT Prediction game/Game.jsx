@@ -18,7 +18,7 @@ export default function Game() {
   const { address } = useAppKitAccount();
   const [slot, setSlots] = useState(3)
   const [time, setTime] = useState(1)
-    const [serverStatus, setServerStatus] = useState(true)
+  const [serverStatus, setServerStatus] = useState(true)
   const [amount, setAmount] = useState(0.1)
   const [hexaBalance, setHexaBalance] = useState(0.1)
   const [price, setPrice] = useState(0.01)
@@ -27,19 +27,19 @@ export default function Game() {
   const [depositBalance, setDepositBalance] = useState(0)
   const [showDeposit, setShowDeposit] = useState(false);
   const ROUND_BUFFER = 1; // safety buffer
-  const [allResults,setAllResults] = useState()
+  const [allResults, setAllResults] = useState()
   const [gameRan, setGameRan] = useState(0);
   const [myBids, setMyBids] = useState();
   const [remaining, setRemaining] = useState(0);
   const [predictionHistory, setPredictionHistory] = useState()
   const [loading, setLoading] = useState(false)
-  const [depositHistory,setDepositHistory] = useState([])
+  const [depositHistory, setDepositHistory] = useState([])
 
-    const [activeTab, setActiveTab] = useState("bigsmall");
-const [showResultModal, setShowResultModal] = useState({
-  show:false,
-  result: {resultEmoji: "", resultText: "", resultColor: "", selectedType: "", wagerVal: 0, payout: 0, won: false}
-})
+  const [activeTab, setActiveTab] = useState("bigsmall");
+  const [showResultModal, setShowResultModal] = useState({
+    show: false,
+    result: { resultEmoji: "", resultText: "", resultColor: "", selectedType: "", wagerVal: 0, payout: 0, won: false }
+  })
 
   const findGame = (slots, time) => {
     switch (true) {
@@ -69,14 +69,14 @@ const [showResultModal, setShowResultModal] = useState({
 
   const countdownAudioRef = useRef(null);
 
-useEffect(() => {
-  countdownAudioRef.current = new Audio("/sound.mp3");
-  countdownAudioRef.current.loop = true; // if you want continuous sound
+  useEffect(() => {
+    countdownAudioRef.current = new Audio("/sound.mp3");
+    countdownAudioRef.current.loop = true; // if you want continuous sound
 
-  return () => {
-    countdownAudioRef.current?.pause();
-  };
-}, []);
+    return () => {
+      countdownAudioRef.current?.pause();
+    };
+  }, []);
 
 
 
@@ -85,15 +85,15 @@ useEffect(() => {
   }, [address])
 
 
-const fetchGameRan = useCallback(async () => {
-  const gameAddr = findGame(slot, time);
+  const fetchGameRan = useCallback(async () => {
+    const gameAddr = findGame(slot, time);
 
-  const ran = await gameContractR.methods.gameRan(gameAddr).call();
-  setGameRan(Number(ran));
-  setShowResultModal({show:false, result: {resultEmoji: "", resultText: "", resultColor: "", selectedType: "Nothing", wagerVal: 0, payout: 0, won: false}})
-  // 🔁 Reset winner check for new round
+    const ran = await gameContractR.methods.gameRan(gameAddr).call();
+    setGameRan(Number(ran));
+    setShowResultModal({ show: false, result: { resultEmoji: "", resultText: "", resultColor: "", selectedType: "Nothing", wagerVal: 0, payout: 0, won: false } })
+    // 🔁 Reset winner check for new round
 
-}, [slot, time]);
+  }, [slot, time]);
 
 
 
@@ -102,133 +102,133 @@ const fetchGameRan = useCallback(async () => {
   }, [fetchGameRan]);
 
 
-useEffect(() => {
-  if (!gameRan) return;
+  useEffect(() => {
+    if (!gameRan) return;
 
-  const interval = setInterval(() => {
-    const now = Math.floor(Date.now() / 1000);
-    const end = gameRan + time * 60;
-    const diff = Math.max(end - now, 0);
+    const interval = setInterval(() => {
+      const now = Math.floor(Date.now() / 1000);
+      const end = gameRan + time * 60;
+      const diff = Math.max(end - now, 0);
 
 
 
-    setRemaining(diff);
+      setRemaining(diff);
 
-  // 🔊 Start sound at 10 seconds
-    if (diff === 10) {
-      const audio = countdownAudioRef.current;
-      if (audio) {
-        audio.currentTime = 0;
-        audio.play().catch(() => {
-          console.log("Autoplay blocked until user interaction");
-        });
-      }
-    }
-
-    // 🔇 Stop sound at 0
-    if (diff === 0) {
-      const audio = countdownAudioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
+      // 🔊 Start sound at 10 seconds
+      if (diff === 10) {
+        const audio = countdownAudioRef.current;
+        if (audio) {
+          audio.currentTime = 0;
+          audio.play().catch(() => {
+            console.log("Autoplay blocked until user interaction");
+          });
+        }
       }
 
-      fetchGameRan();
-      abc();
-      checkHealth();
-    }
-  }, 1000);
+      // 🔇 Stop sound at 0
+      if (diff === 0) {
+        const audio = countdownAudioRef.current;
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
 
-  return () => clearInterval(interval);
-}, [gameRan, time, fetchGameRan]);
+        fetchGameRan();
+        abc();
+        checkHealth();
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [gameRan, time, fetchGameRan]);
 
 
-const checkHealth = async () => {
-  try {
-    const response = await fetch(
-      "https://api.hexaway.org/health"
-  //"http://localhost:4000/health"  
-  );
-    if (!response.ok) throw new Error("Server error");
+  const checkHealth = async () => {
+    try {
+      const response = await fetch(
+        "https://api.hexaway.org/health"
+        //"http://localhost:4000/health"  
+      );
+      if (!response.ok) throw new Error("Server error");
 
-    const data = await response.json();
+      const data = await response.json();
 
-    // Validate status
-    const isStatusOk = data.status === "ok";
+      // Validate status
+      const isStatusOk = data.status === "ok";
 
-    // Validate all health checks are true
-    const allHealthy =
-      data.healthy &&
-      Object.values(data.healthy).every(value => value === true);
+      // Validate all health checks are true
+      const allHealthy =
+        data.healthy &&
+        Object.values(data.healthy).every(value => value === true);
 
-    if (isStatusOk && allHealthy) {
-      setServerStatus(true);
-      checkWinner();
-    } else {
+      if (isStatusOk && allHealthy) {
+        setServerStatus(true);
+        checkWinner();
+      } else {
+        setServerStatus(false);
+        //    console.warn("Server unhealthy:", data.healthy);
+      }
+
+    } catch (err) {
+      console.error("Health check failed:", err);
       setServerStatus(false);
-  //    console.warn("Server unhealthy:", data.healthy);
     }
-
-  } catch (err) {
-    console.error("Health check failed:", err);
-    setServerStatus(false);
-  }
-};
+  };
 
 
 
-//console.log("addres",address)
+  //console.log("addres",address)
 
   const checkWinner = async () => {
-    
+
     const gameId = findGame(slot, time);
 
     try {
-    // if (!address || !gameId) return { won: false };
+      // if (!address || !gameId) return { won: false };
 
-    // Fetch winners list from contract
-    const _result = await gameFetcherContractR.methods
-      .getUserWinningAmount(gameId,address)
-      .call();
+      // Fetch winners list from contract
+      const _result = await gameFetcherContractR.methods
+        .getUserWinningAmount(gameId, address)
+        .call();
 
-    //  console.log("object",gameId,address,_result)
-    
-    if(!_result[1]){
-      setShowResultModal({
-        show:true,
-        result: {resultEmoji: '😞', resultText: "You Have Missed it!", resultColor: '#dc2626', selectedType: "Nothing", wagerVal: 0, payout: 0, won: false}
-      });
-    }else if (_result[1] && _result[0] === "0") {
-      setShowResultModal({
-        show:true,
-        result: {resultEmoji: '😞', resultText: "YOU LOST", resultColor: '#dc2626', selectedType: _result[2], wagerVal: formatEther(_result[3]), payout: 0, won: false}
-      });
+        console.log("object of game ",_result)
+
+      if (!_result[1]) {
+        setShowResultModal({
+          show: true,
+          result: { resultEmoji: '😞', resultText: "You Have Missed it!", resultColor: '#dc2626', selectedType: "Nothing", wagerVal: 0, payout: 0, won: false }
+        });
+      } else if (_result[1] && _result[0] === "0") {
+        setShowResultModal({
+          show: true,
+          result: { resultEmoji: '😞', resultText: "YOU LOST", resultColor: '#dc2626', selectedType: _result[2], wagerVal: formatEther(_result[3]), payout: 0, won: false }
+        });
+      }
+
+      // Find current user in winners list
+      if (_result[0] > 0 && _result[1]) {
+        const amountWei = _result[0].toString() // Convert to string if it's a BigNumber;
+        const amountHexa = formatEther(amountWei.toString());
+
+        setShowResultModal({
+          show: true,
+          result: { resultEmoji: '🎉', resultText: "YOU WON", resultColor: '#10b981', selectedType: _result[2], wagerVal: formatEther(_result[3]), payout: amountHexa, won: true }
+        });
+
+
+        return {
+          won: true,
+          amount: amountHexa,
+        };
+      }
+
+      return { won: false };
+
+    } catch (error) {
+      console.error("Winner check failed:", error);
+      return { won: false };
     }
-
-    // Find current user in winners list
-    if (_result[0] > 0 && _result[1]) {
-      const amountWei = _result[0].toString() // Convert to string if it's a BigNumber;
-      const amountHexa = formatEther(amountWei.toString());
-
-      setShowResultModal({
-        show:true,
-        result: {resultEmoji: '🎉', resultText: "YOU WON", resultColor: '#10b981', selectedType: _result[2], wagerVal: formatEther(_result[3]), payout: amountHexa, won: true}
-      });
-
-
-      return {
-        won: true,
-        amount: amountHexa,
-      };
-    }
-
-    return { won: false };
-
-  } catch (error) {
-    console.error("Winner check failed:", error);
-    return { won: false };
-  }
-};
+  };
 
 
 
@@ -255,9 +255,9 @@ const checkHealth = async () => {
     setDepositHistory(_depositHistory)
 
     const gameresult = await gameContractR.methods.getBids().call()
-//    console.log("game result of game 12",gameresult)
-   
-  
+    
+
+
   }
 
 
@@ -265,16 +265,17 @@ const checkHealth = async () => {
 
   const handleClick = async (v) => {
 
-          if (
-            Number(depositBalance) < amount
-          ) {
-            toast.error("Insufficient Deposit Balance")
-            return
-          }
+    if (
+      Number(depositBalance) < amount
+    ) {
+      toast.error("Insufficient Deposit Balance")
+      return
+    }
 
     let gameAddr = findGame(slot, time);
-   console.log("object", gameAddr)
-const value = amount / price;
+
+    const value = amount / price;
+        console.log("object", value)
     await executeContract({
       config,
       functionName: "placeBid",
@@ -313,83 +314,83 @@ const value = amount / price;
     );
   }
 
-//   console.log("prediction", { allResults })
+  //   console.log("prediction", { allResults })
 
   return (
     <div>
       <div>
-            <div className="flex gap-4 mb-6">
+        <div className="flex gap-4 mb-6">
 
-                <button
-                    onClick={() => setActiveTab("color")}
-                    className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "color"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-700"
-                        }`}
-                >
-                    Color
-                </button>
+          <button
+            onClick={() => setActiveTab("color")}
+            className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "color"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700"
+              }`}
+          >
+            Color
+          </button>
 
-                <button
-                    onClick={() => setActiveTab("bigsmall")}
-                    className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "bigsmall"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-700"
-                        }`}
-                >
-                    Tom & Jerry
-                </button>
-
-    
-    
+          <button
+            onClick={() => setActiveTab("bigsmall")}
+            className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "bigsmall"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700"
+              }`}
+          >
+            Tom & Jerry
+          </button>
 
 
-            </div>
 
-                    {activeTab === "color" && <ColorGame 
-            setShowDeposit={setShowDeposit}
-            allResults={allResults}
-            showDeposit={showDeposit}
-            colors={colors}
-            depositBalance={depositBalance}
-            remaining={duration}
-            serverStatus={serverStatus}
-            setTime={setTime}
-            time={time}
-            amount={amount}
-                        executeContract={executeContract}
-            setAmount={setAmount}
-            handleClick={handleClick}
-            myBids={myBids}
-            price={price}
-            config={config}
-            onSuccess={abc}
-            depositHistory={depositHistory}
 
-            hexaBalance={hexaBalance}
-            />}
-            {activeTab === "bigsmall" && <BigSmall 
-            setShowDeposit={setShowDeposit}
-            allResults={allResults}
-                        depositHistory={depositHistory}
-            depositBalance={depositBalance}
-            remaining={duration}
-            colors={colors}
-            onSuccess={abc}
-            serverStatus={serverStatus}
-            setTime={setTime}
-            amount={amount}
-            executeContract={executeContract}
-            showDeposit={showDeposit}
-            setAmount={setAmount}
-            handleClick={handleClick}
-             price={price}
-             myBids={myBids}
-             time={time}
-                         hexaBalance={hexaBalance}
-                         config={config}
-              
-            />}
+
+        </div>
+
+        {activeTab === "color" && <ColorGame
+          setShowDeposit={setShowDeposit}
+          allResults={allResults}
+          showDeposit={showDeposit}
+          colors={colors}
+          depositBalance={depositBalance}
+          remaining={duration}
+          serverStatus={serverStatus}
+          setTime={setTime}
+          time={time}
+          amount={amount}
+          executeContract={executeContract}
+          setAmount={setAmount}
+          handleClick={handleClick}
+          myBids={myBids}
+          price={price}
+          config={config}
+          onSuccess={abc}
+          depositHistory={depositHistory}
+
+          hexaBalance={hexaBalance}
+        />}
+        {activeTab === "bigsmall" && <BigSmall
+          setShowDeposit={setShowDeposit}
+          allResults={allResults}
+          depositHistory={depositHistory}
+          depositBalance={depositBalance}
+          remaining={duration}
+          colors={colors}
+          onSuccess={abc}
+          serverStatus={serverStatus}
+          setTime={setTime}
+          amount={amount}
+          executeContract={executeContract}
+          showDeposit={showDeposit}
+          setAmount={setAmount}
+          handleClick={handleClick}
+          price={price}
+          myBids={myBids}
+          time={time}
+          hexaBalance={hexaBalance}
+          config={config}
+
+        />}
 
 
 
@@ -641,18 +642,18 @@ const value = amount / price;
           </div>
         </div> */}
       </div>
-<ResultModal
-  show={showResultModal.show}
-  result={showResultModal.result}
-  activeTab={activeTab}
-  colors={colors}
-  onClose={() =>
-    setShowResultModal({
-      show:false,
-      result: {resultEmoji: "", resultText: "", resultColor: "", selectedType: "", wagerVal: 0, payout: 0, won: false}
-    })
-  }
-/>
+      <ResultModal
+        show={showResultModal.show}
+        result={showResultModal.result}
+        activeTab={activeTab}
+        colors={colors}
+        onClose={() =>
+          setShowResultModal({
+            show: false,
+            result: { resultEmoji: "", resultText: "", resultColor: "", selectedType: "", wagerVal: 0, payout: 0, won: false }
+          })
+        }
+      />
 
     </div>
   )
