@@ -229,7 +229,7 @@ export default function ColorGame({ colors, depositHistory, onSuccess, allResult
                         <div className="history-header">
                             <span>SNo</span><span>Time</span><span>Colour</span><span>Spent</span><span>Earn</span>
                         </div>
-                        {reversed.map((bid, index) => {
+                        {reversed.filter(b=>(time == 1 && b.gameId=="0") ||(time == 3 && b.gameId=="1") ).map((bid, index) => {
                             const startIndex = (page - 1) * pageSize;
                             const endIndex = startIndex + pageSize;
                             if (index < startIndex || index >= endIndex) return null;

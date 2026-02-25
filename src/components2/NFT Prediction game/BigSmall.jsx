@@ -226,7 +226,7 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
                             <span>SNo</span><span>Time</span><span>Type</span><span>Spent</span><span>Earn</span>
                         </div>
 
-                        {reversed.map((bid, index) => {
+                        {reversed.filter(b=>(time == 1 && b.gameId=="12") ||(time == 3 && b.gameId=="13") ).map((bid, index) => {
                             const startIndex = (page - 1) * pageSize;
                             const endIndex = startIndex + pageSize;
                             if (index < startIndex || index >= endIndex) return null;
