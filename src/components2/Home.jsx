@@ -39,195 +39,213 @@ const { address } = useAppKitAccount();
             
                        <div id="home-page" class="page">
             <section class="relative hero-gradient py-20 overflow-hidden">
-                <div
-                    className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%20fill-opacity%3D%220.03%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/svg%3E')] opacity-30"
-                ></div>
+        
+        
+        
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-5xl md:text-7xl font-bold font-display bg-gradient-to-r from-gray-900 via-indigo-700 to-purple-700 bg-clip-text text-transparent mb-6 leading-tight">Discover, Trade &amp; More</h2>
+                <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">Join the future of digital earning opportunities with HEXAWAY </p>
+                <button 
+                onClick={handleClick}
+                class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-2xl hover:shadow-indigo-500/25 transform hover:scale-105">Start Trading Now</button>
+            </div>
+        </section>
 
-                <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 id="hero-title" class="text-5xl md:text-7xl font-bold font-display bg-gradient-to-r from-gray-900 via-indigo-700 to-purple-700 bg-clip-text text-transparent mb-6 leading-tight">Discover, Trade &amp; Create NFTs</h2>
-                    <p id="hero-subtitle" class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">Join the future of digital art trading</p>
-                    <button 
-                    onClick={handleClick} 
+        
+        <section id="why-choose" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h3 class="text-4xl font-bold font-display text-gray-900 mb-6">Why Choose HEXAWAY?</h3>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">Experience the next generation of trading with our cutting-edge features</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8">
                     
-                    class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-2xl hover:shadow-indigo-500/25 transform hover:scale-105">Start Trading Now</button>
-                </div>
-            </section>
-            <section class="py-20 overflow-hidden bg-gradient-to-br from-slate-50 to-gray-100">
-                <div class="mb-16 text-center">
-                    <h3 class="text-4xl font-bold font-display text-gray-900 mb-6">Featured Collections</h3>
-                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">Discover premium digital assets from world-renowned artists and creators</p>
-                </div>
-                <div class="scroll-animation flex space-x-8">
-                    <div class="flex-shrink-0 w-80 h-80 bg-black rounded-2xl overflow-hidden shadow-2xl">
-                        <div class="w-full h-full bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                            <img src="/37.png" alt="Cyber Genesis NFT" class="object-cover rounded-lg shadow-lg" />
-                            <div class="absolute bottom-4 left-4 text-white">
-                                <div class="text-sm font-bold">
-                                    Cyber Genesis #001
-                                </div>
-                                <div class="text-xs opacity-75">
-                                    by DigitalVision
-                                </div>
-                            </div>
+                    <div class="feature-card bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl border border-blue-100">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
                         </div>
-                    </div>
-                    <div class="flex-shrink-0 w-80 h-80 bg-black rounded-2xl overflow-hidden shadow-2xl">
-                        <div class="w-full h-full bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                            <img src="/35.png" alt="Cyber Genesis NFT" class="object-cover rounded-lg shadow-lg" />
-                            <div class="absolute bottom-4 left-4 text-white">
-                                <div class="text-sm font-bold">
-                                    Abstract Dreams #247
-                                </div>
-                                <div class="text-xs opacity-75">
-                                    by ModernArt
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0 w-80 h-80 bg-black rounded-2xl overflow-hidden shadow-2xl">
-                        <div class="w-full h-full bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                            <img src="/29.png" alt="Cyber Genesis NFT" class="object-cover rounded-lg shadow-lg" />
-                            <div class="absolute bottom-4 left-4 text-white">
-                                <div class="text-sm font-bold">
-                                    Cosmic Valley #089
-                                </div>
-                                <div class="text-xs opacity-75">
-                                    by SpaceArt
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0 w-80 h-80 bg-black rounded-2xl overflow-hidden shadow-2xl">
-                        <div class="w-full h-full bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                            <img src="/33.png" alt="Cyber Genesis NFT" class="object-cover rounded-lg shadow-lg" />
-                            <div class="absolute bottom-4 left-4 text-white">
-                                <div class="text-sm font-bold">
-                                    Cyber Genesis #001
-                                </div>
-                                <div class="text-xs opacity-75">
-                                    by DigitalVision
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0 w-80 h-80 bg-black rounded-2xl overflow-hidden shadow-2xl">
-                        <div class="w-full h-full bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                            <img src="/34.png" alt="Cyber Genesis NFT" class="object-cover rounded-lg shadow-lg" />
-                            <div class="absolute bottom-4 left-4 text-white">
-                                <div class="text-sm font-bold">
-                                    Abstract Dreams #247
-                                </div>
-                                <div class="text-xs opacity-75">
-                                    by ModernArt
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            {/* <section class="py-16 bg-gray-100">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="grid md:grid-cols-2 gap-12">
-                        <div>
-                            <h3 class="text-2xl font-bold font-display text-gray-900 mb-6">🏆 Today's Top Picks</h3>
-                            <div class="space-y-4">
-                                <div class="bg-white/95 backdrop-blur-md border border-blue-200 p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-4">
-                                    <div class="w-16 h-16 bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 rounded-lg overflow-hidden">
-                                        <div class="w-full h-full relative">
-                                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                                <div class="w-8 h-10 bg-gradient-to-b from-cyan-400 to-purple-500 rounded-full opacity-80"></div>
-                                                <div class="absolute top-2 left-2 w-1 h-1 bg-cyan-300 rounded-full"></div>
-                                                <div class="absolute top-3 right-2 w-1 h-1 bg-pink-400 rounded-full"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-semibold text-gray-900">Cyber Genesis #7804</h4>
-                                        <p class="text-gray-600">Floor: 45.2 $</p>
-                                    </div>
-                                </div>
-                                <div class="bg-white/95 backdrop-blur-md border border-blue-200 p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-4">
-                                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 via-red-500 to-pink-600 rounded-lg overflow-hidden">
-                                        <div class="w-full h-full relative">
-                                            <div class="absolute top-3 left-3 w-6 h-6 bg-yellow-300 rounded-full opacity-70 blur-sm"></div>
-                                            <div class="absolute top-8 right-4 w-4 h-8 bg-blue-400 rounded-lg opacity-60 transform rotate-45"></div>
-                                            <div class="absolute bottom-5 left-5 w-5 h-5 bg-green-400 opacity-50 transform rotate-12"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-semibold text-gray-900">Abstract Dreams #3749</h4>
-                                        <p class="text-gray-600">Floor: 32.1 $</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold font-display text-gray-900 mb-6">💰 Top Sellers</h3>
-                            <div class="space-y-4">
-                                <div class="bg-white/95 backdrop-blur-md border border-blue-200 p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-4">
-                                    <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-lg">
-                                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center"><span class="text-emerald-600 font-bold text-sm">DV</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-semibold text-gray-900">DigitalVision</h4>
-                                        <p class="text-gray-600">Volume: 1,234 $</p>
-                                    </div>
-                                </div>
-                                <div class="bg-white/95 backdrop-blur-md border border-blue-200 p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-4">
-                                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
-                                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center"><span class="text-purple-600 font-bold text-sm">SA</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-semibold text-gray-900">SpaceArt</h4>
-                                        <p class="text-gray-600">Volume: 987 $</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section> */}
-            <section class="py-16 bg-white">
-                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h3 class="text-3xl font-bold font-display text-gray-900 mb-8">Contact Us</h3>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="p-6 bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl hover:shadow-lg transition-all duration-200">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mb-4">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        <h4 class="text-2xl font-bold text-gray-900 mb-4">Fully Decentralized</h4>
+                        <p class="text-gray-600 mb-4">Trade with complete freedom on our decentralized platform. No intermediaries, no restrictions.</p>
+                        <ul class="space-y-2">
+                            <li class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
-                            </div>
-                            <h4 class="font-semibold text-gray-900 mb-2">Email Support</h4>
-                            <p class="text-gray-600">support@hexaway.org</p>
-                        </div>
-                        <div class="p-6 bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl hover:shadow-lg transition-all duration-200">
-                            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mb-4">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                No central authority control
+                            </li>
+                            <li class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
-                            </div>
-                            <h4 class="font-semibold text-gray-900 mb-2">Chat</h4>
-                            <p class="text-gray-600">Support Available</p>
-                        </div>
-                        <a
-                        href='https://media.hexaway.org/'
-                        target='_blank' 
-                        
-                        class="cursor-pointer p-6 bg-white/95 backdrop-blur-md border border-blue-200 rounded-xl hover:shadow-lg transition-all duration-200">
-                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mb-4">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                Peer-to-peer transactions
+                            </li>
+                            <li class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
-                            </div>
-                            <h4 class="font-semibold text-gray-900 mb-2">Community</h4>
-                            <p class="text-gray-600">Hexa Media</p>
-                        </a>
+                                Complete ownership rights
+                            </li>
+                        </ul>
+                    </div>
+
+                    
+                    <div class="feature-card bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-2xl border border-purple-100">
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-900 mb-4">Blockchain Based</h4>
+                        <p class="text-gray-600 mb-4">Built on secure blockchain technology ensuring transparency and immutability of all transactions.</p>
+                        <ul class="space-y-2">
+                            <li class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Transparent transaction history
+                            </li>
+                            <li class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Immutable ownership records
+                            </li>
+                            <li class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Secure and tamper-proof
+                            </li>
+                        </ul>
+                    </div>
+
+                    
+                    <div class="feature-card bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-2xl border border-green-100">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-900 mb-4">Verified Smart Contracts</h4>
+                        <p class="text-gray-600 mb-4">All transactions powered by audited and verified smart contracts for maximum security.</p>
+                        <ul class="space-y-2">
+                            <li class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Professionally audited code
+                            </li>
+                            <li class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Automated secure transactions
+                            </li>
+                            <li class="flex items-center text-gray-600">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Trustless execution
+                            </li>
+                        </ul>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        
+        <section id="features" class="py-20 bg-gradient-to-br from-slate-50 to-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h3 class="text-4xl font-bold font-display text-gray-900 mb-6">Platform Features</h3>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">Everything you need for successful trading in one place</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <div class="stat-card bg-white p-6 rounded-xl shadow-lg text-center">
+                        <div class="text-3xl font-bold text-indigo-600 mb-2">99.9%</div>
+                        <div class="text-gray-700 font-medium">Uptime</div>
+                        <div class="text-sm text-gray-500 mt-1">Reliable platform</div>
+                    </div>
+                    <div class="stat-card bg-white p-6 rounded-xl shadow-lg text-center">
+                        <div class="text-3xl font-bold text-green-600 mb-2">24/7</div>
+                        <div class="text-gray-700 font-medium">Trading</div>
+                        <div class="text-sm text-gray-500 mt-1">Non-stop markets</div>
+                    </div>
+                 
+                   
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white/80 backdrop-blur-sm p-6 rounded-xl border border-gray-200">
+                        <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-3">Secure Wallet</h4>
+                        <p class="text-gray-600">Multi-signature security with biometric authentication for your digital assets.</p>
+                    </div>
+                    
+                    <div class="bg-white/80 backdrop-blur-sm p-6 rounded-xl border border-gray-200">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-3">Instant Trading</h4>
+                        <p class="text-gray-600">Execute trades instantly with our high-speed matching engine and low latency.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section id="contact" class="py-16 bg-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h3 class="text-3xl font-bold font-display text-gray-900 mb-8">Contact Support</h3>
+                
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 mb-8 border border-gray-200">
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <button onclick="redirectToMedia()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4 rounded-xl text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                            Media
+                        </button>
+                        <button onclick="redirectToContact()" class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-4 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                            Contact Us
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-center space-x-3">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="text-lg text-gray-700 font-medium">support@hexaway.org</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-3">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                            </svg>
+                            <span class="text-lg text-gray-700 font-medium">media.hexaway.org</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-8">
+                    <h4 class="text-xl font-bold text-gray-900 mb-4">Media & Resources</h4>
+                    <p class="text-gray-600 mb-6">Access our media kit, brand resources, and More opportunities</p>
+                </div>
+                
+                <div class="pt-8 border-t border-gray-200">
+                    <p class="text-gray-500 text-sm">
+                        © 2023 HEXAWAY  Trading & Gaming Platform. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        
                 <TawkChat/>
            </section>
         </div ></div>
