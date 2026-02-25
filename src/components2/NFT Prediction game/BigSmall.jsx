@@ -12,9 +12,10 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
     const [showLive, setShowLive] = useState(false)
     const [showList, setShowList] = useState("my")
     const pageSize = 5;
-    const totalPages = showList == "my" ? Math.ceil(myBids.length / pageSize) : Math.ceil(allResults.length / pageSize)
-    const pending = myBids.filter(bid => !bid.settled)
-    const reversed = [...myBids].reverse();
+    const pending = myBids.filter(bid => !bid.settled).filter(b => (time == 1 && b.gameId == "0") || (time == 3 && b.gameId == "1"));
+    const isDisabled = remaining <= 10;
+    const reversed = [...myBids].reverse().filter(b => (time == 1 && b.gameId == "0") || (time == 3 && b.gameId == "1"));
+    const totalPages = showList == "my" ? Math.ceil(reversed.length / pageSize) : Math.ceil(allResults.length / pageSize)
 
     const allResultsReversed = [...allResults].reverse();
     return (
@@ -58,100 +59,100 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
                     </div>
 
 
-<div style={{ marginBottom: "20px" }}>
-  <div style={{ color: "#475569", fontWeight: 600, marginBottom: "8px" }}>
-    <i className="fas fa-coins"></i> wager
-  </div>
+                    <div style={{ marginBottom: "20px" }}>
+                        <div style={{ color: "#475569", fontWeight: 600, marginBottom: "8px" }}>
+                            <i className="fas fa-coins"></i> wager
+                        </div>
 
-  <div className="wager-control">
-    {/* Decrease Button */}
-    <button
-      id="decreaseWagerBtn"
-      className="wager-btn"
-      onClick={() => {
-        const num = parseFloat(amount);
+                        <div className="wager-control">
+                            {/* Decrease Button */}
+                            <button
+                                id="decreaseWagerBtn"
+                                className="wager-btn"
+                                onClick={() => {
+                                    const num = parseFloat(amount);
 
-        if (isNaN(num) || num <= 0.1) {
-          toast.error("Cannot set below 0.1 HEXA");
-          setAmount("0.10");
-        } else {
-          setAmount((num - 0.1).toFixed(2));
-        }
-      }}
-    >
-      −
-    </button>
+                                    if (isNaN(num) || num <= 0.1) {
+                                        toast.error("Cannot set below 0.1 HEXA");
+                                        setAmount("0.10");
+                                    } else {
+                                        setAmount((num - 0.1).toFixed(2));
+                                    }
+                                }}
+                            >
+                                −
+                            </button>
 
-    {/* Input Field */}
-    <input
-      type="number"
-      id="wagerInput"
-      className="wager-input"
-      value={amount}
-      step="0.1"
-      min="0.1"
-      max="100"
-      onChange={(e) => {
-        setAmount(e.target.value);
-      }}
-      onBlur={() => {
-        let num = parseFloat(amount);
+                            {/* Input Field */}
+                            <input
+                                type="number"
+                                id="wagerInput"
+                                className="wager-input"
+                                value={amount}
+                                step="0.1"
+                                min="0.1"
+                                max="100"
+                                onChange={(e) => {
+                                    setAmount(e.target.value);
+                                }}
+                                onBlur={() => {
+                                    let num = parseFloat(amount);
 
-        if (isNaN(num) || num < 0.1) num = 0.1;
+                                    if (isNaN(num) || num < 0.1) num = 0.1;
 
 
-        setAmount(num.toFixed(2));
-      }}
-    />
+                                    setAmount(num.toFixed(2));
+                                }}
+                            />
 
-    {/* Increase Button */}
-    <button
-      id="increaseWagerBtn"
-      className="wager-btn"
-      onClick={() => {
-        const num = parseFloat(amount);
+                            {/* Increase Button */}
+                            <button
+                                id="increaseWagerBtn"
+                                className="wager-btn"
+                                onClick={() => {
+                                    const num = parseFloat(amount);
 
-        if (isNaN(num)) {
-          setAmount("0.10");
-          return;
-        }
+                                    if (isNaN(num)) {
+                                        setAmount("0.10");
+                                        return;
+                                    }
 
-        if (num >= 100) {
-          toast.error("Cannot set above 100 HEXA");
-        } else {
-          setAmount((num + 0.1).toFixed(2));
-        }
-      }}
-    >
-      +
-    </button>
-  </div>
+                                    if (num >= 100) {
+                                        toast.error("Cannot set above 100 HEXA");
+                                    } else {
+                                        setAmount((num + 0.1).toFixed(2));
+                                    }
+                                }}
+                            >
+                                +
+                            </button>
+                        </div>
 
-  {/* Bottom Info */}
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "space-between",
-      marginTop: "8px",
-      padding: "0 8px",
-    }}
-  >
-    <span style={{ color: "#64748b", fontSize: "13px" }}>
-      <i
-        className="fas fa-gem"
-        style={{ color: "#8b5cf6" }}
-      ></i>{" "}
-      <span id="hexaAmount">
-        {Number((parseFloat(amount) || 0) / price).toFixed(0)}
-      </span>{" "}
-      HEXA
-    </span>
+                        {/* Bottom Info */}
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginTop: "8px",
+                                padding: "0 8px",
+                            }}
+                        >
+                            <span style={{ color: "#64748b", fontSize: "13px" }}>
+                                <i
+                                    className="fas fa-gem"
+                                    style={{ color: "#8b5cf6" }}
+                                ></i>{" "}
+                                <span id="hexaAmount">
+                                    {Number((parseFloat(amount) || 0) / price).toFixed(0)}
+                                </span>{" "}
+                                HEXA
+                            </span>
 
-    <span style={{ color: "#8b5cf6", fontSize: "13px" }}>
-      1.8x win
-    </span>
-  </div>
-</div>
+                            <span style={{ color: "#8b5cf6", fontSize: "13px" }}>
+                                1.8x win
+                            </span>
+                        </div>
+                    </div>
 
 
                     <div>
@@ -164,7 +165,7 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
                         <div className="slots-grid1">
                             <button
                                 disabled={remaining <= 10}
-                                onClick={() => handleClick("Red")}
+                                    onClick={!isDisabled ? () => handleClick("Red") : undefined}
                                 className="big-slot"
                                 id="big-slot"
                             >
@@ -174,7 +175,7 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
 
                             <button
                                 disabled={remaining <= 10}
-                                onClick={() => handleClick("Green")}
+                                onClick={!isDisabled ? () => handleClick("Green") : undefined}
                                 className="small-slot"
                                 id="small-slot"
                             >
@@ -216,7 +217,7 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
                             <button
                                 id="myHistoryTab" className={showList === "my" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("my")}>My</button>
                             <button id="gameHistoryTab" className={showList === "game" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("game")}>Game</button>
-                                                    <button id="depositHistoryTab" className={showList === "deposit" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("deposit")}>Deposit</button>
+                            <button id="depositHistoryTab" className={showList === "deposit" ? "tab-btn active" : "tab-btn"} onClick={() => setShowList("deposit")}>Deposit</button>
                         </div>
                     </div>
 
@@ -226,7 +227,7 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
                             <span>SNo</span><span>Time</span><span>Type</span><span>Spent</span><span>Earn</span>
                         </div>
 
-                        {reversed.filter(b=>(time == 1 && b.gameId=="12") ||(time == 3 && b.gameId=="13") ).map((bid, index) => {
+                        {reversed.filter(b => (time == 1 && b.gameId == "12") || (time == 3 && b.gameId == "13")).map((bid, index) => {
                             const startIndex = (page - 1) * pageSize;
                             const endIndex = startIndex + pageSize;
                             if (index < startIndex || index >= endIndex) return null;
@@ -275,7 +276,7 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
                                     <span>{formatAddress(deposit.depositor)}</span>
                                     <span>{deposit.percentage}</span>
                                     <span>{deposit.eventType == "0" ? "Deposit" :
-                                    deposit.eventType == "1" ? "Bonus" : "R-Bonus" }</span>
+                                        deposit.eventType == "1" ? "Bonus" : "R-Bonus"}</span>
                                 </div>
                             )
                         })}

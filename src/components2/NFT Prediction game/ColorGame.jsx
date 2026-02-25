@@ -14,12 +14,13 @@ export default function ColorGame({ colors, depositHistory, onSuccess, allResult
     const [showLive, setShowLive] = useState(false)
     const [showList, setShowList] = useState("my")
     const pageSize = 5;
-    const totalPages = showList == "my" ? Math.ceil(myBids.length / pageSize) : Math.ceil(allResults.length / pageSize)
 
-    const pending = myBids.filter(bid => !bid.settled)
+
+    const pending = myBids.filter(bid => !bid.settled).filter(b=>(time == 1 && b.gameId=="0") ||(time == 3 && b.gameId=="1") );
     const isDisabled = remaining <= 10;
-    const reversed = [...myBids].reverse();
-    console.log("time", { depositHistory })
+    const reversed = [...myBids].reverse().filter(b=>(time == 1 && b.gameId=="0") ||(time == 3 && b.gameId=="1") );
+        const totalPages = showList == "my" ? Math.ceil(reversed.length / pageSize) : Math.ceil(allResults.length / pageSize)
+
 
     const allResultsReversed = [...allResults].reverse();
     return (
@@ -229,7 +230,7 @@ export default function ColorGame({ colors, depositHistory, onSuccess, allResult
                         <div className="history-header">
                             <span>SNo</span><span>Time</span><span>Colour</span><span>Spent</span><span>Earn</span>
                         </div>
-                        {reversed.filter(b=>(time == 1 && b.gameId=="0") ||(time == 3 && b.gameId=="1") ).map((bid, index) => {
+                        {reversed.map((bid, index) => {
                             const startIndex = (page - 1) * pageSize;
                             const endIndex = startIndex + pageSize;
                             if (index < startIndex || index >= endIndex) return null;
