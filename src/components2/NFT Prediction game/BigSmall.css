@@ -367,6 +367,17 @@
       color: #334155;
       margin: 12px 0 6px;
     }
+        .history-header2 {
+      display: grid;
+      grid-template-columns: 35px 50px 55px 108px 55px 55px;
+      background: #e2e8f0;
+      border-radius: 20px;
+      padding: 8px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #334155;
+      margin: 12px 0 6px;
+    }
     .game-header {
       display: grid;
       grid-template-columns: 35px 60px 1fr;
@@ -380,6 +391,18 @@
     .history-row {
       display: grid;
       grid-template-columns: 35px 50px 1fr 55px 55px;
+      align-items: center;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 10px 6px;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #1e293b;
+      border: 1px solid #e2e8f0;
+    }
+      .history-row2 {
+      display: grid;
+      grid-template-columns: 35px 50px 55px 108px 55px 55px;
       align-items: center;
       background: #ffffff;
       border-radius: 18px;
