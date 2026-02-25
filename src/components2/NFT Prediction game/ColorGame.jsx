@@ -19,7 +19,7 @@ export default function ColorGame({ colors, depositHistory, onSuccess, allResult
     const pending = myBids.filter(bid => !bid.settled)
     const isDisabled = remaining <= 10;
     const reversed = [...myBids].reverse();
-        console.log("time",{depositHistory})
+    console.log("time", { depositHistory })
 
     const allResultsReversed = [...allResults].reverse();
     return (
@@ -63,100 +63,100 @@ export default function ColorGame({ colors, depositHistory, onSuccess, allResult
                     </div>
 
 
-<div style={{ marginBottom: "20px" }}>
-  <div style={{ color: "#475569", fontWeight: 600, marginBottom: "8px" }}>
-    <i className="fas fa-coins"></i> wager
-  </div>
+                    <div style={{ marginBottom: "20px" }}>
+                        <div style={{ color: "#475569", fontWeight: 600, marginBottom: "8px" }}>
+                            <i className="fas fa-coins"></i> wager
+                        </div>
 
-  <div className="wager-control">
-    {/* Decrease Button */}
-    <button
-      id="decreaseWagerBtn"
-      className="wager-btn"
-      onClick={() => {
-        const num = parseFloat(amount);
+                        <div className="wager-control">
+                            {/* Decrease Button */}
+                            <button
+                                id="decreaseWagerBtn"
+                                className="wager-btn"
+                                onClick={() => {
+                                    const num = parseFloat(amount);
 
-        if (isNaN(num) || num <= 0.1) {
-          toast.error("Cannot set below 0.1 HEXA");
-          setAmount("0.10");
-        } else {
-          setAmount((num - 0.1).toFixed(2));
-        }
-      }}
-    >
-      −
-    </button>
+                                    if (isNaN(num) || num <= 0.1) {
+                                        toast.error("Cannot set below 0.1 HEXA");
+                                        setAmount("0.10");
+                                    } else {
+                                        setAmount((num - 0.1).toFixed(2));
+                                    }
+                                }}
+                            >
+                                −
+                            </button>
 
-    {/* Input Field */}
-    <input
-      type="number"
-      id="wagerInput"
-      className="wager-input"
-      value={amount}
-      step="0.1"
-      min="0.1"
-      max="100"
-      onChange={(e) => {
-        setAmount(e.target.value);
-      }}
-      onBlur={() => {
-        let num = parseFloat(amount);
+                            {/* Input Field */}
+                            <input
+                                type="number"
+                                id="wagerInput"
+                                className="wager-input"
+                                value={amount}
+                                step="0.1"
+                                min="0.1"
+                                max="100"
+                                onChange={(e) => {
+                                    setAmount(e.target.value);
+                                }}
+                                onBlur={() => {
+                                    let num = parseFloat(amount);
 
-        if (isNaN(num) || num < 0.1) num = 0.1;
-        if (num > 100) num = 100;
+                                    if (isNaN(num) || num < 0.1) num = 0.1;
 
-        setAmount(num.toFixed(2));
-      }}
-    />
 
-    {/* Increase Button */}
-    <button
-      id="increaseWagerBtn"
-      className="wager-btn"
-      onClick={() => {
-        const num = parseFloat(amount);
+                                    setAmount(num.toFixed(2));
+                                }}
+                            />
 
-        if (isNaN(num)) {
-          setAmount("0.10");
-          return;
-        }
+                            {/* Increase Button */}
+                            <button
+                                id="increaseWagerBtn"
+                                className="wager-btn"
+                                onClick={() => {
+                                    const num = parseFloat(amount);
 
-        if (num >= 100) {
-          toast.error("Cannot set above 100 HEXA");
-        } else {
-          setAmount((num + 0.1).toFixed(2));
-        }
-      }}
-    >
-      +
-    </button>
-  </div>
+                                    if (isNaN(num)) {
+                                        setAmount("0.10");
+                                        return;
+                                    }
 
-  {/* Bottom Info */}
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "space-between",
-      marginTop: "8px",
-      padding: "0 8px",
-    }}
-  >
-    <span style={{ color: "#64748b", fontSize: "13px" }}>
-      <i
-        className="fas fa-gem"
-        style={{ color: "#8b5cf6" }}
-      ></i>{" "}
-      <span id="hexaAmount">
-        {Number((parseFloat(amount) || 0) / price).toFixed(0)}
-      </span>{" "}
-      HEXA
-    </span>
+                                    if (num >= 100) {
+                                        toast.error("Cannot set above 100 HEXA");
+                                    } else {
+                                        setAmount((num + 0.1).toFixed(2));
+                                    }
+                                }}
+                            >
+                                +
+                            </button>
+                        </div>
 
-    <span style={{ color: "#8b5cf6", fontSize: "13px" }}>
-      1.8x win
-    </span>
-  </div>
-</div>
+                        {/* Bottom Info */}
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginTop: "8px",
+                                padding: "0 8px",
+                            }}
+                        >
+                            <span style={{ color: "#64748b", fontSize: "13px" }}>
+                                <i
+                                    className="fas fa-gem"
+                                    style={{ color: "#8b5cf6" }}
+                                ></i>{" "}
+                                <span id="hexaAmount">
+                                    {Number((parseFloat(amount) || 0) / price).toFixed(0)}
+                                </span>{" "}
+                                HEXA
+                            </span>
+
+                            <span style={{ color: "#8b5cf6", fontSize: "13px" }}>
+                                1.8x win
+                            </span>
+                        </div>
+                    </div>
 
 
                     <div>
@@ -277,8 +277,8 @@ export default function ColorGame({ colors, depositHistory, onSuccess, allResult
                                     <span>{Number(formatEther(deposit.amount)).toFixed(2)}</span>
                                     <span>{formatAddress(deposit.depositor)}</span>
                                     <span>{deposit.percentage}</span>
-                                   <span>{deposit.eventType == "0" ? "Deposit" :
-                                    deposit.eventType == "1" ? "Bonus" : "R-Bonus" }</span>
+                                    <span>{deposit.eventType == "0" ? "Deposit" :
+                                        deposit.eventType == "1" ? "Bonus" : "R-Bonus"}</span>
 
                                 </div>
                             )

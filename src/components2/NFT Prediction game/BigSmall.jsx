@@ -98,7 +98,7 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
         let num = parseFloat(amount);
 
         if (isNaN(num) || num < 0.1) num = 0.1;
-        if (num > 100) num = 100;
+
 
         setAmount(num.toFixed(2));
       }}
