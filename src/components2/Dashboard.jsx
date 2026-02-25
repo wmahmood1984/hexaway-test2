@@ -40,12 +40,12 @@ export default function Dashboard() {
     const [weeklyProTraderReward, setWeeklyProTraderReward] = useState(0);
     const [monthlyProTraderReward, setMonthlyProTraderReward] = useState(0);
 
-    const [dailyStarRewardInfo, setDailyStarRewardInfo] = useState();
-    const [weeklyStarRewardInfo, setWeeklyStarRewardInfo] = useState();
-    const [monthlyStarRewardInfo, setMonthlyStarRewardInfo] = useState({});
-    const [dailyProRewardInfo, setDailyProRewardInfo] = useState();
-    const [weeklyProRewardInfo, setWeeklyProRewardInfo] = useState();
-    const [monthlyProRewardInfo, setMonthlyProRewardInfo] = useState();
+    const [dailyReferralInfo, setDailyReferralInfo] = useState();
+    const [weeklyReferralInfo, setWeeklyReferralInfo] = useState();
+    const [monthlyReferralInfo, setMonthlyReferralInfo] = useState({});
+    const [dailyBidderInfo, setDailyBidderInfo] = useState();
+    const [weeklyBidderInfo, setWeeklyBidderInfo] = useState();
+    const [monthlyBidderInfo, setMonthlyBidderInfo] = useState();
 
     useEffect(() => {
 
@@ -69,18 +69,18 @@ export default function Dashboard() {
             const _monthlyProTraderReward = await gameContractR.methods.userRewardTypeAmount(address,3).call()
             setMonthlyProTraderReward(_monthlyProTraderReward)
 
-            const _dailyStarRewardInfo = await gameContractR.methods.rewardInfo(1).call()
-            setDailyStarRewardInfo(_dailyStarRewardInfo)
-            const _weeklyStarRewardInfo = await gameContractR.methods.rewardInfo(2).call()
-            setWeeklyStarRewardInfo(_weeklyStarRewardInfo)
-            const _monthlyStarRewardInfo = await gameContractR.methods.rewardInfo(3).call()
-            setMonthlyStarRewardInfo(_monthlyStarRewardInfo)
-            const _dailyProTraderRewardInfo = await gameContractR.methods.rewardInfo(4).call()
-            setDailyProRewardInfo(_dailyProTraderRewardInfo)
-            const _weeklyProTraderRewardInfo = await gameContractR.methods.rewardInfo(5).call()
-            setWeeklyProRewardInfo(_weeklyProTraderRewardInfo)
-            const _monthlyProTraderRewardInfo = await gameContractR.methods.rewardInfo(6).call()
-            setMonthlyProRewardInfo(_monthlyProTraderRewardInfo)
+            const _dailyBidderInfo = await gameContractR.methods.rewardInfo(1).call()
+            setDailyBidderInfo(_dailyBidderInfo)
+            const _weeklyBidderInfo = await gameContractR.methods.rewardInfo(2).call()
+            setWeeklyBidderInfo(_weeklyBidderInfo)
+            const _monthlyBidderInfo = await gameContractR.methods.rewardInfo(3).call()
+            setMonthlyBidderInfo(_monthlyBidderInfo)
+            const _dailyReferralInfo = await gameContractR.methods.rewardInfo(4).call()
+            setDailyReferralInfo(_dailyReferralInfo)
+            const _weeklyReferralInfo = await gameContractR.methods.rewardInfo(5).call()
+            setWeeklyReferralInfo(_weeklyReferralInfo)
+            const _monthlyReferralInfo = await gameContractR.methods.rewardInfo(6).call()
+            setMonthlyReferralInfo(_monthlyReferralInfo)
 
         }
 
@@ -739,14 +739,14 @@ export default function Dashboard() {
                     </div>
 
  {
-   dailyStarRewardInfo && weeklyStarRewardInfo  && monthlyStarRewardInfo && dailyProRewardInfo && weeklyProRewardInfo && monthlyProRewardInfo &&
+   dailyReferralInfo && 
                     <SchemeIncomes
-                    dailyStarRewardInfo={dailyStarRewardInfo}
-                    weeklyStarRewardInfo={weeklyStarRewardInfo}
-                    monthlyStarRewardInfo={monthlyStarRewardInfo}
-                    dailyProTraderRewardInfo={dailyProRewardInfo}
-                    weeklyProTraderRewardInfo={weeklyProRewardInfo}
-                    monthlyProTraderRewardInfo={monthlyProRewardInfo}
+                    dailyBidderInfo={dailyBidderInfo}
+                    weeklyBidderInfo={weeklyBidderInfo}
+                    monthlyBidderInfo={monthlyBidderInfo}
+                    dailyReferralInfo={dailyReferralInfo}
+                    weeklyReferralInfo={weeklyReferralInfo}
+                    monthlyReferralInfo={monthlyReferralInfo}
                     
                     />}
                 </div>

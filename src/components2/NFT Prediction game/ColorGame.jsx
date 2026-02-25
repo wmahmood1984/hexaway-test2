@@ -206,7 +206,7 @@ export default function ColorGame({ colors, depositHistory, onSuccess, allResult
 
                     <div id="depositHistoryList" style={{ display: showList === "deposit" ? "block" : "none" }}>
                         <div className="history-header2"><span>SNo</span><span>Time</span><span>Amount</span>
-                            <span>Sender</span><span>%</span><span>Scheme ending</span>
+                            <span>Sender</span><span>%</span><span>Status</span>
                         </div>
                         {depositHistory && depositHistory.map((deposit, index) => {
                             const startIndex = (page - 1) * pageSize;
@@ -219,7 +219,9 @@ export default function ColorGame({ colors, depositHistory, onSuccess, allResult
                                     <span>{Number(formatEther(deposit.amount)).toFixed(2)}</span>
                                     <span>{formatAddress(deposit.depositor)}</span>
                                     <span>{deposit.percentage}</span>
-                                    <span>{deposit.eventType=="0"?"N/A": secondsToDMY(deposit.eventType)}</span>
+                                   <span>{deposit.eventType == "0" ? "Deposit" :
+                                    deposit.eventType == "1" ? "Bonus" : "R-Bonus" }</span>
+
                                 </div>
                             )
                         })}

@@ -236,6 +236,7 @@ export default function Game() {
 
 
   const abc = async () => {
+
     const _hexaBalance = await HEXAContractR.methods.balanceOf(address).call()
     setHexaBalance((_hexaBalance / 1e18).toFixed(0))
     const _price = await priceOracleContractR.methods.price().call()
@@ -258,8 +259,6 @@ export default function Game() {
 
     const gameresult = await gameContractR.methods.getBids().call()
     
-
-
   }
 
 

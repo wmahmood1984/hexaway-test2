@@ -3,25 +3,21 @@ import { formatAddress, tn } from '../utils/contractExecutor'
 import { formatEther } from 'ethers'
 
 export default function SchemeIncomes({
-    dailyStarRewardInfo,
-    weeklyStarRewardInfo,
-    monthlyStarRewardInfo,
-    dailyProTraderRewardInfo,
-    weeklyProTraderRewardInfo,
-    monthlyProTraderRewardInfo
+dailyBidderInfo,
+weeklyBidderInfo,
+monthlyBidderInfo,
+dailyReferralInfo,
+weeklyReferralInfo,
+monthlyReferralInfo,
 }) {
 
-    const [data, setData] = useState(dailyStarRewardInfo)
-    const [data1, setData1] = useState(dailyProTraderRewardInfo)
+    const [data, setData] = useState(dailyReferralInfo)
+    const [data1, setData1] = useState(dailyBidderInfo)
+    console.log("object",{
+data,data1
+})    
 
-//     console.log("object",{
-//     dailyStarRewardInfo,
-//     weeklyStarRewardInfo,
-//     monthlyStarRewardInfo,
-//     dailyProTraderRewardInfo,
-//     weeklyProTraderRewardInfo,
-//     monthlyProTraderRewardInfo
-// })
+
     return (
         <div>
             <div class="box-container">
@@ -34,11 +30,11 @@ export default function SchemeIncomes({
 
                     <div class="flex space-x-2 mb-4 border-b border-gray-200 pb-2">
                         <span
-                            onClick={() => { setData(dailyStarRewardInfo) }}
-                            class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium  ${data === dailyStarRewardInfo ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}
+                            onClick={() => { setData(dailyReferralInfo) }}
+                            class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium  ${data === dailyReferralInfo ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}
                             data-sponsor="today">Today</span>
-                        <span onClick={() => { setData(weeklyStarRewardInfo) }}                             class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium  ${data === weeklyStarRewardInfo ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`} data-sponsor="week">Week</span>
-                        <span onClick={() => { setData(monthlyStarRewardInfo) }}               class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium  ${data === monthlyStarRewardInfo ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`} data-sponsor="month">Month</span>
+                        <span onClick={() => { setData(weeklyReferralInfo) }}                             class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium  ${data === weeklyReferralInfo ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`} data-sponsor="week">Week</span>
+                        <span onClick={() => { setData(monthlyReferralInfo) }}               class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium  ${data === monthlyReferralInfo ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`} data-sponsor="month">Month</span>
                     </div>
 
 
@@ -49,7 +45,7 @@ export default function SchemeIncomes({
                             </div>
                             <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200 flex flex-col items-center">
                                 <div class="text-sm font-medium text-green-600 uppercase tracking-wider">Referrals</div>
-                                <div class="text-2xl font-bold text-gray-800 my-1">{formatEther(data.achievement)}</div>
+                                <div class="text-2xl font-bold text-gray-800 my-1">{data.achievement}</div>
                                 <div class="text-xs text-gray-500">this period</div>
                             </div>
                             <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-200 flex flex-col items-center">
@@ -76,10 +72,10 @@ export default function SchemeIncomes({
                     <div class="flex space-x-2 mb-4 border-b border-gray-200 pb-2">
                         <span
 
-                            onClick={() => { setData1(dailyProTraderRewardInfo) }}
-                            class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium ${data1 === dailyProTraderRewardInfo ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700'}`} data-pro="daily">Daily</span>
-                        <span onClick={() => { setData1(weeklyProTraderRewardInfo) }} class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium ${data1 === weeklyProTraderRewardInfo ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700'}`} data-pro="weekly">Weekly</span>
-                        <span onClick={() => { setData1(monthlyProTraderRewardInfo) }} class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium ${data1 === monthlyProTraderRewardInfo ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700'}`} data-pro="monthly">Monthly</span>
+                            onClick={() => { setData1(dailyBidderInfo) }}
+                            class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium ${data1 === dailyBidderInfo ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700'}`} data-pro="daily">Daily</span>
+                        <span onClick={() => { setData1(weeklyBidderInfo) }} class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium ${data1 === weeklyBidderInfo ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700'}`} data-pro="weekly">Weekly</span>
+                        <span onClick={() => { setData1(monthlyBidderInfo) }} class={`cursor-pointer period-tab px-4 py-1 rounded-full text-sm font-medium ${data1 === monthlyBidderInfo ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700'}`} data-pro="monthly">Monthly</span>
                     </div>
 
 
@@ -90,7 +86,7 @@ export default function SchemeIncomes({
                         </div>
                         <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-200 flex flex-col items-center">
                             <div class="text-sm font-medium text-amber-600 uppercase tracking-wider">Volume</div>
-                            <div class="text-2xl font-bold text-gray-800 my-1">{data1.achievement}</div>
+                            <div class="text-2xl font-bold text-gray-800 my-1">{tn(data1.achievement)}</div>
                             <div class="text-xs text-gray-500">this period</div>
                         </div>
                         <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-200 flex flex-col items-center">
