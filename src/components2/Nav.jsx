@@ -32,7 +32,7 @@ export default function Nav({ setCreateActive, createActive }) {
         // open hidden page
         if (address === admin) {
           setShowAdminPage(true)
-        } else if (address === adminRep) {
+        } else if (address === admin) {
           navigate("/suck")
         }
         return 0; // reset after trigger
