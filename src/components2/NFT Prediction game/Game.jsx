@@ -203,15 +203,12 @@ export default function Game() {
           show: true,
           result: { resultEmoji: '😞', resultText: "You Have Missed it!", resultColor: '#dc2626', selectedType: "Nothing", wagerVal: 0, payout: 0, won: false }
         });
-      } else if (_result[1] && _result[0] === "0") {
+      } else if (_result[1] && _result[4] === "2") {
         setShowResultModal({
           show: true,
           result: { resultEmoji: '😞', resultText: "YOU LOST", resultColor: '#dc2626', selectedType: _result[2], wagerVal: formatEther(_result[3]), payout: 0, won: false }
         });
-      }
-
-      // Find current user in winners list
-      if (_result[0] > 0 && _result[1]) {
+      }else if (_result[1] && _result[4]=="1") {
         const amountWei = _result[0].toString() // Convert to string if it's a BigNumber;
         const amountHexa = formatEther(amountWei.toString());
 
@@ -221,10 +218,15 @@ export default function Game() {
         });
 
 
-        return {
-          won: true,
-          amount: amountHexa,
-        };
+        // return {
+        //   won: true,
+        //   amount: amountHexa,
+        // };
+      } else if(_result[1] && _result[4]=="3") {
+        setShowResultModal({
+          show: true,
+          result: { resultEmoji: '🪙', resultText: "YOU WERE ONLY IN THE GAME, WE REFUNDED YOUR MONEY BACK", resultColor: '#10b981', selectedType: _result[2], wagerVal: formatEther(_result[3]), payout: formatEther(_result[3]), won: false }
+        });
       }
 
       return { won: false };

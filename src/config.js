@@ -61,6 +61,8 @@ export const incomeKeys = [
 	}
 ]
 
+export const resultKeys = ["Pending","Won","Lost","Refunded"]
+
 export const packageKeys = [
 	{	dollar:"$ 2",
 		name: "Welcome",
@@ -7717,6 +7719,7 @@ export const stakingV1Abi = [
 		"type": "function"
 	}
 ]
+
 export const gameAbi = [
 	{
 		"inputs": [],
@@ -8014,9 +8017,9 @@ export const gameAbi = [
 				"type": "uint256"
 			},
 			{
-				"internalType": "bool",
+				"internalType": "uint256",
 				"name": "won",
-				"type": "bool"
+				"type": "uint256"
 			},
 			{
 				"internalType": "uint8",
@@ -8282,9 +8285,9 @@ export const gameAbi = [
 						"type": "uint256"
 					},
 					{
-						"internalType": "bool",
+						"internalType": "uint256",
 						"name": "won",
-						"type": "bool"
+						"type": "uint256"
 					},
 					{
 						"internalType": "uint8",
@@ -8413,6 +8416,11 @@ export const gameAbi = [
 								"internalType": "uint256",
 								"name": "amount",
 								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "resultKey",
+								"type": "uint256"
 							}
 						],
 						"internalType": "struct GameEngine.Winner[]",
@@ -8537,9 +8545,9 @@ export const gameAbi = [
 						"type": "uint256"
 					},
 					{
-						"internalType": "bool",
+						"internalType": "uint256",
 						"name": "won",
-						"type": "bool"
+						"type": "uint256"
 					},
 					{
 						"internalType": "uint8",
@@ -9539,9 +9547,9 @@ export const dataFetcherGameAbi = [
 						"type": "uint256"
 					},
 					{
-						"internalType": "bool",
+						"internalType": "uint256",
 						"name": "won",
-						"type": "bool"
+						"type": "uint256"
 					},
 					{
 						"internalType": "uint8",
@@ -9632,22 +9640,27 @@ export const dataFetcherGameAbi = [
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "winnerAmount",
 				"type": "uint256"
 			},
 			{
 				"internalType": "bool",
-				"name": "",
+				"name": "isInTheGame",
 				"type": "bool"
 			},
 			{
 				"internalType": "uint8",
-				"name": "",
+				"name": "color",
 				"type": "uint8"
 			},
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "resultKey",
 				"type": "uint256"
 			}
 		],
@@ -9723,12 +9736,12 @@ export const distributionAdd = mainnet ?  "0xaE2A9F5F5AB9f437826D2Ac6173EfB98f86
 : "0x0872c88D2Ca157e4C6221c6B55BeAeba64848Df4"
 export const buySale = mainnet ? "0x052DbC12bac5490e4225042493bF9B438545668E"
 :"0x0b13FbC7d4BF441C5e9f846E7F60846B41eA3cBf"
-export const gameAdd = mainnet ? "0x2833CDa79dc4F19887CFAD897765886d32C70A05"
+export const gameAdd = mainnet ? "0xc6A4B3BDf99a6433dEBF9375E839FBB67E935a12"
 : "0xB397Df6888F021C446f5D72b55ed3B42C7A592a3"
 export const mlmcontractaddressImplementation =
 	"0x6337B82a7F7fdff5EDA67521d61827fc067E505F";
 
-export const dataFetcherGameAdd = mainnet ? "0xFD0DA468F0f87dBD1Af54920724cCabA9F2DBB3c" : 
+export const dataFetcherGameAdd = mainnet ? "0x0cb4db2cb9a70c03d590De7EAFc117C4D333d12a" : 
 "0x4a9DB257a8320aF3A558c7a4Cf848a80555EEf95"
 
 export const bonusContractAdd = mainnet? "0x648dFbD997b12F2F615ADAfD901B92c498cebEd1": ""
