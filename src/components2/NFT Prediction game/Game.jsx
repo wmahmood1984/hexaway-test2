@@ -1,13 +1,14 @@
 import { AbiCoder, formatEther, parseEther } from 'ethers'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { gameAdd, gameContract, gameContractR, gameFetcherContractR, HexaContract, HEXAContractR, priceOracleContractR } from '../../config'
+import { gameAbi, gameAdd, gameContract, gameFetcherContractR, HexaContract, HEXAContractR, priceOracleContractR, rpc1 } from '../../config'
 import { useAppKitAccount } from '@reown/appkit/react'
 import { useConfig, useShowCallsStatus } from 'wagmi'
 import { executeContract } from '../../utils/contractExecutor'
 import ColorGame from './ColorGame'
 import BigSmall from './BigSmall'
 import ResultModal from './ResultModal'
+import Web3 from 'web3'
 
 const colors = ['Red', 'Green', 'Purple', "black", "yellow", "blue", "pink", "grey", "orange"]
 
@@ -63,6 +64,10 @@ export default function Game() {
         throw new Error("Invalid slots or time combination");
     }
   };
+
+
+  const newWeb3 = new Web3(new Web3.providers.HttpProvider(rpc1))
+  const gameContractR = new newWeb3.eth.Contract(gameAbi, gameAdd)
 
 
   const countdownAudioRef = useRef(null);

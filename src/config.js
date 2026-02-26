@@ -6,7 +6,8 @@ const rpc = !mainnet?  	"https://opbnb-testnet-rpc.publicnode.com"   //op bnb
 			//"https://api-opbnb-testnet.n.dwellir.com/cd3616b6-aa41-42c2-a71a-6c87168622db" // opbnb testnet
 			//:"https://api-opbnb-mainnet.n.dwellir.com/cd3616b6-aa41-42c2-a71a-6c87168622db"	// opbnb mainnet	
 
-
+export const rpc1 = !mainnet ? "https://api-opbnb-testnet.n.dwellir.com/cd3616b6-aa41-42c2-a71a-6c87168622db" // opbnb testnet
+			:"https://api-opbnb-mainnet.n.dwellir.com/cd3616b6-aa41-42c2-a71a-6c87168622db"	// opbnb mainnet
 export const web31 = new Web3(new Web3.providers.HttpProvider(rpc))
 export const testweb3 = new Web3(new Web3.providers.HttpProvider("https://bsc-testnet-dataseed.bnbchain.org"))
 
