@@ -5,8 +5,6 @@ import { gameAdd, gameContract, gameContractR, gameFetcherContractR, HexaContrac
 import { useAppKitAccount } from '@reown/appkit/react'
 import { useConfig, useShowCallsStatus } from 'wagmi'
 import { executeContract } from '../../utils/contractExecutor'
-import RoundCountdown from './Countdown'
-import DepositModal from './Modal'
 import ColorGame from './ColorGame'
 import BigSmall from './BigSmall'
 import ResultModal from './ResultModal'
@@ -193,7 +191,7 @@ export default function Game() {
         .getUserWinningAmount(gameId, address)
         .call();
 
-        console.log("object of game ",_result)
+
 
       if (!_result[1]) {
         setShowResultModal({
@@ -276,7 +274,7 @@ export default function Game() {
     let gameAddr = findGame(slot, time);
 
     const value = amount / price;
-        console.log("object", value)
+        console.log("object", {value,contract:gameContract.address,gameAddr})
     await executeContract({
       config,
       functionName: "placeBid",

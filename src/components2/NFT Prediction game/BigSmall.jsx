@@ -6,16 +6,19 @@ import { formatEther } from 'ethers'
 import { formatAddress, secondsToDMY } from '../../utils/contractExecutor'
 import DepositModal from './Modal'
 import { gameContract } from '../../config'
+import { reverse } from '@cloudinary/url-gen/actions/effect'
 
 export default function BigSmall({ config, allResults, depositHistory, onSuccess, colors, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
     const [page, setPage] = useState(1)
     const [showLive, setShowLive] = useState(false)
     const [showList, setShowList] = useState("my")
     const pageSize = 5;
-    const pending = myBids.filter(bid => !bid.settled).filter(b => (time == 1 && b.gameId == "0") || (time == 3 && b.gameId == "1"));
+    const pending = myBids.filter(bid => !bid.settled).filter(b => (time == 1 && b.gameId == "12") || (time == 3 && b.gameId == "13"));
     const isDisabled = remaining <= 10;
-    const reversed = [...myBids].reverse().filter(b => (time == 1 && b.gameId == "0") || (time == 3 && b.gameId == "1"));
+    const reversed = [...myBids].reverse().filter(b => (time == 1 && b.gameId == "12") || (time == 3 && b.gameId == "13"));
     const totalPages = showList == "my" ? Math.ceil(reversed.length / pageSize) : Math.ceil(allResults.length / pageSize)
+
+            console.log("object of game ",{myBids,reversed})
 
     const allResultsReversed = [...allResults].reverse();
     return (

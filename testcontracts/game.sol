@@ -59,7 +59,7 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     address public settler;
     Ihelper public helper;
     IpriceOracle public priceOracle;
-    //    address public feeder;
+    address public feeder;
 
     struct Scheme {
         uint start;
@@ -171,19 +171,22 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function initialize(
-        // address _hexa,
-        // address _incomeWallet,
-        // address _helper,
-        address[] memory _settler
+        address _hexa,
+        address _incomeWallet,
+        address _helper,
+        address[] memory _settler,
+        address _priceOracle,
+        address _feeder
     ) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
 
-        hexa = IERC20(0x309D64381Ea67edbe9E09e719b398f0060AD4FCf);
-        incomeWallet = 0x0872c88D2Ca157e4C6221c6B55BeAeba64848Df4;
-        helper = Ihelper(0xd3120EF4eFA25ABE521761D3aEC8c7D87bAc5d5f);
-        settler = 0x8397d56A9bec2155E63F62133C8fbDA30C61A7eF;
-        priceOracle = IpriceOracle(0x6176417d8Ab5232175FFEa27b26b2dCeDf09376B);
+        hexa = IERC20(_hexa);
+        incomeWallet = _incomeWallet;
+        helper = Ihelper(_helper);
+
+        priceOracle = IpriceOracle(_priceOracle);
+        feeder = _feeder;
 
         _createGames();
         setSettlers(_settler);
@@ -241,13 +244,15 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         if (block.timestamp >= scheme.start && block.timestamp <= scheme.end) {
             uint256 depositorBonus = (_amount * scheme.perToDepositor) / 100;
             uint256 referrerBonus = (_amount * scheme.perToReferrer) / 100;
+            uint256 totalBonus = depositorBonus + referrerBonus;
+            hexa.transferFrom(feeder, address(this), totalBonus);
 
             balance[msg.sender] += depositorBonus;
             Deposit memory dx2 = Deposit({
                 amount: (_amount * scheme.perToDepositor) / 100,
                 time: block.timestamp,
                 depositor: msg.sender,
-                eventType: scheme.end,
+                eventType: 1,
                 percentage: scheme.perToDepositor
             });
             userDepositArray[msg.sender].push(dx2);
@@ -257,11 +262,12 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
                 amount: (_amount * scheme.perToReferrer) / 100,
                 time: block.timestamp,
                 depositor: msg.sender,
-                eventType: scheme.end,
+                eventType: 2,
                 percentage: scheme.perToReferrer
             });
-            userDepositArray[msg.sender].push(dx3);
+
             balance[u.referrer] += referrerBonus;
+            userDepositArray[u.referrer].push(dx3);
         }
 
         _distributeIncome(msg.sender, _amount);
@@ -524,9 +530,9 @@ contract GameEngine is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         address addr
     ) public view returns (bool) {
         return
-            block.timestamp - user.data.packageUpgraded <= 45 minutes &&
+            block.timestamp - user.data.packageUpgraded <= 45 days &&
             helper.userPackage(addr).id > 0 &&
-            block.timestamp - user.data.userTradingTime <= 2 hours;
+            block.timestamp - user.data.userTradingTime <= 30 days;
     }
 
     function getBids() public view returns (Bid[] memory) {
@@ -733,6 +739,6 @@ contract DataFetcherForGame is
             }
         }
 
-        return (winnerAmount, isInTheGame, color, winnerAmount / 2);
+        return (winnerAmount, isInTheGame, color, amount);
     }
 }
