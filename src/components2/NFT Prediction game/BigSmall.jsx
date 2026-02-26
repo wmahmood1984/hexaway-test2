@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { formatEther } from 'ethers'
 import { formatAddress, secondsToDMY } from '../../utils/contractExecutor'
 import DepositModal from './Modal'
-import { gameContract } from '../../config'
+import { gameContract, resultKeys } from '../../config'
 import { reverse } from '@cloudinary/url-gen/actions/effect'
 
 export default function BigSmall({ config, allResults, depositHistory, onSuccess, colors, executeContract, hexaBalance, showDeposit, price, myBids, time, setShowDeposit, depositBalance, remaining, serverStatus, setTime, amount, setAmount, handleClick }) {
@@ -234,7 +234,7 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
                             const startIndex = (page - 1) * pageSize;
                             const endIndex = startIndex + pageSize;
                             if (index < startIndex || index >= endIndex) return null;
-                            let result = bid.settled && bid.won ? "WON" : bid.settled && !bid.won ? "LOST" : "PENDING"
+                                                        let result = bid.settled && resultKeys[bid.won]
                             return (
                                 <div className="history-row"><span>#{index + 1}</span>
                                     <span>{secondsToDMY(bid.time)}</span>

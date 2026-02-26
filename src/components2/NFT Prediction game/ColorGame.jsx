@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { formatEther } from 'ethers'
 import { formatAddress, secondsToDMY } from '../../utils/contractExecutor'
 import DepositModal from './Modal'
-import { gameContract } from '../../config'
+import { gameContract, resultKeys } from '../../config'
 import { all } from 'axios'
 
 
@@ -234,14 +234,17 @@ export default function ColorGame({ colors, depositHistory, onSuccess, allResult
                             const startIndex = (page - 1) * pageSize;
                             const endIndex = startIndex + pageSize;
                             if (index < startIndex || index >= endIndex) return null;
-                            let result = bid.settled && bid.won ? "WON" : bid.settled && !bid.won ? "LOST" : "PENDING"
+                            let result = bid.settled && resultKeys[bid.won]
                             return (
                                 <div className="history-row"><span>#{index + 1}</span>
                                     <span>{secondsToDMY(bid.time)}</span>
                                     <span style={{ color: bid.color }}>
                                         {colors[bid.color]} </span>
                                     <span>{Number(formatEther(bid.amount)).toFixed(2)}</span>
-                                    <span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>{result === "WON" ? `+${Number(formatEther(bid.amount) * 2).toFixed(2)}` : result === "LOST" ? "0" : "-"}</span></div>
+                                    <span className={result === "WON" ? "badge-win" : result === "LOST" ? "badge-loss" : ""}>
+                                        {result === "WON" ? `+${Number(formatEther(bid.amount) * 2).toFixed(2)}` : result === "LOST" ? "0" : "-"}
+                                        </span>
+                                        </div>
                             )
                         })}
                     </div>

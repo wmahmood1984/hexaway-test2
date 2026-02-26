@@ -61,7 +61,7 @@ export const incomeKeys = [
 	}
 ]
 
-export const resultKeys = ["Pending","Won","Lost","Refunded"]
+export const resultKeys = ["Pending","WON","LOST","Refunded"]
 
 export const packageKeys = [
 	{	dollar:"$ 2",
