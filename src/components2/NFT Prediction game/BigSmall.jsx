@@ -18,7 +18,7 @@ export default function BigSmall({ config, allResults, depositHistory, onSuccess
     const reversed = [...myBids].reverse().filter(b => (time == 1 && b.gameId == "12") || (time == 3 && b.gameId == "13"));
     const totalPages = showList == "my" ? Math.ceil(reversed.length / pageSize) : Math.ceil(allResults.length / pageSize)
 
-            console.log("object of game ",{myBids,reversed})
+    console.log("object of game ",{myBids,reversed})
 
     const allResultsReversed = [...allResults].reverse();
     return (

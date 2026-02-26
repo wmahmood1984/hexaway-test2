@@ -93,7 +93,7 @@ export default function Game() {
 
     const ran = await gameContractR.methods.gameRan(gameAddr).call();
     setGameRan(Number(ran));
-    setShowResultModal({ show: false, result: { resultEmoji: "", resultText: "", resultColor: "", selectedType: "Nothing", wagerVal: 0, payout: 0, won: false } })
+
     // 🔁 Reset winner check for new round
 
   }, [slot, time]);
