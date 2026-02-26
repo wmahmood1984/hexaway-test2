@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { executeContract, formatWithCommas, secondsToDMY } from '../utils/contractExecutor';
 import { formatEther, parseEther } from 'ethers';
-import { bulkAddAbi, bulkContractAdd, fetcherAbi, fetcherAddress, fetcherHelperv2, fetcherV2Abi, helperAbi, helperAddress, helperContractV2, helperv2, helperv2Abi, HexaContract, priceOracleContractR, testweb3, web3 } from '../config';
+import { bulkAddAbi, bulkContractAdd, fetcherAbi, fetcherAddress, fetcherContractV2R, fetcherHelperv2, fetcherV2Abi, helperAbi, helperAddress, helperContractV2, helperv2, helperv2Abi, HexaContract, priceOracleContractR, testweb3, web3 } from '../config';
 import { NFT } from './NFT';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppKitAccount } from '@reown/appkit/react';
@@ -31,7 +31,7 @@ export default function Trade({ setCreateActive }) {
     const [price, setPrice] = useState(0)
 
     const helperContract = new web3.eth.Contract(helperv2Abi, helperv2)
-    const fetcherContract = new web3.eth.Contract(fetcherV2Abi, fetcherHelperv2)
+    const fetcherContract = new web3.eth.Contract(fetcherV2Abi, "0x531275f6a03e0a8198066E00BF8Ec544AA1c057E")
 
 
     useEffect(() => {
@@ -43,7 +43,8 @@ export default function Trade({ setCreateActive }) {
 
 
     const abc = async () => {
-        const _tickets = await fetcherContract.methods.getTicketsByUser(address).call()
+           console.log("Trade,",address,fetcherContractV2R)
+       const _tickets = await fetcherContract.methods.getTicketsByUser(address).call()
 
         setTickets(_tickets)
 
@@ -172,7 +173,7 @@ export default function Trade({ setCreateActive }) {
 
 
 
-
+ 
     const isLoading = !tickets || !Package
 
 

@@ -1,10 +1,10 @@
 import Web3 from "web3";
 export const mainnet = true;
 
-const rpc = !mainnet?  //	"https://opbnb-testnet-rpc.publicnode.com"   //op bnb
-			//:  "https://opbnb-mainnet-rpc.bnbchain.org"	
-			"https://api-opbnb-testnet.n.dwellir.com/cd3616b6-aa41-42c2-a71a-6c87168622db" // opbnb testnet
-			:"https://api-opbnb-mainnet.n.dwellir.com/cd3616b6-aa41-42c2-a71a-6c87168622db"	// opbnb mainnet	
+const rpc = !mainnet?  	"https://opbnb-testnet-rpc.publicnode.com"   //op bnb
+			:  "https://opbnb-mainnet-rpc.bnbchain.org"	
+			//"https://api-opbnb-testnet.n.dwellir.com/cd3616b6-aa41-42c2-a71a-6c87168622db" // opbnb testnet
+			//:"https://api-opbnb-mainnet.n.dwellir.com/cd3616b6-aa41-42c2-a71a-6c87168622db"	// opbnb mainnet	
 
 
 export const web31 = new Web3(new Web3.providers.HttpProvider(rpc))
@@ -5097,13 +5097,6 @@ export const fetcherV2Abi = [
 	},
 	{
 		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "UUPSUnauthorizedCallContext",
 		"type": "error"
 	},
@@ -5149,6 +5142,13 @@ export const fetcherV2Abi = [
 		],
 		"name": "OwnershipTransferred",
 		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -5205,6 +5205,66 @@ export const fetcherV2Abi = [
 		"name": "upgradeToAndCall",
 		"outputs": [],
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "windowSeconds",
+				"type": "uint256"
+			}
+		],
+		"name": "_countReferrals",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "refs",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "counts",
+				"type": "uint256[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "refs",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "counts",
+				"type": "uint256[]"
+			}
+		],
+		"name": "_top3",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "referrer",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "count",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct DataFetcherUpgradeable.TopReferrer[3]",
+				"name": "top",
+				"type": "tuple[3]"
+			}
+		],
+		"stateMutability": "pure",
 		"type": "function"
 	},
 	{
@@ -10307,6 +10367,7 @@ export const HEXAContractR = new web3.eth.Contract(erc20abi,hexaTokenAdd)
 export const priceOracleContractR = new web3.eth.Contract(priceOracleAbi,priceOracleAdd)
 
 export const distributionContractR = new web3.eth.Contract(distributionAbi,distributionAdd)
+export const fetcherContractV2R = new web3.eth.Contract(fetcherV2Abi,fetcherHelperv2)
 
 export const stakingV1ContractR = new web3.eth.Contract(stakingV1Abi,stakingV1Add)
 export const gameContractR = new web3.eth.Contract(gameAbi,gameAdd)
