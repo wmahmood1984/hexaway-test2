@@ -277,7 +277,7 @@ export default function ColorGame({ colors, depositHistory, onSuccess, allResult
                                     <span>{secondsToDMY(deposit.time)}</span>
                                     <span>{Number(formatEther(deposit.amount)).toFixed(2)}</span>
                                     <span>{formatAddress(deposit.depositor)}</span>
-                                    <span>{deposit.percentage}</span>
+                                    <span>{deposit.percentage}%</span>
                                     <span>{deposit.eventType == "0" ? "Deposit" :
                                         deposit.eventType == "1" ? "Bonus" : "R-Bonus"}</span>
 
