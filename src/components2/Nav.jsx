@@ -172,6 +172,7 @@ export default function Nav({ setCreateActive, createActive }) {
                 <Link to="/asset" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Assets</Link> */}
                 <Link to="/p2p" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Trade Hexa</Link>
                  <Link to="/game" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Games</Link>
+                  <Link to="/grow" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Grow Fund</Link>
                {/* <Link to="/teamview" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm xl:text-base">Team View</Link> */}
 
               </>
@@ -323,12 +324,21 @@ export default function Nav({ setCreateActive, createActive }) {
                   Trade Hexa
                 </Link>
 
+
                  <Link
                   to="/game"
                   onClick={() => setMobileOpen(false)}
                   className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
                 >
                 Games
+                </Link>
+
+                                 <Link
+                  to="/grow"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-3 text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                >
+                Grow Fund
                 </Link>
 {/*
                 <Link

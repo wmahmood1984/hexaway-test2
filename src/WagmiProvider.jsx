@@ -20,7 +20,7 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/179229932']
 }
 
-const netw = opBNB//mainnet ? opBNB : opBNBTestnet
+const netw = opBNBTestnet//mainnet ? opBNB : opBNBTestnet
 
 // 3. Set the networks
 const networks = [

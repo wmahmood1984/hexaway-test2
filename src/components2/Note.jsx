@@ -165,7 +165,7 @@ export default function NoteMarquee() {
               >
                 {" "}
                 {Array(9).fill(
-                  "Dear Hexa Community,  We’re excited to announce that the new module is now ready for trading. You and your entire team can begin using it immediately to maximize earnings by placing as many trades as suitable under your strategy Team Hexa, 🎯"
+                  "We are pleased to share exciting news with the HEXA community—HEXA Game is now live. This launch creates a powerful opportunity for all communities to build strong teams and unlock significant growth and advantages together🕹️🟢🔴🔵🖲️"
                 )}
               </div>
             </div>

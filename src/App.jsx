@@ -28,6 +28,7 @@ import ColorPredictionAdmin from './components2/NFT Prediction game/ColorPredict
 import ColorSlotAdmin from './components2/NFT Prediction game/ColorSlotAdmin'
 
 import SetScheme from './components2/SchemeAdmin'
+import Grow from './components2/Grow/Grow'
 
 export default function App() {
 
@@ -66,10 +67,11 @@ export default function App() {
                 <Route path="/p2p" element={<User />} />
                 <Route path="/lists" element={<Lists />} />
                 <Route path="/staking" element={<Staking />} />
-                <Route path="/game" element={<Game />} />
+                {/* <Route path="/game" element={<Game />} /> */}
                 <Route path="/predictionadmin" element={<ColorPredictionAdmin />} />
                 <Route path="/slotadmin" element={<ColorSlotAdmin />} />
                               <Route path="/admin" element={<SetScheme />} />
+                                                            <Route path="/grow" element={<Grow />} />
             </Routes>
         </div >
     )
