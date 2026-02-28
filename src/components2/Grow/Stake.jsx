@@ -61,13 +61,13 @@ export default function Stake(
 
                             <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "16px", flexWrap: "wrap" }}>
                                 <a ><button
-                                    onClick={() => { setActiveTab("10") }}
+                                    onClick={() => { setActiveTab("1") }}
                                     style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "white", border: "none", padding: "12px 24px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(14px,3vw,16px)", fontWeight: 700, boxShadow: "0 8px 20px rgba(245,158,11,0.4)", minWidth: "140px" }}>10 Days Plan</button></a>
                                 <a ><button
-                                    onClick={() => { setActiveTab("20") }}
+                                    onClick={() => { setActiveTab("2") }}
                                     style={{ background: "linear-gradient(135deg,#10b981,#059669)", color: "white", border: "none", padding: "12px 24px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(14px,3vw,16px)", fontWeight: 700, boxShadow: "0 8px 20px rgba(16,185,129,0.4)", minWidth: "140px" }}>20 Days Plan</button></a>
                                 <a ><button
-                                    onClick={() => { setActiveTab("30") }}
+                                    onClick={() => { setActiveTab("3") }}
                                     style={{ background: "linear-gradient(135deg,#8b5cf6,#7c3aed)", color: "white", border: "none", padding: "12px 24px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(14px,3vw,16px)", fontWeight: 700, boxShadow: "0 8px 20px rgba(139,92,246,0.4)", minWidth: "140px" }}>30 Days Plan</button></a>
                             </div>
 

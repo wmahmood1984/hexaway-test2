@@ -10,7 +10,7 @@ import { parseEther } from 'ethers';
 export default function Grow() {
     const config = useConfig()
     const { address } = useAppKitAccount();
-    const [activeTab, setActiveTab] = useState("10");
+    const [activeTab, setActiveTab] = useState("1");
     const [price, setPrice] = useState("0.01");
     const [hexaBalance, setHexaBalance] = useState(0)
     const [totalStaked, setTotalStaked] = useState(0)
@@ -26,7 +26,16 @@ export default function Grow() {
 
     useEffect(() => {
         abc()
-    }, [])
+    }, [loading])
+
+    useEffect(() => {
+        fetchTickets()
+    }, [loading,activeTab])
+
+    const fetchTickets = async ()=>{
+        const ticket = await growFundContractR.methods.getTicketsByUser(address,activeTab).call()
+            setTicket(ticket)
+    }
 
     const abc = async () => {
         try {
@@ -40,8 +49,7 @@ export default function Grow() {
             setTotalEarned(tn(earned))
             const usdtBal = await USDTContractR.methods.balanceOf(address).call()
             setUsdtBalance(tn(usdtBal))
-            const ticket = await growFundContractR.methods.getTicketsByUser(address).call()
-            setTicket(ticket)
+           
 
             const _stakeDone = await growFundContractR.methods.stakeDone(1).call()
 
@@ -54,7 +62,7 @@ export default function Grow() {
             const _stakeDone3 = await growFundContractR.methods.stakeDone(3).call()
             setStakeDone3(_stakeDone3)
         } catch (error) {
-            console.log("error in abc", _stakeDone)            
+            console.log("error in abc")            
         }
     }
 
@@ -164,6 +172,15 @@ export default function Grow() {
             </div>
         );
     }
+
+    let myTotalStaked = ticket.reduce((sum, t) => {
+        return Number(sum) + Number(tn(t.amount));
+    }, 0)
+
+    let myTotalEarned = ticket.reduce((sum, t) => {
+        const reward = Number(tn(t.claimable))-Number(tn(t.amount))
+         return Number(sum) + Number(reward);
+}, 0)
     return (
         <div>
             <div>
@@ -171,7 +188,7 @@ export default function Grow() {
 
                 </div>
 
-                {activeTab === "10" && <Stake
+                {activeTab === "1" && <Stake
                     onClick={() => onDepositClick(1)}
                     textShadow={"0 4px 20px #f59e0b"}
                     setActiveTab={setActiveTab}
@@ -183,15 +200,15 @@ export default function Grow() {
                     color={"#f59e0b"}
                     background1={"linear-gradient(135deg,#f59e0b,#d97706)"}
                     price={price}
-                    totalStaked={totalStaked}
-                    totalEarned={totalEarned}
+                    totalStaked={myTotalStaked}
+                    totalEarned={myTotalEarned}
                     hexaBalance={hexaBalance}
                     usdtBalance={usdtBalance}
                     ticket={ticket}
                     stakeDone={stakeDone}
                     clickClaim={clickClaim}
                 />}
-                {activeTab === "20" && <Stake
+                {activeTab === "2" && <Stake
                     onClick={() => onDepositClick(2)}
                     textShadow={"0 4px 20px #10b981"}
                     setActiveTab={setActiveTab}
@@ -203,8 +220,8 @@ export default function Grow() {
                     border={"3px solid #10b981"}
                     background1={"linear-gradient(135deg,#10b981,#059669)"}
                     price={price}
-                    totalStaked={totalStaked}
-                    totalEarned={totalEarned}
+                    totalStaked={myTotalStaked}
+                    totalEarned={myTotalEarned}
                     hexaBalance={hexaBalance}
                     usdtBalance={usdtBalance}
                     ticket={ticket}
@@ -212,7 +229,7 @@ export default function Grow() {
                     clickClaim={clickClaim}
                 />}
 
-                {activeTab === "30" && <Stake
+                {activeTab === "3" && <Stake
                     onClick={() => onDepositClick(3)}
                     textShadow={"0 4px 20px #8b5cf6"}
                     setActiveTab={setActiveTab}
@@ -225,8 +242,8 @@ export default function Grow() {
                     background1={"linear-gradient(135deg,#8b5cf6,#7c3aed)"}
                     background={"linear-gradient(135deg,#ffffff,rgba(139,92,246,0.2))"}
                     price={price}
-                    totalStaked={totalStaked}
-                    totalEarned={totalEarned}
+                    totalStaked={myTotalStaked}
+                    totalEarned={myTotalEarned}
                     hexaBalance={hexaBalance}
                     usdtBalance={usdtBalance}
                     ticket={ticket}

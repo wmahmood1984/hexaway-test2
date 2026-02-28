@@ -61,7 +61,7 @@ export const incomeKeys = [
 	}
 ]
 
-export const rewardTypeKeys = ["10 Days", "20 Days", "30 Days"]
+export const rewardTypeKeys = ["","10 Days", "20 Days", "30 Days"]
 
 export const resultKeys = ["Pending","WON","LOST","Refunded"]
 
@@ -9730,6 +9730,19 @@ export const growfundAbi = [
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "claim",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "implementation",
 				"type": "address"
@@ -9747,6 +9760,13 @@ export const growfundAbi = [
 		"inputs": [],
 		"name": "FailedCall",
 		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -9829,6 +9849,39 @@ export const growfundAbi = [
 		"type": "event"
 	},
 	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "stake",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -9842,29 +9895,21 @@ export const growfundAbi = [
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "HEXA",
-		"outputs": [
+		"inputs": [
 			{
-				"internalType": "contract IERC20",
-				"name": "",
+				"internalType": "address",
+				"name": "newImplementation",
 				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "UPGRADE_INTERFACE_VERSION",
-		"outputs": [
+			},
 			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
 			}
 		],
-		"stateMutability": "view",
+		"name": "upgradeToAndCall",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -9887,19 +9932,6 @@ export const growfundAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_id",
-				"type": "uint256"
-			}
-		],
-		"name": "claim",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "feeder",
 		"outputs": [
@@ -9913,11 +9945,66 @@ export const growfundAbi = [
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "getTickets",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "time",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "stakeType",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "claimable",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "amountClaimed",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct Grow.Stake[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
 				"name": "_user",
 				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
 			}
 		],
 		"name": "getTicketsByUser",
@@ -9974,6 +10061,19 @@ export const growfundAbi = [
 		"outputs": [
 			{
 				"internalType": "contract Ihelper",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "HEXA",
+		"outputs": [
+			{
+				"internalType": "contract IERC20",
 				"name": "",
 				"type": "address"
 			}
@@ -10129,13 +10229,6 @@ export const growfundAbi = [
 	},
 	{
 		"inputs": [],
-		"name": "initialize",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "owner",
 		"outputs": [
 			{
@@ -10158,26 +10251,6 @@ export const growfundAbi = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_id",
-				"type": "uint256"
-			}
-		],
-		"name": "stake",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -10303,19 +10376,6 @@ export const growfundAbi = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
@@ -10343,21 +10403,16 @@ export const growfundAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "UPGRADE_INTERFACE_VERSION",
+		"outputs": [
 			{
-				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
-		"name": "upgradeToAndCall",
-		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "view",
 		"type": "function"
 	}
 ]
@@ -10398,8 +10453,10 @@ export const mlmcontractaddressImplementation =
 export const dataFetcherGameAdd = mainnet ? "0x0cb4db2cb9a70c03d590De7EAFc117C4D333d12a" : 
 "0x4a9DB257a8320aF3A558c7a4Cf848a80555EEf95"
 
-export const bonusContractAdd = mainnet? "0x648dFbD997b12F2F615ADAfD901B92c498cebEd1": "0xCdB22dc563949646836a3a4076E797e34B0f13Ae"
-export const growFundAdd = mainnet ? "" : "0xebdf3067d4f80D55C894755F1c60C4f799d4780c"
+export const bonusContractAdd = mainnet? "0x648dFbD997b12F2F615ADAfD901B92c498cebEd1":
+ "0xCdB22dc563949646836a3a4076E797e34B0f13Ae"
+export const growFundAdd = mainnet ? "" : 
+"0xebdf3067d4f80D55C894755F1c60C4f799d4780c"
 
 
 export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"

@@ -9,6 +9,7 @@ import Admin_staking_earning from "./Staking page/Admin_staking_earning";
 import ExchangeAdmin from "./reports/ExchangeAdmin";
 import ColorSlotAdmin from "./NFT Prediction game/ColorSlotAdmin";
 import ColorPredictionAdmin from "./NFT Prediction game/ColorPredictionAdmin";
+import AdminHistory from "./Grow/AdminHistory";
 
 export default function Lists() {
     const [activeTab, setActiveTab] = useState("admin1");
@@ -68,7 +69,7 @@ export default function Lists() {
                 >
                     Trading
                 </button>
-                                <button
+                <button
                     onClick={() => setActiveTab("prediction")}
                     className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "prediction"
                         ? "bg-blue-600 text-white"
@@ -77,7 +78,7 @@ export default function Lists() {
                 >
                     Prediction Admin
                 </button>
-                            <button
+                <button
                     onClick={() => setActiveTab("slotadmin")}
                     className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "slotadmin"
                         ? "bg-blue-600 text-white"
@@ -85,7 +86,16 @@ export default function Lists() {
                         }`}
                 >
                     Slot Admin
-                </button>    
+                </button>
+                <button
+                    onClick={() => setActiveTab("growadmin")}
+                    className={`px-5 py-2 rounded-lg font-semibold transition-all ${activeTab === "growadmin"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700"
+                        }`}
+                >
+                    Grow
+                </button>
 
 
 
@@ -98,8 +108,9 @@ export default function Lists() {
             {activeTab === "admin1" && <ExchangeAdmin />}
             {activeTab === "admin2" && <Admin_staking />}
             {activeTab === "admin3" && <Admin_staking_earning />}
-                       {activeTab === "prediction" && <ColorPredictionAdmin />}
-                                  {activeTab === "slotadmin" && <ColorSlotAdmin/>}
+            {activeTab === "prediction" && <ColorPredictionAdmin />}
+            {activeTab === "slotadmin" && <ColorSlotAdmin />}
+            {activeTab === "growadmin" && <AdminHistory />}
 
         </div>
     );

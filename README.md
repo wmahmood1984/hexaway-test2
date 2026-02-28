@@ -1,5 +1,6 @@
-loading issue. 
+ 
 
+put level income as per the level unlock
 
 
 
@@ -51,5 +52,7 @@ steps
 
 1) change time in initializer from minutes to days (3 instances)
 2) change duration at line 187 of Stake.jsx
+3) provide allowance to the smart contract from feeder
+
 
 
