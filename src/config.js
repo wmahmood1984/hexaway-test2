@@ -61,6 +61,8 @@ export const incomeKeys = [
 	}
 ]
 
+export const rewardTypeKeys = ["10 Days", "20 Days", "30 Days"]
+
 export const resultKeys = ["Pending","WON","LOST","Refunded"]
 
 export const packageKeys = [
@@ -10397,7 +10399,7 @@ export const dataFetcherGameAdd = mainnet ? "0x0cb4db2cb9a70c03d590De7EAFc117C4D
 "0x4a9DB257a8320aF3A558c7a4Cf848a80555EEf95"
 
 export const bonusContractAdd = mainnet? "0x648dFbD997b12F2F615ADAfD901B92c498cebEd1": "0xCdB22dc563949646836a3a4076E797e34B0f13Ae"
-export const growFundAdd = mainnet ? "" : "0x32616985dCc3724eb7363ED4eFAbE21E5239537A"
+export const growFundAdd = mainnet ? "" : "0xebdf3067d4f80D55C894755F1c60C4f799d4780c"
 
 
 export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"

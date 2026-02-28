@@ -11,20 +11,24 @@ export default function Grow() {
     const config = useConfig()
     const { address } = useAppKitAccount();
     const [activeTab, setActiveTab] = useState("10");
-        const [price, setPrice] = useState("0.01");
-         const [hexaBalance, setHexaBalance] = useState(0)
-         const [totalStaked, setTotalStaked] = useState(0)
-         const [totalEarned, setTotalEarned] = useState(0)
-         const [usdtBalance,setUsdtBalance] = useState(0)
-         const [ticket,setTicket] = useState()
-         const [loading, setLoading] = useState(false);
+    const [price, setPrice] = useState("0.01");
+    const [hexaBalance, setHexaBalance] = useState(0)
+    const [totalStaked, setTotalStaked] = useState(0)
+    const [totalEarned, setTotalEarned] = useState(0)
+    const [usdtBalance, setUsdtBalance] = useState(0)
+    const [ticket, setTicket] = useState()
+    const [stakeDone, setStakeDone] = useState(0)
 
-  
-    useEffect(()=>{
+    const [stakeDone2, setStakeDone2] = useState(0)
+    const [stakeDone3, setStakeDone3] = useState(0)
+    const [loading, setLoading] = useState(false);
+
+
+    useEffect(() => {
         abc()
-    },[])
+    }, [])
 
-    const abc = async ()=>{
+    const abc = async () => {
         try {
             const price = await priceOracleContractR.methods.price().call()
             setPrice(tn(price))
@@ -38,71 +42,113 @@ export default function Grow() {
             setUsdtBalance(tn(usdtBal))
             const ticket = await growFundContractR.methods.getTicketsByUser(address).call()
             setTicket(ticket)
+
+            const _stakeDone = await growFundContractR.methods.stakeDone(1).call()
+
+            setStakeDone(_stakeDone)
+
+            const _stakeDone2 = await growFundContractR.methods.stakeDone(2).call()
+            setStakeDone2(_stakeDone2)
+
+
+            const _stakeDone3 = await growFundContractR.methods.stakeDone(3).call()
+            setStakeDone3(_stakeDone3)
         } catch (error) {
-            console.log("error in abc",error)
+            console.log("error in abc", _stakeDone)            
         }
     }
 
 
-  const onDepositClick1 = async (id) => {
+    const onDepositClick1 = async (id) => {
 
-      console.log("object",{growFundContract,growFundAdd,config,id})
-    try {
-      setLoading(true);
 
-      await executeContract({
-        config,
-        contract: growFundContract,
-        functionName: "stake",
-        args: [id],
-        onSuccess: (txHash, receipt) => {
-          console.log("🎉 Tx Hash:", txHash);
-          console.log("🚀 Tx Receipt:", receipt);
-          toast.success("Stake successful");
-          
-        },
-        onError: (err) => {
-          console.error("🔥 Stake error:", err);
-          toast.error("Stake failed");
-        },
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+        try {
+            setLoading(true);
+
+            await executeContract({
+                config,
+                contract: growFundContract,
+                functionName: "stake",
+                args: [id],
+                onSuccess: (txHash, receipt) => {
+                    console.log("🎉 Tx Hash:", txHash);
+                    console.log("🚀 Tx Receipt:", receipt);
+                    toast.success("Stake successful");
+                    abc()
+                },
+                onError: (err) => {
+                    console.error("🔥 Stake error:", err);
+                    toast.error("Stake failed");
+                },
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
     const onDepositClick = async (id) => {
-  
-        
-      if (
-        Number(hexaBalance) < 1000
-      ) {
-        toast.error("Insufficient HEXA Balance")
-        return
-      }
 
-   
 
-       try {
-        setLoading(true);
-        await executeContract({
-          config,
-          functionName: "approve",
-          args: [growFundAdd, parseEther("1000")],
-          contract: HexaContract,
-          onSuccess: () => onDepositClick1(id),
-          onError: () => {
+        if (
+            Number(hexaBalance) < 1000
+        ) {
+            toast.error("Insufficient HEXA Balance")
+            return
+        }
+
+
+
+        try {
+            setLoading(true);
+            await executeContract({
+                config,
+                functionName: "approve",
+                args: [growFundAdd, parseEther("1000")],
+                contract: HexaContract,
+                onSuccess: () => onDepositClick1(id),
+                onError: () => {
+                    setLoading(false);
+                    // toast.error("Approval failed");
+                }
+            });
+
+        } catch (err) {
             setLoading(false);
-            // toast.error("Approval failed");
-          }
-        });
-  
-      } catch (err) {
-        setLoading(false);
-        toast.error("Unexpected error occurred");
-        console.error(err);
-      }
+            toast.error("Unexpected error occurred");
+            console.error(err);
+        }
+    };
+
+    const clickClaim = async (id) => {
+
+
+
+
+        try {
+            setLoading(true);
+            await executeContract({
+                config,
+                functionName: "claim",
+                args: [id],
+                contract: growFundContract,
+                onSuccess: (txHash, receipt) => {
+                    console.log("🎉 Tx Hash:", txHash);
+                    console.log("🚀 Tx Receipt:", receipt);
+                    toast.success("Claim successful");
+                    abc()
+                },
+                onError: () => {
+                    setLoading(false);
+                    // toast.error("Approval failed");
+                }
+            });
+
+        } catch (err) {
+            setLoading(false);
+            toast.error("Unexpected error occurred");
+            console.error(err);
+        }
     };
 
 
@@ -126,7 +172,7 @@ export default function Grow() {
                 </div>
 
                 {activeTab === "10" && <Stake
-                                    onClick={() => onDepositClick(1)}
+                    onClick={() => onDepositClick(1)}
                     textShadow={"0 4px 20px #f59e0b"}
                     setActiveTab={setActiveTab}
                     days={10}
@@ -141,10 +187,12 @@ export default function Grow() {
                     totalEarned={totalEarned}
                     hexaBalance={hexaBalance}
                     usdtBalance={usdtBalance}
-                    ticket={ticket} 
+                    ticket={ticket}
+                    stakeDone={stakeDone}
+                    clickClaim={clickClaim}
                 />}
                 {activeTab === "20" && <Stake
-                                        onClick={() => onDepositClick(2)}
+                    onClick={() => onDepositClick(2)}
                     textShadow={"0 4px 20px #10b981"}
                     setActiveTab={setActiveTab}
                     activeTab={activeTab}
@@ -153,13 +201,15 @@ export default function Grow() {
                     color={"#10b981"}
                     background={"linear-gradient(135deg,#ffffff,rgba(16,185,129,0.2))"}
                     border={"3px solid #10b981"}
-                                        background1={"linear-gradient(135deg,#10b981,#059669)"}
-                price={price}
+                    background1={"linear-gradient(135deg,#10b981,#059669)"}
+                    price={price}
                     totalStaked={totalStaked}
                     totalEarned={totalEarned}
                     hexaBalance={hexaBalance}
                     usdtBalance={usdtBalance}
-                    ticket={ticket} 
+                    ticket={ticket}
+                    stakeDone={stakeDone2}
+                    clickClaim={clickClaim}
                 />}
 
                 {activeTab === "30" && <Stake
@@ -169,16 +219,18 @@ export default function Grow() {
                     activeTab={activeTab}
                     days={30}
                     earn={450}
+                    stakeDone={stakeDone3}
                     border={"3px solid #8b5cf6"}
                     color={"#8b5cf6"}
-                                        background1={"linear-gradient(135deg,#8b5cf6,#7c3aed)"}
+                    background1={"linear-gradient(135deg,#8b5cf6,#7c3aed)"}
                     background={"linear-gradient(135deg,#ffffff,rgba(139,92,246,0.2))"}
-                price={price}
+                    price={price}
                     totalStaked={totalStaked}
                     totalEarned={totalEarned}
                     hexaBalance={hexaBalance}
                     usdtBalance={usdtBalance}
-                    ticket={ticket} 
+                    ticket={ticket}
+                    clickClaim={clickClaim}
                 />}
 
 

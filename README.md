@@ -49,13 +49,7 @@ done) add escrow in to the game
 
 steps
 
-1) deploy buy/sale smart contract
-2) deploy staking smart contract 
-3) transfer hexas to the contract. 
-4) deploy game contract
-5) change the timings in helper v2 fetcher from hours to days / weeeks / month
-5) change .env file in the script
-6) copy the config file into the script 
-6) provide hexa to game contract for incentive scheme
+1) change time in initializer from minutes to days (3 instances)
+2) change duration at line 187 of Stake.jsx
 
 
