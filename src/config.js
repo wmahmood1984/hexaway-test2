@@ -1,5 +1,5 @@
 import Web3 from "web3";
-export const mainnet = false;
+export const mainnet = true;
 
 const rpc = !mainnet?  	"https://opbnb-testnet-rpc.publicnode.com"   //op bnb
 			:  "https://opbnb-mainnet-rpc.bnbchain.org"	
@@ -9730,6 +9730,41 @@ export const growfundAbi = [
 	{
 		"inputs": [
 			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "duration",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "redemption",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct Grow.Types",
+				"name": "tx1",
+				"type": "tuple"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "changeType",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "_id",
 				"type": "uint256"
@@ -9762,7 +9797,28 @@ export const growfundAbi = [
 		"type": "error"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_hexa",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_helper",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_incomeWallet",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_feeder",
+				"type": "address"
+			}
+		],
 		"name": "initialize",
 		"outputs": [],
 		"stateMutability": "nonpayable",
@@ -10450,10 +10506,11 @@ export const dataFetcherGameAdd = mainnet ? "0x0cb4db2cb9a70c03d590De7EAFc117C4D
 
 export const bonusContractAdd = mainnet? "0x648dFbD997b12F2F615ADAfD901B92c498cebEd1":
  "0xCdB22dc563949646836a3a4076E797e34B0f13Ae"
-export const growFundAdd = mainnet ? "" : 
+export const growFundAdd = mainnet ? "0xC21B4dAd1AE24aE4c822EAE4ec8de773E42F79cb" : 
 "0xdfe1cc073B02e50a515f8d4299a2Bb1a530AeA95"
 
-export const stakindReward = mainnet ? "" : "0xe1B6678e9189e5D1E9c76e464949d90a3B308B0C"
+export const stakindReward = mainnet ? "0x74f6DC8D4C64d30bA9BAd8706de2D64c06f8f6D0" : 
+"0xe1B6678e9189e5D1E9c76e464949d90a3B308B0C"
 
 
 export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"

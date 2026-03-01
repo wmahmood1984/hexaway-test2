@@ -186,7 +186,7 @@ export default function Stake(
                                         const startTime = Number(v.time);
 
                                         // stake end time
-                                        const endTime = startTime + duration * 60;
+                                        const endTime = startTime + duration * 60*60*24;
 
                                         // remaining time
                                         const timeRemaining = Math.max(endTime - now, 0);

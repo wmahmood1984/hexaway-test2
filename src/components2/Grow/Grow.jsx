@@ -150,6 +150,7 @@ export default function Grow() {
                     console.log("🎉 Tx Hash:", txHash);
                     console.log("🚀 Tx Receipt:", receipt);
                     toast.success("Claim successful");
+                    fetchTickets()
                     abc()
                 },
                 onError: () => {
