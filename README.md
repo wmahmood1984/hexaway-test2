@@ -52,7 +52,8 @@ steps
 
 1) change time in initializer from minutes to days (3 instances)
 2) change duration at line 187 of Stake.jsx
-3) provide allowance to the smart contract from feeder
+3) provide allowance to the smart contract from stakingreward
+4) put balance into the staking reward. 
 
 
 

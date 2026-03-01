@@ -200,7 +200,7 @@ export default function Grow() {
                     setActiveTab={setActiveTab}
                     days={10}
                     activeTab={activeTab}
-                    earn={100}
+                    earn={70}
                     border={"3px solid #f59e0b"}
                     background={"linear-gradient(135deg,#ffffff,rgba(245,158,11,0.2))"}
                     color={"#f59e0b"}
@@ -221,7 +221,7 @@ export default function Grow() {
                     activeTab={activeTab}
                     stakeDoneTime={stakeDoneTime}
                     days={20}
-                    earn={250}
+                    earn={160}
                     color={"#10b981"}
                     background={"linear-gradient(135deg,#ffffff,rgba(16,185,129,0.2))"}
                     border={"3px solid #10b981"}
@@ -243,7 +243,7 @@ export default function Grow() {
                     activeTab={activeTab}
                     stakeDoneTime={stakeDoneTime}
                     days={30}
-                    earn={450}
+                    earn={300}
                     stakeDone={stakeDone3}
                     border={"3px solid #8b5cf6"}
                     color={"#8b5cf6"}
