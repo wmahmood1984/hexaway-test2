@@ -88,6 +88,7 @@ export default function Grow() {
                     console.log("🚀 Tx Receipt:", receipt);
                     toast.success("Stake successful");
                     abc()
+                    fetchTickets()
                 },
                 onError: (err) => {
                     console.error("🔥 Stake error:", err);
