@@ -16,7 +16,7 @@ export default function Stake(
         hexaBalance,
         usdtBalance,
         ticket, onClick,
-        clickClaim,stakeDone
+        clickClaim,stakeDone,stakeDoneTime
     }
 ) {
 
@@ -41,6 +41,8 @@ export default function Stake(
 
     const config = buttonConfig[days] || buttonConfig[30];
     const [tab, setTab] = useState("history")
+    const now = new Date().getTime()/1000
+    const stakeDoneRevised = now>stakeDoneTime+(60*60*24) ?15 :  15-Number(stakeDone)
 
     console.log("object", { stakeDone })
 
@@ -81,7 +83,7 @@ export default function Stake(
                             <div style={{ display: "flex", alignItems: "stretch", justifyContent: "space-between", gap: "16px", flexDirection: "column" }}>
                                 <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "12px 0" }}>
                                     <div style={{ fontSize: "clamp(12px,3vw,14px)", color: "#0f172a", opacity: 0.7, marginBottom: "6px", fontWeight: 600 }}>Today Grow Board</div>
-                                    <div id="todayStakeBoard" style={{ fontSize: "clamp(48px,15vw,96px)", color, fontWeight: 900, lineHeight: 1 }}>{15-Number(stakeDone)}</div>
+                                    <div id="todayStakeBoard" style={{ fontSize: "clamp(48px,15vw,96px)", color, fontWeight: 900, lineHeight: 1 }}>{stakeDoneRevised}</div>
                                     <div style={{ fontSize: "clamp(10px,2.5vw,12px)", color: "#0f172a", opacity: 0.6, marginTop: "6px", fontWeight: 500 }}>Pending Slots (20D)</div>
                                 </div>
 
@@ -159,19 +161,19 @@ export default function Stake(
                             <button
                                 onClick={() => { setTab("history") }}
                                 id="viewHistoryBtn" style={{ background: "linear-gradient(135deg,#8b5cf6,#7c3aed)", color: "white", border: "none", padding: "14px 24px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(14px,3vw,16px)", fontWeight: 700, boxShadow: "0 8px 20px rgba(139,92,246,0.4)", minWidth: "180px" }}>View Grow History</button>
-                            <button
+                            {/* <button
                                 onClick={() => { setTab("reward") }}
-                                id="viewRewardsBtn" style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", color: "white", border: "none", padding: "14px 24px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(14px,3vw,16px)", fontWeight: 700, boxShadow: "0 8px 20px rgba(6,182,212,0.4)", minWidth: "180px" }}>Grow Reward</button>
+                                id="viewRewardsBtn" style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", color: "white", border: "none", padding: "14px 24px", borderRadius: "12px", cursor: "pointer", fontSize: "clamp(14px,3vw,16px)", fontWeight: 700, boxShadow: "0 8px 20px rgba(6,182,212,0.4)", minWidth: "180px" }}>Grow Reward</button> */}
                         </div>
 
 
                         {tab == "history" ? <div id="stakingHistory" style={{ background: "#ffffff", padding: "16px", borderRadius: "20px", boxShadow: "0 10px 40px rgba(0,0,0,0.4)", marginTop: "16px" }}>
-                            <h2 style={{ fontSize: "clamp(18px,4vw,20px)", color: "#0f172a", fontWeight: 900, textAlign: "center", marginBottom: "16px" }}>Your Staking History (20D)</h2>
+                            <h2 style={{ fontSize: "clamp(18px,4vw,20px)", color: "#0f172a", fontWeight: 900, textAlign: "center", marginBottom: "16px" }}>Your Staking History ({days}D)</h2>
                             <div id="historyContent">
                                 {ticket.length == 0 ?
                                     <div style={{ textAlign: "center", padding: "24px", opacity: "0.6" }}>No history.</div>
                                     :
-                                    ticket.map((v, e) => {
+                                    [...ticket].reverse().map((v, e) => {
                                         const duration =
                                             v.stakeType === "1" ? 10 :
                                                 v.stakeType === "2" ? 20 :

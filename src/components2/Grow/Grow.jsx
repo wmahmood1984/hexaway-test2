@@ -18,6 +18,7 @@ export default function Grow() {
     const [usdtBalance, setUsdtBalance] = useState(0)
     const [ticket, setTicket] = useState()
     const [stakeDone, setStakeDone] = useState(0)
+        const [stakeDoneTime, setStakeDoneTime] = useState(0)
 
     const [stakeDone2, setStakeDone2] = useState(0)
     const [stakeDone3, setStakeDone3] = useState(0)
@@ -49,6 +50,9 @@ export default function Grow() {
             setTotalEarned(tn(earned))
             const usdtBal = await USDTContractR.methods.balanceOf(address).call()
             setUsdtBalance(tn(usdtBal))
+
+            const _stakeDoneTime = await growFundContractR.methods.stakeDoneTime().call()
+            setStakeDoneTime(_stakeDoneTime)
            
 
             const _stakeDone = await growFundContractR.methods.stakeDone(1).call()
@@ -61,8 +65,9 @@ export default function Grow() {
 
             const _stakeDone3 = await growFundContractR.methods.stakeDone(3).call()
             setStakeDone3(_stakeDone3)
+            console.log("stake",{_stakeDone,_stakeDone2,_stakeDone3})
         } catch (error) {
-            console.log("error in abc")            
+            console.log("error in abc",error)            
         }
     }
 
@@ -190,6 +195,7 @@ export default function Grow() {
 
                 {activeTab === "1" && <Stake
                     onClick={() => onDepositClick(1)}
+                    stakeDoneTime={stakeDoneTime}
                     textShadow={"0 4px 20px #f59e0b"}
                     setActiveTab={setActiveTab}
                     days={10}
@@ -213,6 +219,7 @@ export default function Grow() {
                     textShadow={"0 4px 20px #10b981"}
                     setActiveTab={setActiveTab}
                     activeTab={activeTab}
+                    stakeDoneTime={stakeDoneTime}
                     days={20}
                     earn={250}
                     color={"#10b981"}
@@ -234,6 +241,7 @@ export default function Grow() {
                     textShadow={"0 4px 20px #8b5cf6"}
                     setActiveTab={setActiveTab}
                     activeTab={activeTab}
+                    stakeDoneTime={stakeDoneTime}
                     days={30}
                     earn={450}
                     stakeDone={stakeDone3}
