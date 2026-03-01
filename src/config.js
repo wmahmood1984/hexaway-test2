@@ -10196,11 +10196,6 @@ export const growfundAbi = [
 				"internalType": "struct Ihelper.User",
 				"name": "_user",
 				"type": "tuple"
-			},
-			{
-				"internalType": "address",
-				"name": "_up",
-				"type": "address"
 			}
 		],
 		"name": "incomeEligible",
@@ -10456,7 +10451,9 @@ export const dataFetcherGameAdd = mainnet ? "0x0cb4db2cb9a70c03d590De7EAFc117C4D
 export const bonusContractAdd = mainnet? "0x648dFbD997b12F2F615ADAfD901B92c498cebEd1":
  "0xCdB22dc563949646836a3a4076E797e34B0f13Ae"
 export const growFundAdd = mainnet ? "" : 
-"0xebdf3067d4f80D55C894755F1c60C4f799d4780c"
+"0xC4579D2Fe443Db2e26F771F80420BF2CFf69b287"
+
+export const stakindReward = mainnet ? "" : "0xe1B6678e9189e5D1E9c76e464949d90a3B308B0C"
 
 
 export const bulkContractAdd = "0x66fB9B9319dCB00721002F7a88E8411226F6E8d3"
